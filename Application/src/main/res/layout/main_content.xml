@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/error_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/cancel_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/error_text"
+        android:text="Alarm" />
+
+    <Button
+        android:id="@+id/trigger_glucose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/cancel_alarm"
+        android:layout_below="@id/error_text"
+        android:text="Get glucose now!" />
+
+    <TextView
+        android:id="@+id/next_glucose"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_toEndOf="@id/trigger_glucose"
+        android:layout_below="@id/error_text"
+        android:layout_height="wrap_content"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/history"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/trigger_glucose" />
+</RelativeLayout>
