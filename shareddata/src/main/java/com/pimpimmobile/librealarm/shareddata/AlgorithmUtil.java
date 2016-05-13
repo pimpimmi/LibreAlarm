@@ -49,7 +49,7 @@ public class AlgorithmUtil {
         return alert;
     }
 
-    public static ReadingData parseData(byte[] data) {
+    public static ReadingData parseData(String tagId, byte[] data) {
         long watchTime = System.currentTimeMillis();
 
         int indexTrend = data[26] & 0xFF;
@@ -73,7 +73,7 @@ public class AlgorithmUtil {
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
-            glucoseData.sensorId = sensorStartTime;
+            glucoseData.sensorId = tagId;
             glucoseData.sensorTime = time;
             historyList.add(glucoseData);
         }
@@ -91,17 +91,17 @@ public class AlgorithmUtil {
             int time = Math.max(0, sensorTime - index);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;
-            glucoseData.sensorId = sensorStartTime;
+            glucoseData.sensorId = tagId;
             glucoseData.sensorTime = time;
             trendList.add(glucoseData);
         }
 
-        PredictionData predictedGlucose = getPredictionData(sensorStartTime, trendList);
+        PredictionData predictedGlucose = getPredictionData(tagId, trendList);
         return new ReadingData(predictedGlucose, trendList, historyList);
     }
 
     @NonNull
-    private static PredictionData getPredictionData(long sensorStartTime, ArrayList<GlucoseData> trendList) {
+    private static PredictionData getPredictionData(String tagId, ArrayList<GlucoseData> trendList) {
         PredictionData predictedGlucose = new PredictionData();
         SimpleRegression regression = new SimpleRegression();
         for (int i = 0; i < trendList.size(); i++) {
@@ -112,7 +112,7 @@ public class AlgorithmUtil {
         predictedGlucose.confidence = regression.getSlopeConfidenceInterval();
         predictedGlucose.errorCode = PredictionData.Result.OK;
         predictedGlucose.realDate = trendList.get(0).realDate;
-        predictedGlucose.sensorId = sensorStartTime;
+        predictedGlucose.sensorId = tagId;
         predictedGlucose.sensorTime = trendList.get(0).sensorTime;
         return predictedGlucose;
     }

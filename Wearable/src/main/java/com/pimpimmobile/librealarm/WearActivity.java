@@ -207,8 +207,10 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         @Override
         protected void onPostExecute(Tag tag) {
             if (tag == null) return;
+            String tagId = bytesToHexString(tag.getId());
+            Log.i(TAG, "Tag id: " + tagId);
             mHandler.removeCallbacks(mStopActivityRunnable);
-            mResult = AlgorithmUtil.parseData(data);
+            mResult = AlgorithmUtil.parseData(tagId, data);
             PreferenceManager.getDefaultSharedPreferences(WearActivity.this)
                     .edit().putInt("retries", 0).apply();
             sendResultAndFinish();
@@ -258,5 +260,21 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
             return tag;
         }
+    }
+
+    private String bytesToHexString(byte[] src) {
+        StringBuilder builder = new StringBuilder("");
+        if (src == null || src.length <= 0) {
+            return "";
+        }
+
+        char[] buffer = new char[2];
+        for (int i = 0; i < src.length; i++) {
+            buffer[0] = Character.forDigit((src[i] >>> 4) & 0x0F, 16);
+            buffer[1] = Character.forDigit(src[i] & 0x0F, 16);
+            builder.append(buffer);
+        }
+
+        return builder.toString();
     }
 }

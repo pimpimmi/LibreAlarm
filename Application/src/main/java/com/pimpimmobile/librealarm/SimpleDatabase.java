@@ -123,7 +123,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
                     data.databaseId = c.getLong(idIndex);
                     data.glucoseLevel = c.getInt(glucoseIndex);
                     data.realDate = c.getLong(realDateIndex);
-                    data.sensorId = c.getLong(sensorIdIndex);
+                    data.sensorId = c.getString(sensorIdIndex);
                     data.sensorTime = c.getLong(sensorTimeIndex);
                     data.confidence = c.getFloat(confidenceIndex);
                     data.prediction = c.getFloat(predictionIndex);
@@ -153,7 +153,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
                     GlucoseData data = new GlucoseData();
                     data.glucoseLevel = c.getInt(glucoseIndex);
                     data.realDate = c.getLong(realDateIndex);
-                    data.sensorId = c.getLong(sensorIdIndex);
+                    data.sensorId = c.getString(sensorIdIndex);
                     data.sensorTime = c.getLong(sensorTimeIndex);
                     trend.add(data);
                     c.moveToNext();
