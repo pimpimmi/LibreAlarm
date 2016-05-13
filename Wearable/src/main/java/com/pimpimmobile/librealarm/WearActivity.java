@@ -32,6 +32,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
+import com.pimpimmobile.librealarm.shareddata.ReadingStatus;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
@@ -42,6 +43,8 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         OnConnectionFailedListener, MessageApi.MessageListener, View.OnClickListener {
 
     private static final String TAG = "GLUCOSE::" + WearActivity.class.getSimpleName();
+
+    private static final int MAX_ATTEMPTS = 6;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -60,13 +63,18 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         public void run() {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(WearActivity.this);
             int retries = preferences.getInt("retries", 0);
-            if (retries > 5) {
+            if (retries >= MAX_ATTEMPTS) {
                 preferences.edit().putInt("retries", 0).commit();
                 sendResultAndFinish();
             } else {
+                sendStatusUpdate(false, new ResultCallback<MessageApi.SendMessageResult>() {
+                    @Override
+                    public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
+                        finish();
+                    }
+                });
                 preferences.edit().putInt("retries", ++retries).commit();
                 mShouldRetry = true;
-                finish();
             }
         }
     };
@@ -138,6 +146,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "is connected!!");
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
+        sendStatusUpdate(true, null);
 
         NfcManager nfcManager =
                 (NfcManager) this.getBaseContext().getSystemService(Context.NFC_SERVICE);
@@ -151,6 +160,13 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         } catch (NullPointerException e) {
             Log.e(TAG, "Adapter nullpointer");
         }
+    }
+
+    private void sendStatusUpdate(boolean running,
+            ResultCallback<MessageApi.SendMessageResult> listener) {
+        int attempt = PreferenceManager.getDefaultSharedPreferences(this).getInt("retries", 0);
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.STATUS_UPDATE,
+                new ReadingStatus(attempt, MAX_ATTEMPTS, running).toTransferString(), listener);
     }
 
     @Override

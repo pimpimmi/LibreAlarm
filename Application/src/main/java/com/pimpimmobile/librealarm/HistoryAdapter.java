@@ -16,7 +16,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
+public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<PredictionData> mHistory;
 
@@ -40,13 +40,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     }
 
     @Override
-    public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new HistoryViewHolder(mInflater.inflate(R.layout.history_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(HistoryViewHolder holder, int position) {
-        holder.onBind(mHistory.get(position), position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ((HistoryViewHolder)holder).onBind(mHistory.get(position), position);
     }
 
     @Override

@@ -22,6 +22,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
+import com.pimpimmobile.librealarm.shareddata.ReadingStatus;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 
 import java.nio.charset.Charset;
@@ -47,6 +48,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     private String mNextCheck;
 
+    private ReadingStatus mReadingStatus;
+
     private SimpleDatabase mDatabase = new SimpleDatabase(this);
 
     @Override
@@ -68,6 +71,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 }
             }
         }
+        mReadingStatus = null;
+        if (mListener != null) mListener.onDataUpdated();
         WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK, "", null);
     }
 
@@ -86,6 +91,11 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 break;
             case WearableApi.SETTINGS:
                 Toast.makeText(this, "Settings updated on watch", Toast.LENGTH_LONG).show();
+                break;
+            case WearableApi.STATUS_UPDATE:
+                mReadingStatus = new ReadingStatus(
+                        new String(messageEvent.getData(), Charset.forName("UTF-8")));
+                if (mListener != null) mListener.onDataUpdated();
                 break;
         }
     }
@@ -168,6 +178,10 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     public SimpleDatabase getDatabase() {
         return mDatabase;
+    }
+
+    public ReadingStatus getReadingStatus() {
+        return mReadingStatus;
     }
 
     private void startAlarm() {

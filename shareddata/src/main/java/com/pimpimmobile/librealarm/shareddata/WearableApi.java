@@ -27,6 +27,7 @@ public class WearableApi {
     public static final String ALARM = "/alarm";
     public static final String SETTINGS = "/settings";
     public static final String GLUCOSE = "/glucose";
+    public static final String STATUS_UPDATE = "/status_update";
     public static final String ERROR = "/error";
 
     public static final String ERROR_NOT_THEATER_MODE = "not_theater_mode";
@@ -68,7 +69,6 @@ public class WearableApi {
             public void run() {
                 NodeApi.GetConnectedNodesResult nodes =
                         Wearable.NodeApi.getConnectedNodes( client ).await();
-
                 for(Node node : nodes.getNodes()) {
                     Log.i(TAG, "sending to " + node.getId() + ", command: " + command);
                     PendingResult<MessageApi.SendMessageResult> pR =

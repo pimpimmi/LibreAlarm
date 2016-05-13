@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
+import com.pimpimmobile.librealarm.shareddata.ReadingStatus;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     private ActionBarDrawerToggle mDrawerToggle;
     private WearService mService;
     private TextView mErrorView;
+    private ProgressBar mProgressBar;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -113,6 +116,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         bindService(new Intent(this, WearService.class), mConnection, BIND_AUTO_CREATE);
 
         mNextGlucoseTextView = (TextView) layout.findViewById(R.id.next_glucose);
+        mProgressBar = (ProgressBar) layout.findViewById(R.id.progress);
         mTriggerGlucoseButton = layout.findViewById(R.id.trigger_glucose);
         mTriggerGlucoseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,7 +193,15 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     @Override
     public void onDataUpdated() {
         onDatabaseChange();
-        mNextGlucoseTextView.setText(mService.getNextCheck());
+        ReadingStatus status = mService.getReadingStatus();
+        mProgressBar.setVisibility((status != null && status.running) ? View.VISIBLE : View.INVISIBLE);
+
+        if (status == null) {
+            mNextGlucoseTextView.setText(mService.getNextCheck());
+        } else {
+            mNextGlucoseTextView.setText("Attempt " + status.attempt + "/" + status.maxAttempts +
+                    (status.running ? "" : " Failed..."));
+        }
         if (mService.isAlarmPlaying()) {
             mCancelAlarmTextView.setVisibility(View.VISIBLE);
         } else {

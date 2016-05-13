@@ -29,11 +29,21 @@
         android:layout_below="@id/error_text"
         android:text="Get glucose now!" />
 
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_marginTop="15dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_toEndOf="@id/trigger_glucose"
+        android:layout_marginStart="5dp"
+        android:visibility="invisible"/>
+
     <TextView
         android:id="@+id/next_glucose"
         android:layout_width="wrap_content"
         android:layout_marginTop="15dp"
-        android:layout_toEndOf="@id/trigger_glucose"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@id/progress"
         android:layout_below="@id/error_text"
         android:layout_height="wrap_content"/>
 
