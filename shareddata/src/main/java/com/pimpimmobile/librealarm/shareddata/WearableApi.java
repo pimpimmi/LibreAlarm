@@ -21,7 +21,8 @@ public class WearableApi {
     private static final String TAG = "GLUCOSE::" + WearableApi.class.getSimpleName();
 
     public static final String TRIGGER_GLUCOSE = "/trigger_glucose";
-    public static final String SET_NEXT_CHECK = "/set_next_check";
+    public static final String START = "/start";
+    public static final String STOP = "/stop";
     public static final String GET_NEXT_CHECK = "/get_next_check";
     public static final String CANCEL_ALARM = "/cancel_alarm";
     public static final String ALARM = "/alarm";
@@ -29,6 +30,7 @@ public class WearableApi {
     public static final String GLUCOSE = "/glucose";
     public static final String STATUS_UPDATE = "/status_update";
     public static final String ERROR = "/error";
+
 
     public static final String ERROR_NOT_THEATER_MODE = "not_theater_mode";
 

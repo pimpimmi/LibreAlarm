@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -39,7 +40,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     private View mTriggerGlucoseButton;
     private TextView mNextGlucoseTextView;
     private HistoryAdapter mAdapter;
-    private View mCancelAlarmTextView;
+    private Button mActionButton;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private WearService mService;
@@ -104,7 +105,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
                 long nextAlarmTime = ((PostponeSettings)
                         settingsView.settingsMap.get(PostponeSettings.class.getSimpleName())).time;
                 if (nextAlarmTime != -1) {
-                    mService.setNextCheck(AlgorithmUtil.format(new Date(nextAlarmTime)));
+                    mService.setNextCheck(nextAlarmTime);
                 }
             }
 
@@ -133,13 +134,22 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
                 });
             }
         });
-        mCancelAlarmTextView = layout.findViewById(R.id.cancel_alarm);
-        mCancelAlarmTextView.setOnClickListener(new View.OnClickListener() {
+        mActionButton = (Button) layout.findViewById(R.id.action);
+        mActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.sendMessage(WearableApi.CANCEL_ALARM, "", null);
-                mService.stopAlarm();
-                v.setVisibility(View.GONE);
+                switch (mActionButton.getText().toString().toLowerCase()) {
+                    case "alarm":
+                        mService.sendMessage(WearableApi.CANCEL_ALARM, "", null);
+                        mService.stopAlarm();
+                        break;
+                    case "start":
+                        mService.start();
+                        break;
+                    case "stop":
+                        mService.stop();
+                        break;
+                }
             }
         });
 
@@ -197,15 +207,21 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         mProgressBar.setVisibility((status != null && status.running) ? View.VISIBLE : View.INVISIBLE);
 
         if (status == null) {
-            mNextGlucoseTextView.setText(mService.getNextCheck());
+            if (mService.getNextCheck() == -1) {
+                mNextGlucoseTextView.setText("");
+            } else {
+                mNextGlucoseTextView.setText(mService.getNextCheckString());
+            }
         } else {
             mNextGlucoseTextView.setText("Attempt " + status.attempt + "/" + status.maxAttempts +
                     (status.running ? "" : " Failed..."));
         }
         if (mService.isAlarmPlaying()) {
-            mCancelAlarmTextView.setVisibility(View.VISIBLE);
+            mActionButton.setText("ALARM");
+        } else if (mService.getNextCheck() == -1) {
+            mActionButton.setText("START");
         } else {
-            mCancelAlarmTextView.setVisibility(View.GONE);
+            mActionButton.setText("STOP");
         }
     }
 

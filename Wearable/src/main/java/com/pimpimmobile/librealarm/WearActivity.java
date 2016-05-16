@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -85,8 +86,15 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     public void onCreate(Bundle b) {
         super.onCreate(b);
         Log.i(TAG, "onCreate()");
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         setContentView(R.layout.wear_activity);
-        AlarmHandler.setNextCheck(this, System.currentTimeMillis() + AlarmHandler.getDefaultInterval(this));
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
@@ -94,7 +102,8 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 .build();
 
         PowerManager manager = (PowerManager) getSystemService(POWER_SERVICE);
-        mWakeLock = manager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+        mWakeLock = manager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+                PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
 
         mWakeLock.acquire();
         mHandler.postDelayed(mStopActivityRunnable, 10000);
@@ -115,7 +124,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     @Override
     protected void onDestroy() {
         Log.i(TAG,"onDestroy");
-        if (mShouldRetry) AlarmHandler.setNextCheck(this, System.currentTimeMillis() +  10000);
+        if (mShouldRetry) AlarmReceiver.post(this, 10000);
         mHandler.removeCallbacksAndMessages(null);
         if (mWakeLock.isHeld()) mWakeLock.release();
         if (mVibrator != null) mVibrator.cancel();

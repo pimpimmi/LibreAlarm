@@ -43,7 +43,7 @@ public class HighGlucoseSettings extends Settings implements AlertRule {
         View v = inflater.inflate(R.layout.settings_edit_text, parent, false);
         ((TextView)v.findViewById(R.id.title)).setText("High glucose limit");
         mGlucoseEditView = (EditText) v.findViewById(R.id.value);
-        mGlucoseEditView.setHint("Minutes");
+        mGlucoseEditView.setHint("mmol/l");
         mGlucoseEditView.setText(String.valueOf(glucose));
         mGlucoseEditView.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
         return v;

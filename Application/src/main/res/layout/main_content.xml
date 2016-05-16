@@ -14,20 +14,21 @@
         android:visibility="gone"/>
 
     <Button
-        android:id="@+id/cancel_alarm"
+        android:id="@+id/action"
+        android:width="70dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/error_text"
-        android:text="Alarm" />
+        android:text="Wait"
+        android:layout_below="@id/error_text" />
 
     <Button
         android:id="@+id/trigger_glucose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/cancel_alarm"
+        android:layout_toEndOf="@id/action"
         android:layout_below="@id/error_text"
-        android:text="Get glucose now!" />
+        android:text="Check now" />
 
     <ProgressBar
         android:id="@+id/progress"

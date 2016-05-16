@@ -16,7 +16,6 @@ import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.Settings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
-import java.nio.charset.Charset;
 import java.util.HashMap;
 
 public class DataLayerListenerService extends WearableListenerService {
@@ -53,13 +52,11 @@ public class DataLayerListenerService extends WearableListenerService {
                     HashMap<String, Settings> settings = SettingsUtils.getSettings(getBaseContext());
                     long nextAlarm = ((PostponeSettings)settings.get(PostponeSettings.class.getSimpleName())).time;
                     if (nextAlarm != -1) {
-                        if (nextAlarm < System.currentTimeMillis()) {
-                            AlarmHandler.cancelNextCheck(this);
-                        } else {
-                            AlarmHandler.setNextCheck(this, nextAlarm);
-                        }
+                        AlarmReceiver.post(this, nextAlarm);
                     }
                     WearableApi.sendMessage(mGoogleApiClient, WearableApi.SETTINGS, WearableApi.MESSAGE_ACK, null);
+                    WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
+                            Long.toString(AlarmReceiver.getNextCheck(this)), null);
                 }
             }
         }
@@ -70,11 +67,8 @@ public class DataLayerListenerService extends WearableListenerService {
         Log.i(TAG, "received message: " + messageEvent.getSourceNodeId() + ", command: " + messageEvent.getPath());
         switch (messageEvent.getPath()) {
             case WearableApi.GET_NEXT_CHECK:
-                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK, Long.toString(AlarmHandler.getNextCheck(this)), null);
-                break;
-            case WearableApi.SET_NEXT_CHECK:
-                AlarmHandler.setNextCheck(this, Long.valueOf(new String(messageEvent.getData(),Charset.forName("UTF-8"))));
-                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK, Long.toString(AlarmHandler.getNextCheck(this)), null);
+                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
+                        Long.toString(AlarmReceiver.getNextCheck(this)), null);
                 break;
             case WearableApi.TRIGGER_GLUCOSE: {
                     Intent i = new Intent(this, WearActivity.class);
@@ -87,6 +81,18 @@ public class DataLayerListenerService extends WearableListenerService {
                     i.putExtra("cancel", true);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
+                }
+                break;
+            case WearableApi.STOP: {
+                AlarmReceiver.stop(this);
+                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
+                        Long.toString(AlarmReceiver.getNextCheck(this)), null);
+                }
+                break;
+            case WearableApi.START: {
+                AlarmReceiver.start(this);
+                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
+                        Long.toString(AlarmReceiver.getNextCheck(this)), null);
                 }
                 break;
         }

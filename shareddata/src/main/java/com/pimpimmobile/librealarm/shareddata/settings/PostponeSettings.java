@@ -18,8 +18,7 @@ public class PostponeSettings extends Settings {
     @Override
     public String getExtraData() {
         if (!TextUtils.isEmpty(mMinutesView.getText().toString())) {
-            setExtraData(String.valueOf(System.currentTimeMillis() +
-                    Long.valueOf(mMinutesView.getText().toString()) * 60000));
+            setExtraData("" + Long.valueOf(mMinutesView.getText().toString()) * 60000);
         }
         return String.valueOf(time);
     }

@@ -46,7 +46,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     // TODO: Crashes for some reason.
 //    private MediaPlayer mAlarmPlayer;
 
-    private String mNextCheck;
+    private long mNextCheck;
 
     private ReadingStatus mReadingStatus;
 
@@ -60,6 +60,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     @Override
     public void onDataChanged(DataEventBuffer dataEventBuffer) {
         for (DataEvent event : dataEventBuffer) {
+            Log.i(TAG, "Data receiver: " + event.getType());
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 // Check the data path
                 String path = event.getDataItem().getUri().getPath();
@@ -78,6 +79,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
+        Log.i(TAG, "Message receiver: " + messageEvent.getPath() + ", " +
+                new String(messageEvent.getData(), Charset.forName("UTF-8")));
         switch (messageEvent.getPath()) {
             case WearableApi.ALARM:
                 startAlarm();
@@ -86,8 +89,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 stopAlarm();
                 break;
             case WearableApi.GET_NEXT_CHECK:
-                setNextCheck(AlgorithmUtil.format(new Date(Long.valueOf(
-                        new String(messageEvent.getData(), Charset.forName("UTF-8"))))));
+                setNextCheck(Long.valueOf(
+                         new String(messageEvent.getData(), Charset.forName("UTF-8"))));
                 break;
             case WearableApi.SETTINGS:
                 Toast.makeText(this, "Settings updated on watch", Toast.LENGTH_LONG).show();
@@ -98,6 +101,15 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 if (mListener != null) mListener.onDataUpdated();
                 break;
         }
+    }
+
+    public void start() {
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.START, "", null);
+    }
+
+    public void stop() {
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.STOP, "", null);
+        mNextCheck = -1;
     }
 
     public class WearServiceBinder extends Binder {
@@ -208,11 +220,15 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         return alarmisplaying; //return mAlarmPlayer != null && mAlarmPlayer.isPlaying();
     }
 
-    public String getNextCheck() {
+    public String getNextCheckString() {
+        return AlgorithmUtil.format(new Date(mNextCheck));
+    }
+
+    public long getNextCheck(){
         return mNextCheck;
     }
 
-    public void setNextCheck(String nextCheck) {
+    public void setNextCheck(long nextCheck) {
         mNextCheck = nextCheck;
         if (mListener != null) mListener.onDataUpdated();
     }
