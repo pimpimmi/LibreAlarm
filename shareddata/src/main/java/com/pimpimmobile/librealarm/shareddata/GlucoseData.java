@@ -2,13 +2,13 @@ package com.pimpimmobile.librealarm.shareddata;
 
 import java.text.DecimalFormat;
 
-public class GlucoseData {
+public class GlucoseData implements Comparable<GlucoseData> {
 
     public long realDate;
     public String sensorId;
     public long sensorTime;
     public int glucoseLevel = -1;
-    public long databaseId;
+    public long phoneDatabaseId;
 
     public GlucoseData(){}
 
@@ -28,4 +28,8 @@ public class GlucoseData {
         return new DecimalFormat("##.#").format(glucoseLevel/18f);
     }
 
+    @Override
+    public int compareTo(GlucoseData another) {
+        return (int) (realDate - another.realDate);
+    }
 }

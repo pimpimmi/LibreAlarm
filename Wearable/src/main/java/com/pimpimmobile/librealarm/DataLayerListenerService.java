@@ -11,6 +11,9 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.pimpimmobile.librealarm.shareddata.ReadingData;
+import com.pimpimmobile.librealarm.shareddata.Status;
+import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.Settings;
@@ -51,50 +54,78 @@ public class DataLayerListenerService extends WearableListenerService {
                     SettingsUtils.saveSettings(this, newSettings);
                     HashMap<String, Settings> settings = SettingsUtils.getSettings(getBaseContext());
                     long nextAlarm = ((PostponeSettings)settings.get(PostponeSettings.class.getSimpleName())).time;
-                    if (nextAlarm != -1) {
+                    if (nextAlarm > 0) {
                         AlarmReceiver.post(this, nextAlarm);
                     }
                     WearableApi.sendMessage(mGoogleApiClient, WearableApi.SETTINGS, WearableApi.MESSAGE_ACK, null);
-                    WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
-                            Long.toString(AlarmReceiver.getNextCheck(this)), null);
+
+                    sendStatus(mGoogleApiClient);
                 }
             }
         }
     }
 
+    private static void sendStatus(GoogleApiClient client) {
+        int attempt = PreferencesUtil.getRetries(client.getContext());
+        Type type = PreferencesUtil.getCurrentType(client.getContext());
+        WearableApi.sendMessage(client, WearableApi.STATUS,
+                new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
+                        AlarmReceiver.getNextCheck(client.getContext())).toTransferString(), null);
+    }
+
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
+        handleMessage(mGoogleApiClient, messageEvent);
+    }
+
+    public static void handleMessage(GoogleApiClient client, MessageEvent messageEvent) {
         Log.i(TAG, "received message: " + messageEvent.getSourceNodeId() + ", command: " + messageEvent.getPath());
         switch (messageEvent.getPath()) {
-            case WearableApi.GET_NEXT_CHECK:
-                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
-                        Long.toString(AlarmReceiver.getNextCheck(this)), null);
-                break;
             case WearableApi.TRIGGER_GLUCOSE: {
-                    Intent i = new Intent(this, WearActivity.class);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                }
-                break;
+                Intent i = new Intent(client.getContext(), WearActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                client.getContext().startActivity(i);
+            }
+            break;
             case WearableApi.CANCEL_ALARM: {
-                    Intent i = new Intent(this, WearActivity.class);
-                    i.putExtra("cancel", true);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                }
-                break;
+                PreferencesUtil.setCurrentType(client.getContext(), Type.WAITING);
+                Intent i = new Intent(client.getContext(), WearActivity.class);
+                i.putExtra(WearActivity.EXTRA_CANCEL_ALARM, true);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                client.getContext().startActivity(i);
+                sendStatus(client);
+            }
+            break;
             case WearableApi.STOP: {
-                AlarmReceiver.stop(this);
-                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
-                        Long.toString(AlarmReceiver.getNextCheck(this)), null);
-                }
-                break;
+                PreferencesUtil.setCurrentType(client.getContext(), Type.NOT_RUNNING);
+                PreferencesUtil.setIsStarted(client.getContext(), false);
+                AlarmReceiver.stop(client.getContext());
+                sendStatus(client);
+            }
+            break;
             case WearableApi.START: {
-                AlarmReceiver.start(this);
-                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK,
-                        Long.toString(AlarmReceiver.getNextCheck(this)), null);
+                PreferencesUtil.setCurrentType(client.getContext(), Type.WAITING);
+                PreferencesUtil.setIsStarted(client.getContext(), true);
+                AlarmReceiver.start(client.getContext());
+                AlarmReceiver.post(client.getContext(), 30000);
+                sendStatus(client);
+            }
+            break;
+            case WearableApi.GLUCOSE: { // ACK response
+                SimpleDatabase database = new SimpleDatabase(client.getContext());
+                database.deleteMessage(Long.valueOf(new String(messageEvent.getData())));
+                database.close();
+            }
+            break;
+            case WearableApi.GET_UPDATE: {
+                SimpleDatabase database = new SimpleDatabase(client.getContext());
+                for (ReadingData.TransferObject message : database.getMessages()) {
+                    WearableApi.sendMessage(client, WearableApi.GLUCOSE, message.toString(), null);
                 }
-                break;
+                database.close();
+                sendStatus(client);
+            }
+            break;
         }
     }
 

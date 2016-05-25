@@ -14,20 +14,22 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
-import com.pimpimmobile.librealarm.shareddata.ReadingStatus;
+import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 
 import java.nio.charset.Charset;
 import java.util.Date;
 
+/**
+ * Service which keeps the phone connected to the watch.
+ * TODO: Perhaps this is unnecessary and drains battery. Needed to get notified about alarms though.
+ */
 public class WearService extends Service implements DataApi.DataListener, MessageApi.MessageListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -46,9 +48,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     // TODO: Crashes for some reason.
 //    private MediaPlayer mAlarmPlayer;
 
-    private long mNextCheck;
-
-    private ReadingStatus mReadingStatus;
+    private Status mReadingStatus;
 
     private SimpleDatabase mDatabase = new SimpleDatabase(this);
 
@@ -59,22 +59,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     @Override
     public void onDataChanged(DataEventBuffer dataEventBuffer) {
-        for (DataEvent event : dataEventBuffer) {
-            Log.i(TAG, "Data receiver: " + event.getType());
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                // Check the data path
-                String path = event.getDataItem().getUri().getPath();
-                if (path.equals(WearableApi.GLUCOSE)) {
-                    String data = DataMapItem.fromDataItem(event.getDataItem()).getDataMap().getString("data", null);
-                    if (data != null) {
-                        mDatabase.storeReading(new ReadingData(data));
-                    }
-                }
-            }
-        }
-        mReadingStatus = null;
-        if (mListener != null) mListener.onDataUpdated();
-        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK, "", null);
+
     }
 
     @Override
@@ -82,22 +67,21 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         Log.i(TAG, "Message receiver: " + messageEvent.getPath() + ", " +
                 new String(messageEvent.getData(), Charset.forName("UTF-8")));
         switch (messageEvent.getPath()) {
-            case WearableApi.ALARM:
-                startAlarm();
-                break;
             case WearableApi.CANCEL_ALARM:
                 stopAlarm();
                 break;
-            case WearableApi.GET_NEXT_CHECK:
-                setNextCheck(Long.valueOf(
-                         new String(messageEvent.getData(), Charset.forName("UTF-8"))));
-                break;
-            case WearableApi.SETTINGS:
+            case WearableApi.SETTINGS: // ACK
                 Toast.makeText(this, "Settings updated on watch", Toast.LENGTH_LONG).show();
                 break;
-            case WearableApi.STATUS_UPDATE:
-                mReadingStatus = new ReadingStatus(
+            case WearableApi.STATUS:
+                mReadingStatus = new Status(
                         new String(messageEvent.getData(), Charset.forName("UTF-8")));
+                if (mListener != null) mListener.onDataUpdated();
+                break;
+            case WearableApi.GLUCOSE:
+                ReadingData.TransferObject object = new ReadingData.TransferObject(new String(messageEvent.getData()));
+                mDatabase.storeReading(object.data);
+                WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, String.valueOf(object.id), null);
                 if (mListener != null) mListener.onDataUpdated();
                 break;
         }
@@ -109,7 +93,6 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     public void stop() {
         WearableApi.sendMessage(mGoogleApiClient, WearableApi.STOP, "", null);
-        mNextCheck = -1;
     }
 
     public class WearServiceBinder extends Binder {
@@ -156,14 +139,14 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         Log.i(TAG, "Wear connected");
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
         Wearable.DataApi.addListener(mGoogleApiClient, this);
-        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_NEXT_CHECK, "", null);
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_UPDATE, "", null);
         mResolvingError = false;
-        if (mListener != null) mListener.onConnected();
+        if (mListener != null) mListener.onDataUpdated();
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
-        if (mListener != null) mListener.onDisconnected();
+        if (mListener != null) mListener.onDataUpdated();
     }
 
     @Override
@@ -182,7 +165,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         } else {
             Log.e(TAG, "Connection to Google API client has failed");
             mResolvingError = false;
-            if (mListener != null) mListener.onDisconnected();
+            if (mListener != null) mListener.onDataUpdated();
             Wearable.MessageApi.removeListener(mGoogleApiClient, this);
             Wearable.DataApi.removeListener(mGoogleApiClient, this);
         }
@@ -192,7 +175,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         return mDatabase;
     }
 
-    public ReadingStatus getReadingStatus() {
+    public Status getReadingStatus() {
         return mReadingStatus;
     }
 
@@ -210,6 +193,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     private boolean alarmisplaying = false;
     public void stopAlarm() {
         alarmisplaying = false;
+        if (mListener != null) mListener.onDataUpdated();
 //        if (mAlarmPlayer != null && mAlarmPlayer.isPlaying()) {
 //            mAlarmPlayer.stop();
 //            mAlarmPlayer.release();
@@ -220,17 +204,25 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         return alarmisplaying; //return mAlarmPlayer != null && mAlarmPlayer.isPlaying();
     }
 
-    public String getNextCheckString() {
-        return AlgorithmUtil.format(new Date(mNextCheck));
-    }
-
-    public long getNextCheck(){
-        return mNextCheck;
-    }
-
-    public void setNextCheck(long nextCheck) {
-        mNextCheck = nextCheck;
-        if (mListener != null) mListener.onDataUpdated();
+    public String getStatusString() {
+        if (isConnected() && mReadingStatus != null) {
+            switch (mReadingStatus.status) {
+                case ALARM:
+                    return "ALARM!!";
+                case ATTEMPTING:
+                    return "Attempt " + mReadingStatus.attempt + "/" + mReadingStatus.maxAttempts;
+                case ATTENPT_FAILED:
+                    return "Attempt " + mReadingStatus.attempt + "/" + mReadingStatus.maxAttempts + " failed";
+                case WAITING:
+                    return AlgorithmUtil.format(new Date(mReadingStatus.nextCheck));
+                case NOT_RUNNING:
+                    return "Not running";
+                default:
+                    return "";
+            }
+        } else {
+            return "Not connected";
+        }
     }
 
     public void sendData(String command, String data, ResultCallback<DataApi.DataItemResult> listener) {
@@ -247,8 +239,6 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     }
 
     public interface WearServiceListener {
-        void onConnected();
-        void onDisconnected();
         void onDataUpdated();
     }
 }

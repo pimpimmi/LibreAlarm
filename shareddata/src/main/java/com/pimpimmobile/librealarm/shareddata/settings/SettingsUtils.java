@@ -18,7 +18,6 @@ public class SettingsUtils {
         settingsMap.put(HighGlucoseSettings.class.getSimpleName(), new HighGlucoseSettings());
         settingsMap.put(LowGlucoseSettings.class.getSimpleName(), new LowGlucoseSettings());
         settingsMap.put(ConfidenceSettings.class.getSimpleName(), new ConfidenceSettings());
-        settingsMap.put(SmsSettings.class.getSimpleName(), new SmsSettings());
 
         // Load settings saved values
         String string = PreferenceManager.getDefaultSharedPreferences(context).getString("settings", "");

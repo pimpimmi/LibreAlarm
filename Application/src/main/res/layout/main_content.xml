@@ -40,7 +40,7 @@
         android:visibility="invisible"/>
 
     <TextView
-        android:id="@+id/next_glucose"
+        android:id="@+id/status_view"
         android:layout_width="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_marginStart="5dp"

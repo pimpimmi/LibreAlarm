@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -26,25 +25,24 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
-import com.pimpimmobile.librealarm.shareddata.ReadingStatus;
+import com.pimpimmobile.librealarm.shareddata.Status;
+import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.util.Date;
 
-public class MainActivity extends Activity implements WearService.WearServiceListener, SimpleDatabase.DatabaseListener, HistoryAdapter.ShowDialogListener {
+public class MainActivity extends Activity implements WearService.WearServiceListener, SimpleDatabase.DatabaseListener, HistoryAdapter.OnListItemClickedListener {
 
     private static final String TAG = "GLUCOSE::" + MainActivity.class.getSimpleName();
 
     private View mTriggerGlucoseButton;
-    private TextView mNextGlucoseTextView;
+    private TextView mStatusTextView;
     private HistoryAdapter mAdapter;
     private Button mActionButton;
-    private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private WearService mService;
-    private TextView mErrorView;
     private ProgressBar mProgressBar;
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -52,33 +50,18 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = ((WearService.WearServiceBinder) service).getService();
             mService.setListener(MainActivity.this, MainActivity.this);
-            if (mService.isConnected()) {
-                onConnected();
-                onDataUpdated();
-            }
+            onDataUpdated();
             mService.getDatabase().setListener(MainActivity.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            onDisconnected();
+            onDataUpdated();
             mService.getDatabase().setListener(MainActivity.this);
             mService.setListener(null, null);
             mService = null;
         }
     };
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle your other action bar items...
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onCreate(Bundle b) {
@@ -88,35 +71,31 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         ViewGroup layout = (ViewGroup) getLayoutInflater().inflate(R.layout.main_content, null);
         ((FrameLayout) findViewById(R.id.content_frame)).addView(layout);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         final SettingsView settingsView = (SettingsView) findViewById(R.id.drawer);
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_close,
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_close,
                 R.string.drawer_open) {
             public void onDrawerClosed(View view) {
                 String transferString =
                         SettingsUtils.createSettingsTransferString(settingsView.settingsMap.values());
                 SettingsUtils.saveSettings(MainActivity.this, transferString);
                 mService.sendData(WearableApi.SETTINGS, transferString, null);
-                long nextAlarmTime = ((PostponeSettings)
-                        settingsView.settingsMap.get(PostponeSettings.class.getSimpleName())).time;
-                if (nextAlarmTime != -1) {
-                    mService.setNextCheck(nextAlarmTime);
-                }
+                settingsView.settingsMap.get(PostponeSettings.class.getSimpleName()).setExtraData("");
             }
 
             public void onDrawerOpened(View drawerView) {
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerLayout.setDrawerListener(mDrawerToggle);
 
         bindService(new Intent(this, WearService.class), mConnection, BIND_AUTO_CREATE);
 
-        mNextGlucoseTextView = (TextView) layout.findViewById(R.id.next_glucose);
+        mStatusTextView = (TextView) layout.findViewById(R.id.status_view);
         mProgressBar = (ProgressBar) layout.findViewById(R.id.progress);
         mTriggerGlucoseButton = layout.findViewById(R.id.trigger_glucose);
         mTriggerGlucoseButton.setOnClickListener(new View.OnClickListener() {
@@ -124,14 +103,14 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             public void onClick(View v) {
                 mService.sendMessage(WearableApi.TRIGGER_GLUCOSE, "",
                         new ResultCallback<MessageApi.SendMessageResult>() {
-                    @Override
-                    public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
-                        if (!sendMessageResult.getStatus().isSuccess()) {
-                            Toast.makeText(MainActivity.this, "Trigger failed: " + sendMessageResult.
-                                    getStatus().getStatusMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+                            @Override
+                            public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
+                                if (!sendMessageResult.getStatus().isSuccess()) {
+                                    Toast.makeText(MainActivity.this, "Trigger failed: " + sendMessageResult.
+                                            getStatus().getStatusMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
             }
         });
         mActionButton = (Button) layout.findViewById(R.id.action);
@@ -142,6 +121,8 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
                     case "alarm":
                         mService.sendMessage(WearableApi.CANCEL_ALARM, "", null);
                         mService.stopAlarm();
+                        boolean notRunning = mService.getReadingStatus().status == Type.NOT_RUNNING;
+                        mActionButton.setText(notRunning ? "START" : "STOP");
                         break;
                     case "start":
                         mService.start();
@@ -152,8 +133,6 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
                 }
             }
         });
-
-        mErrorView = (TextView) layout.findViewById(R.id.error_text);
 
         mAdapter = new HistoryAdapter(this, this);
         RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.history);
@@ -176,17 +155,6 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     }
 
     @Override
-    public void onConnected() {
-        mTriggerGlucoseButton.setEnabled(true);
-        onDataUpdated();
-    }
-
-    @Override
-    public void onDisconnected() {
-        mTriggerGlucoseButton.setEnabled(false);
-    }
-
-    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
@@ -203,26 +171,27 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     @Override
     public void onDataUpdated() {
         onDatabaseChange();
-        ReadingStatus status = mService.getReadingStatus();
-        mProgressBar.setVisibility((status != null && status.running) ? View.VISIBLE : View.INVISIBLE);
-
-        if (status == null) {
-            if (mService.getNextCheck() == -1) {
-                mNextGlucoseTextView.setText("");
-            } else {
-                mNextGlucoseTextView.setText(mService.getNextCheckString());
+        Status status = mService.getReadingStatus();
+        mProgressBar.setVisibility((status != null && status.status == Type.ATTEMPTING) ? View.VISIBLE : View.INVISIBLE);
+        if (status != null && mService.isConnected()) {
+            switch (status.status) {
+                case ALARM:
+                    mActionButton.setText("ALARM");
+                    break;
+                case ATTEMPTING:
+                case ATTENPT_FAILED:
+                case WAITING:
+                    mActionButton.setText("STOP");
+                    break;
+                case NOT_RUNNING:
+                    mActionButton.setText("START");
             }
         } else {
-            mNextGlucoseTextView.setText("Attempt " + status.attempt + "/" + status.maxAttempts +
-                    (status.running ? "" : " Failed..."));
+            mActionButton.setText("WAIT");
         }
-        if (mService.isAlarmPlaying()) {
-            mActionButton.setText("ALARM");
-        } else if (mService.getNextCheck() == -1) {
-            mActionButton.setText("START");
-        } else {
-            mActionButton.setText("STOP");
-        }
+        mActionButton.setEnabled(mService != null && mService.isConnected());
+        mTriggerGlucoseButton.setEnabled(mService != null && mService.isConnected());
+        mStatusTextView.setText(mService.getStatusString());
     }
 
     @Override
@@ -231,7 +200,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     }
 
     @Override
-    public void showDialog(long id) {
+    public void onAdapterItemClicked(long id) {
         String s = "";
         for (GlucoseData data : mService.getDatabase().getTrend(id)) {
             s += AlgorithmUtil.format(new Date(data.realDate)) +

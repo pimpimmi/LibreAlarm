@@ -52,4 +52,23 @@ public class ReadingData {
         }
         return builder.toString();
     }
+
+    public static class TransferObject {
+        public final long id;
+        public final ReadingData data;
+
+        public TransferObject(String data) {
+            id = Long.valueOf(data.split("\n")[0]);
+            this.data = new ReadingData(data.substring(data.indexOf("\n") + 1));
+        }
+
+        public TransferObject(long id, String data) {
+            this.id = id;
+            this.data = new ReadingData(data);
+        }
+
+        public String toString() {
+            return "" + id + "\n" + data.readingToString();
+        }
+    }
 }

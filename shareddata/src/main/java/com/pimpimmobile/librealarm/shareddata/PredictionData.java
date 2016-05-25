@@ -11,6 +11,7 @@ public class PredictionData extends GlucoseData {
     public double prediction = -1;
     public double confidence = -1;
     public Result errorCode;
+    public int attempt;
 
     public PredictionData() {}
 
@@ -20,9 +21,10 @@ public class PredictionData extends GlucoseData {
         prediction = Double.valueOf(split[4]);
         confidence = Double.valueOf(split[5]);
         errorCode = Result.values()[Integer.valueOf(split[6])];
+        attempt = Integer.valueOf(split[7]);
     }
 
     public String toTransferString() {
-        return super.toTransferString() + ":" + prediction + ":" + confidence + ":" + errorCode.ordinal();
+        return super.toTransferString() + ":" + prediction + ":" + confidence + ":" + errorCode.ordinal() + ":" + attempt;
     }
 }

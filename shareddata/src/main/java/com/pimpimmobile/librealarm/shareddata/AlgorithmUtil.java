@@ -19,7 +19,7 @@ public class AlgorithmUtil {
     // TODO: 15 a good value?
     private static final int PREDICTION_TIME = 15;
 
-    private static final SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static final SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static String format(Date date) {
         return mFormat.format(date);
@@ -49,7 +49,7 @@ public class AlgorithmUtil {
         return alert;
     }
 
-    public static ReadingData parseData(String tagId, byte[] data) {
+    public static ReadingData parseData(int attempt, String tagId, byte[] data) {
         long watchTime = System.currentTimeMillis();
 
         int indexTrend = data[26] & 0xFF;
@@ -96,12 +96,12 @@ public class AlgorithmUtil {
             trendList.add(glucoseData);
         }
 
-        PredictionData predictedGlucose = getPredictionData(tagId, trendList);
+        PredictionData predictedGlucose = getPredictionData(attempt, tagId, trendList);
         return new ReadingData(predictedGlucose, trendList, historyList);
     }
 
     @NonNull
-    private static PredictionData getPredictionData(String tagId, ArrayList<GlucoseData> trendList) {
+    private static PredictionData getPredictionData(int attempt, String tagId, ArrayList<GlucoseData> trendList) {
         PredictionData predictedGlucose = new PredictionData();
         SimpleRegression regression = new SimpleRegression();
         for (int i = 0; i < trendList.size(); i++) {
@@ -113,6 +113,7 @@ public class AlgorithmUtil {
         predictedGlucose.errorCode = PredictionData.Result.OK;
         predictedGlucose.realDate = trendList.get(0).realDate;
         predictedGlucose.sensorId = tagId;
+        predictedGlucose.attempt = attempt;
         predictedGlucose.sensorTime = trendList.get(0).sensorTime;
         return predictedGlucose;
     }

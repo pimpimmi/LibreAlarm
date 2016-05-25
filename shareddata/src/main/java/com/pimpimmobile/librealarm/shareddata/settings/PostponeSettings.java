@@ -30,6 +30,7 @@ public class PostponeSettings extends Settings {
         } else {
             time = Long.valueOf(data);
         }
+        if (mMinutesView != null && data != null) mMinutesView.setText(data);
     }
 
     @Override

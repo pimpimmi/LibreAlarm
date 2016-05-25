@@ -13,6 +13,7 @@ import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -26,9 +27,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private DecimalFormat mFormat = new DecimalFormat("##.##");
 
-    private ShowDialogListener mListener;
+    private OnListItemClickedListener mListener;
 
-    public HistoryAdapter(Context context, ShowDialogListener listener) {
+    public HistoryAdapter(Context context, OnListItemClickedListener listener) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mListener = listener;
@@ -36,6 +37,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void setHistory(List<PredictionData> history) {
         mHistory = history;
+        if (mHistory != null) {
+            Collections.sort(mHistory);
+            Collections.reverse(mHistory);
+        }
         notifyDataSetChanged();
     }
 
@@ -65,7 +70,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
-                        mListener.showDialog(mHistory.get(getAdapterPosition()).databaseId);
+                        mListener.onAdapterItemClicked(mHistory.get(getAdapterPosition()).phoneDatabaseId);
                     }
                 }
             });
@@ -90,12 +95,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         (data.prediction >= 0 ? "+" : "") +
                         mFormat.format(data.prediction/18f) + ")");
                 mTitleView.setText(AlgorithmUtil.format(new Date(data.realDate)) +
-                        "\nConfidence: " + mFormat.format(data.confidence));
+                        "\n(" + data.attempt + "/5) Conf: " + mFormat.format(data.confidence));
             }
         }
     }
 
-    interface ShowDialogListener {
-        void showDialog(long id);
+    interface OnListItemClickedListener {
+        void onAdapterItemClicked(long id);
     }
 }

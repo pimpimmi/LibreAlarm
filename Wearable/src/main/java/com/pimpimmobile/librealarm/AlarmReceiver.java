@@ -14,6 +14,9 @@ import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * This receiver will be started
+ */
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     public static final int DEFAULT_INTERVAL = 600000;
@@ -41,7 +44,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public static void start(Context context) {
-        post(context, 120000);
         ComponentName receiver = new ComponentName(context, AlarmReceiver.class);
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(receiver,

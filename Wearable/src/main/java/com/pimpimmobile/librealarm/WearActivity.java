@@ -1,11 +1,8 @@
 package com.pimpimmobile.librealarm;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.nfc.Tag;
@@ -15,10 +12,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.View;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,14 +22,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
-import com.pimpimmobile.librealarm.shareddata.ReadingStatus;
+import com.pimpimmobile.librealarm.shareddata.Status;
+import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
@@ -41,11 +37,13 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class WearActivity extends Activity implements ConnectionCallbacks,
-        OnConnectionFailedListener, MessageApi.MessageListener, View.OnClickListener {
+        OnConnectionFailedListener, MessageApi.MessageListener {
 
     private static final String TAG = "GLUCOSE::" + WearActivity.class.getSimpleName();
 
-    private static final int MAX_ATTEMPTS = 6;
+    public static final String EXTRA_CANCEL_ALARM = "cancel_alarm";
+
+    public static final int MAX_ATTEMPTS = 5;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -57,25 +55,39 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     private Vibrator mVibrator;
 
-    private boolean mShouldRetry;
+    // We can't finish activity until all messages have been sent.
+    private int mMessagesBeingSent;
+    private boolean mFinishAfterSentMessages = false;
+
+    private ResultCallback<MessageApi.SendMessageResult> mMessageListener =
+            new ResultCallback<MessageApi.SendMessageResult>() {
+        @Override
+        public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "messagesbeingsent: " + mMessagesBeingSent +", finish? " + mFinishAfterSentMessages);
+                    if (--mMessagesBeingSent <= 0 && mFinishAfterSentMessages) {
+                        finish();
+                    }
+                }
+            });
+        }
+    };
 
     private Runnable mStopActivityRunnable = new Runnable() {
         @Override
         public void run() {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(WearActivity.this);
-            int retries = preferences.getInt("retries", 0);
+            int retries = PreferencesUtil.getRetries(WearActivity.this);
+            mFinishAfterSentMessages = true;
             if (retries >= MAX_ATTEMPTS) {
-                preferences.edit().putInt("retries", 0).commit();
+                PreferencesUtil.setRetries(WearActivity.this, 1);
+                setNextAlarm();
+                sendStatusUpdate(Type.WAITING);
                 sendResultAndFinish();
             } else {
-                sendStatusUpdate(false, new ResultCallback<MessageApi.SendMessageResult>() {
-                    @Override
-                    public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
-                        finish();
-                    }
-                });
-                preferences.edit().putInt("retries", ++retries).commit();
-                mShouldRetry = true;
+                sendStatusUpdate(Type.ATTENPT_FAILED);
+                PreferencesUtil.setRetries(WearActivity.this, ++retries);
             }
         }
     };
@@ -101,81 +113,80 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 .addOnConnectionFailedListener(this)
                 .build();
 
+        // If attempt fails for some reason, retry in 20 seconds.
+        if (PreferencesUtil.getIsStarted(this)) AlarmReceiver.post(this, 20000);
+
+        mGoogleApiClient.connect();
+        NfcManager nfcManager =
+                (NfcManager) WearActivity.this.getSystemService(Context.NFC_SERVICE);
+        mNfcAdapter = nfcManager.getDefaultAdapter();
+        mNfcAdapter.enableReaderMode(WearActivity.this, new NfcAdapter.ReaderCallback() {
+            @Override
+            public void onTagDiscovered(Tag tag) {
+                new NfcVReaderTask().execute(tag);
+                mNfcAdapter.disableReaderMode(WearActivity.this);
+            }
+        }, NfcAdapter.FLAG_READER_NFC_V, null);
+
         PowerManager manager = (PowerManager) getSystemService(POWER_SERVICE);
         mWakeLock = manager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                 PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
 
         mWakeLock.acquire();
+
+        // If NFC reading hasn't been completed within 10 seconds, close the app.
         mHandler.postDelayed(mStopActivityRunnable, 10000);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (intent.hasExtra("cancel")) finish();
+        if (intent.hasExtra(EXTRA_CANCEL_ALARM)) {
+            sendStatusUpdate(Type.WAITING);
+            mFinishAfterSentMessages = true;
+        }
         super.onNewIntent(intent);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mGoogleApiClient.connect();
+    protected void onStop() {
+        Log.i(TAG,"onStop");
+        mHandler.removeCallbacksAndMessages(null);
+        if (mWakeLock.isHeld()) mWakeLock.release();
+        if (mVibrator != null) mVibrator.cancel();
+        if (mNfcAdapter != null) mNfcAdapter.disableReaderMode(this);
+        if (mGoogleApiClient.isConnected()) {
+            Wearable.MessageApi.removeListener(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
+        finish();
+        super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         Log.i(TAG,"onDestroy");
-        if (mShouldRetry) AlarmReceiver.post(this, 10000);
-        mHandler.removeCallbacksAndMessages(null);
-        if (mWakeLock.isHeld()) mWakeLock.release();
-        if (mVibrator != null) mVibrator.cancel();
         super.onDestroy();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Wearable.MessageApi.removeListener(mGoogleApiClient, this);
-        mGoogleApiClient.disconnect();
-        if (mNfcAdapter != null) mNfcAdapter.disableForegroundDispatch(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        String action = data.getAction();
-        Log.i(TAG, "tech discovered");
-        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)){
-            mResult = new ReadingData(PredictionData.Result.ERROR_NFC_READ);
-            Tag tag = data.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            new NfcVReaderTask().execute(tag);
+    private void setNextAlarm() {
+        if (PreferencesUtil.getIsStarted(this)) {
+            AlarmReceiver.post(this, AlarmReceiver.DEFAULT_INTERVAL);
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "is connected!!");
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
-        sendStatusUpdate(true, null);
-
-        NfcManager nfcManager =
-                (NfcManager) this.getBaseContext().getSystemService(Context.NFC_SERVICE);
-        mNfcAdapter = nfcManager.getDefaultAdapter();
-
-        PendingIntent pi = createPendingResult(15, new Intent(), 0);
-        try {
-            mNfcAdapter.enableForegroundDispatch(this, pi,
-                    new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED)},
-                    new String[][]{new String[]{"android.nfc.tech.NfcV"}});
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Adapter nullpointer");
-        }
+        sendStatusUpdate(Type.ATTEMPTING);
     }
 
-    private void sendStatusUpdate(boolean running,
-            ResultCallback<MessageApi.SendMessageResult> listener) {
-        int attempt = PreferenceManager.getDefaultSharedPreferences(this).getInt("retries", 0);
-        WearableApi.sendMessage(mGoogleApiClient, WearableApi.STATUS_UPDATE,
-                new ReadingStatus(attempt, MAX_ATTEMPTS, running).toTransferString(), listener);
+    private void sendStatusUpdate(Type type) {
+        PreferencesUtil.setCurrentType(this, type);
+        int attempt = PreferencesUtil.getRetries(this);
+        mMessagesBeingSent++;
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.STATUS,
+                new Status(type, attempt, MAX_ATTEMPTS, AlarmReceiver.getNextCheck(this)).toTransferString(), mMessageListener);
     }
 
     @Override
@@ -185,23 +196,25 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     @Override
     public void onMessageReceived(MessageEvent event) {
-        Log.i(TAG, "message: " + event.toString());
+        DataLayerListenerService.handleMessage(mGoogleApiClient, event);
     }
 
+    /**
+     * Disables touch
+     */
     @Override
-    public void onClick(View v) {
-
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return true;
     }
 
     private void sendResultAndFinish() {
-        WearableApi.sendData(mGoogleApiClient, WearableApi.GLUCOSE, mResult.readingToString(), new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(@NonNull DataApi.DataItemResult dataItemResult) {
-                Log.i(TAG, "finish");
-                if (!AlgorithmUtil.danger(WearActivity.this, mResult.prediction,
-                        SettingsUtils.getAlertRules(WearActivity.this))) finish();
-            }
-        });
+        SimpleDatabase database = new SimpleDatabase(this);
+        long id = database.saveMessage(mResult);
+        ReadingData.TransferObject transferObject = new ReadingData.TransferObject(id, mResult.readingToString());
+        database.close();
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, transferObject.toString(), mMessageListener);
+        mMessagesBeingSent++;
+        mFinishAfterSentMessages = true;
     }
 
     @Override
@@ -217,16 +230,25 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         protected void onPostExecute(Tag tag) {
             if (tag == null) return;
             String tagId = bytesToHexString(tag.getId());
-            Log.i(TAG, "Tag id: " + tagId);
-            mHandler.removeCallbacks(mStopActivityRunnable);
-            mResult = AlgorithmUtil.parseData(tagId, data);
-            PreferenceManager.getDefaultSharedPreferences(WearActivity.this)
-                    .edit().putInt("retries", 0).apply();
+            int attempt = PreferencesUtil.getRetries(WearActivity.this);
+            mResult = AlgorithmUtil.parseData(attempt, tagId, data);
+            PreferencesUtil.setRetries(WearActivity.this, 1);
             sendResultAndFinish();
+            setNextAlarm();
             if (AlgorithmUtil.danger(WearActivity.this, mResult.prediction, SettingsUtils.getAlertRules(WearActivity.this))) {
-                WearableApi.sendMessage(mGoogleApiClient, WearableApi.ALARM, "", null);
+                sendStatusUpdate(Type.ALARM);
+                mFinishAfterSentMessages = false;
                 mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                mVibrator.vibrate(1000000);
+                mVibrator.vibrate(10000);
+                // Close app after it has vibrated for 10 seconds.
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                }, 10000);
+            } else {
+                sendStatusUpdate(Type.WAITING);
             }
         }
 
@@ -264,7 +286,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             } finally {
                 try {
                     nfcvTag.close();
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    Log.e(TAG, "Error closing tag!");
+                }
             }
 
             return tag;
@@ -278,9 +302,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         }
 
         char[] buffer = new char[2];
-        for (int i = 0; i < src.length; i++) {
-            buffer[0] = Character.forDigit((src[i] >>> 4) & 0x0F, 16);
-            buffer[1] = Character.forDigit(src[i] & 0x0F, 16);
+        for (byte b : src) {
+            buffer[0] = Character.forDigit((b >>> 4) & 0x0F, 16);
+            buffer[1] = Character.forDigit(b & 0x0F, 16);
             builder.append(buffer);
         }
 

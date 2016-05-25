@@ -15,12 +15,17 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.pimpimmobile.librealarm" >
+        package="com.pimpimmobile.librealarm"
+    android:versionCode="1"
+    android:versionName="1.0.0">
 
     <uses-sdk android:minSdkVersion="18"
               android:targetSdkVersion="23" />
 
-    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
             android:allowBackup="true"

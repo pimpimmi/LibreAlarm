@@ -23,16 +23,11 @@ public class WearableApi {
     public static final String TRIGGER_GLUCOSE = "/trigger_glucose";
     public static final String START = "/start";
     public static final String STOP = "/stop";
-    public static final String GET_NEXT_CHECK = "/get_next_check";
     public static final String CANCEL_ALARM = "/cancel_alarm";
-    public static final String ALARM = "/alarm";
     public static final String SETTINGS = "/settings";
     public static final String GLUCOSE = "/glucose";
-    public static final String STATUS_UPDATE = "/status_update";
-    public static final String ERROR = "/error";
-
-
-    public static final String ERROR_NOT_THEATER_MODE = "not_theater_mode";
+    public static final String STATUS = "/status_update";
+    public static final String GET_UPDATE = "/update";
 
     public static final String MESSAGE_ACK = "OK";
 
@@ -45,12 +40,13 @@ public class WearableApi {
 
     public static boolean sendData(GoogleApiClient client, String command, Bundle bundle, ResultCallback<DataApi.DataItemResult> listener) {
         if (client.isConnected()) {
-
             Log.i(TAG, "send data, message: " + command);
             PutDataMapRequest putDataMapReq = PutDataMapRequest.create(command);
             for (String key : bundle.keySet()) {
                 putDataMapReq.getDataMap().putString(key, bundle.getString(key));
             }
+            putDataMapReq.setUrgent();
+            putDataMapReq.getDataMap().putLong("timestamp", System.currentTimeMillis());
             PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
             PendingResult<DataApi.DataItemResult> pR =
                     Wearable.DataApi.putDataItem(client, putDataReq);

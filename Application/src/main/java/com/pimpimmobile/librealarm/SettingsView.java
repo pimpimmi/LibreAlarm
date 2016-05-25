@@ -17,6 +17,9 @@ import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.util.HashMap;
 
+/**
+ * View shown in navigation bar.
+ */
 public class SettingsView extends LinearLayout {
 
     private LayoutInflater mInflater;
