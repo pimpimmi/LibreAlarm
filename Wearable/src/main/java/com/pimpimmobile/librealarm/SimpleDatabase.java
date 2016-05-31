@@ -18,7 +18,7 @@ import java.util.List;
 public class SimpleDatabase extends SQLiteOpenHelper {
 
     public SimpleDatabase(Context context) {
-        super(context, "data", null, 2);
+        super(context, "data", null, 1);
     }
 
     public interface Message {

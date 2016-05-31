@@ -21,7 +21,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
     private DatabaseListener mListener;
 
     public SimpleDatabase(Context context) {
-        super(context, "data", null, 3);
+        super(context, "data", null, 1);
     }
 
     public interface Prediction extends Glucose {
