@@ -18,13 +18,13 @@ public class LowGlucoseSettings extends Settings implements AlertRule {
     public float glucose = 3.5F;
 
     @Override
-    public String getExtraData() {
-        setExtraData(mLowGlucoseEditText.getText().toString());
+    public String getSettingsValue() {
+        setSettingsValue(mLowGlucoseEditText.getText().toString());
         return String.valueOf(glucose);
     }
 
     @Override
-    public void setExtraData(String data) {
+    public void setSettingsValue(String data) {
         if (!TextUtils.isEmpty(data)) {
             glucose = Float.valueOf(data);
             if (mLowGlucoseEditText != null) mLowGlucoseEditText.setText(String.valueOf(glucose));

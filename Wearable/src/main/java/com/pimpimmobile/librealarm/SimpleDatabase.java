@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.gson.Gson;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 public class SimpleDatabase extends SQLiteOpenHelper {
 
     public SimpleDatabase(Context context) {
-        super(context, "data", null, 1);
+        super(context, "data", null, 2);
     }
 
     public interface Message {
@@ -47,7 +48,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
         if (c != null && c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 list.add(new ReadingData.TransferObject(c.getLong(c.getColumnIndex(Message.ID)),
-                        c.getString(c.getColumnIndex(Message.MESSAGE))));
+                        new Gson().fromJson(c.getString(c.getColumnIndex(Message.MESSAGE)), ReadingData.class)));
                 c.moveToNext();
             }
         }
@@ -64,7 +65,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
     public long saveMessage(ReadingData message) {
         SQLiteDatabase database = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(Message.MESSAGE, message.readingToString());
+        values.put(Message.MESSAGE, new Gson().toJson(message));
         long id = database.insert(TABLE_TRANSFER_MESSAGES, null, values);
         database.close();
         return id;

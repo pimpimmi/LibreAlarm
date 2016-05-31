@@ -16,18 +16,16 @@ public class PostponeSettings extends Settings {
     public long time = -1;
 
     @Override
-    public String getExtraData() {
+    public String getSettingsValue() {
         if (!TextUtils.isEmpty(mMinutesView.getText().toString())) {
-            setExtraData("" + Long.valueOf(mMinutesView.getText().toString()) * 60000);
+            setSettingsValue("" + Long.valueOf(mMinutesView.getText().toString()) * 60000);
         }
         return String.valueOf(time);
     }
 
     @Override
-    public void setExtraData(String data) {
-        if (TextUtils.isEmpty(data)) {
-            time = -1;
-        } else {
+    public void setSettingsValue(String data) {
+        if (!TextUtils.isEmpty(data)) {
             time = Long.valueOf(data);
         }
         if (mMinutesView != null && data != null) mMinutesView.setText(data);

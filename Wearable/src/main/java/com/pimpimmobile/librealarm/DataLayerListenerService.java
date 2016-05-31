@@ -6,11 +6,13 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.google.gson.Gson;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
@@ -50,7 +52,11 @@ public class DataLayerListenerService extends WearableListenerService {
                 // Check the data path
                 String path = event.getDataItem().getUri().getPath();
                 if (WearableApi.SETTINGS.equals(path)) {
-                    String newSettings = DataMapItem.fromDataItem(event.getDataItem()).getDataMap().getString("data", null);
+                    HashMap<String, String> newSettings = new HashMap<>();
+                    DataMap dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    for (String key : dataMap.keySet()) {
+                        newSettings.put(key, dataMap.getString(key, null));
+                    }
                     SettingsUtils.saveSettings(this, newSettings);
                     HashMap<String, Settings> settings = SettingsUtils.getSettings(getBaseContext());
                     long nextAlarm = ((PostponeSettings)settings.get(PostponeSettings.class.getSimpleName())).time;
@@ -68,9 +74,10 @@ public class DataLayerListenerService extends WearableListenerService {
     private static void sendStatus(GoogleApiClient client) {
         int attempt = PreferencesUtil.getRetries(client.getContext());
         Type type = PreferencesUtil.getCurrentType(client.getContext());
-        WearableApi.sendMessage(client, WearableApi.STATUS,
-                new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
-                        AlarmReceiver.getNextCheck(client.getContext())).toTransferString(), null);
+        Status status = new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
+                AlarmReceiver.getNextCheck(client.getContext()));
+        Log.i("UITest", "GSON: " + new Gson().toJson(status));
+        WearableApi.sendMessage(client, WearableApi.STATUS, new Gson().toJson(status), null);
     }
 
     @Override

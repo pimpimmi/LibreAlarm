@@ -20,13 +20,13 @@ public class HighGlucoseSettings extends Settings implements AlertRule {
     public float glucose = DEFAULT;
 
     @Override
-    public String getExtraData() {
-        setExtraData(mGlucoseEditView.getText().toString());
+    public String getSettingsValue() {
+        setSettingsValue(mGlucoseEditView.getText().toString());
         return String.valueOf(glucose);
     }
 
     @Override
-    public void setExtraData(String data) {
+    public void setSettingsValue(String data) {
         if (!TextUtils.isEmpty(data)) {
             glucose = Float.valueOf(data);
             if (mGlucoseEditView != null) mGlucoseEditView.setText(String.valueOf(glucose));

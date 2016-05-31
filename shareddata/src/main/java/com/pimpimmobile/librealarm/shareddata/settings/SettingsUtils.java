@@ -1,10 +1,10 @@
 package com.pimpimmobile.librealarm.shareddata.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,13 +20,10 @@ public class SettingsUtils {
         settingsMap.put(ConfidenceSettings.class.getSimpleName(), new ConfidenceSettings());
 
         // Load settings saved values
-        String string = PreferenceManager.getDefaultSharedPreferences(context).getString("settings", "");
-        for (String s : string.split(",")) {
-            String[] split = s.split(":");
-            if (split.length > 1) {
-                Settings settings = settingsMap.get(split[0]);
-                settings.setExtraData(split[1]);
-                if (split.length > 2) settings.enabled("true".equals(split[2]));
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        for (String key : settingsMap.keySet()) {
+            if (preferences.contains(key)) {
+                settingsMap.get(key).setSettingsValue(preferences.getString(key, null));
             }
         }
 
@@ -41,16 +38,20 @@ public class SettingsUtils {
         return list;
     }
 
-    public static void saveSettings(Context context, String string) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putString("settings", string).apply();
+    public static void saveSettings(Context context, HashMap<String, String> map) {
+        SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        for (String key : map.keySet()) {
+            edit.putString(key, map.get(key));
+        }
+        edit.apply();
     }
 
-    public static String createSettingsTransferString(Collection<Settings> settingsArray) {
-        String string = "";
-        for (Settings settings : settingsArray) {
-            string += settings.getClass().getSimpleName() + ":" + settings.getExtraData() + ":" + settings.isEnabled() + ",";
+    public static HashMap<String, String> getTransferHashMap(HashMap<String, Settings> settingsArray) {
+        HashMap<String, String> map = new HashMap<>();
+        for (String key : settingsArray.keySet()) {
+            map.put(key, settingsArray.get(key).getSettingsValue());
         }
-        return string;
+        return map;
     }
 
 }

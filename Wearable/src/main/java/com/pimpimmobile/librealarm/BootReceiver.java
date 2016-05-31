@@ -12,8 +12,7 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "alarmreceiver");
-        if (intent != null && Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            AlarmReceiver.start(context);
-        }
+        AlarmReceiver.start(context);
+        AlarmReceiver.post(context, 120000);
     }
 }

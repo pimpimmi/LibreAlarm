@@ -12,18 +12,6 @@ public class GlucoseData implements Comparable<GlucoseData> {
 
     public GlucoseData(){}
 
-    public GlucoseData(String transferString) {
-        String[] split = transferString.split(":");
-        sensorId = String.valueOf(split[0]);
-        sensorTime = Long.valueOf(split[1]);
-        glucoseLevel = Integer.valueOf(split[2]);
-        realDate = Long.valueOf(split[3]);
-    }
-
-    public String toTransferString() {
-        return sensorId + ":" + sensorTime + ":" + glucoseLevel + ":" + realDate;
-    }
-
     public String mmolGlucose() {
         return new DecimalFormat("##.#").format(glucoseLevel/18f);
     }

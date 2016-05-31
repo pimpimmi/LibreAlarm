@@ -10,10 +10,10 @@ public class Status {
         ALARM
     }
 
-    public final Type status;
-    public final int attempt;
-    public final int maxAttempts;
-    public final long nextCheck;
+    public Type status;
+    public int attempt;
+    public int maxAttempts;
+    public long nextCheck;
 
     public Status(Type type, int attempt, int maxAttempts, long nextCheck) {
         this.status = type;
@@ -22,15 +22,6 @@ public class Status {
         this.nextCheck = nextCheck;
     }
 
-    public Status(String transferString) {
-        String[] split = transferString.split(":");
-        status = Type.values()[Integer.valueOf(split[0])];
-        attempt = Integer.valueOf(split[1]);
-        maxAttempts = Integer.valueOf(split[2]);
-        nextCheck = Long.valueOf(split[3]);
-    }
-
-    public String toTransferString() {
-        return "" + status.ordinal() + ":" + attempt + ":" + maxAttempts + ":" + nextCheck;
+    public Status() {
     }
 }

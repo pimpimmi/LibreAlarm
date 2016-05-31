@@ -16,8 +16,9 @@ public abstract class Settings {
         return isObligatory() || mIsChecked;
     }
 
-    public abstract String getExtraData();
-    public abstract void setExtraData(String data);
+    public abstract String getSettingsValue();
+    public abstract void setSettingsValue(String data);
+    // Settings return true if the user should be able to disable this setting (not used at the moment)
     public abstract boolean isObligatory();
     public abstract View getView(LayoutInflater inflater, ViewGroup parent);
 

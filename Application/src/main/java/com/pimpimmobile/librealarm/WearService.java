@@ -18,6 +18,7 @@ import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
@@ -25,6 +26,7 @@ import com.pimpimmobile.librealarm.shareddata.WearableApi;
 
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Service which keeps the phone connected to the watch.
@@ -74,12 +76,13 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 Toast.makeText(this, "Settings updated on watch", Toast.LENGTH_LONG).show();
                 break;
             case WearableApi.STATUS:
-                mReadingStatus = new Status(
-                        new String(messageEvent.getData(), Charset.forName("UTF-8")));
+                Log.i("UITest", "Gson: " + new String(messageEvent.getData()));
+                mReadingStatus = new Gson().fromJson(new String(messageEvent.getData()), Status.class);
                 if (mListener != null) mListener.onDataUpdated();
                 break;
             case WearableApi.GLUCOSE:
-                ReadingData.TransferObject object = new ReadingData.TransferObject(new String(messageEvent.getData()));
+                ReadingData.TransferObject object = new Gson().fromJson(
+                        new String(messageEvent.getData()), ReadingData.TransferObject.class);
                 mDatabase.storeReading(object.data);
                 WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, String.valueOf(object.id), null);
                 if (mListener != null) mListener.onDataUpdated();
@@ -225,7 +228,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         }
     }
 
-    public void sendData(String command, String data, ResultCallback<DataApi.DataItemResult> listener) {
+    public void sendData(String command, HashMap<String, String> data, ResultCallback<DataApi.DataItemResult> listener) {
         if (isConnected()) WearableApi.sendData(mGoogleApiClient, command, data, listener);
     }
 

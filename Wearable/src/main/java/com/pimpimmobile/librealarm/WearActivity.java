@@ -25,6 +25,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
@@ -185,8 +186,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         PreferencesUtil.setCurrentType(this, type);
         int attempt = PreferencesUtil.getRetries(this);
         mMessagesBeingSent++;
-        WearableApi.sendMessage(mGoogleApiClient, WearableApi.STATUS,
-                new Status(type, attempt, MAX_ATTEMPTS, AlarmReceiver.getNextCheck(this)).toTransferString(), mMessageListener);
+        Status status = new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
+                AlarmReceiver.getNextCheck(mGoogleApiClient.getContext()));
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.STATUS, new Gson().toJson(status), mMessageListener);
     }
 
     @Override
@@ -210,9 +212,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     private void sendResultAndFinish() {
         SimpleDatabase database = new SimpleDatabase(this);
         long id = database.saveMessage(mResult);
-        ReadingData.TransferObject transferObject = new ReadingData.TransferObject(id, mResult.readingToString());
+        ReadingData.TransferObject transferObject = new ReadingData.TransferObject(id, mResult);
         database.close();
-        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, transferObject.toString(), mMessageListener);
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, new Gson().toJson(transferObject), mMessageListener);
         mMessagesBeingSent++;
         mFinishAfterSentMessages = true;
     }

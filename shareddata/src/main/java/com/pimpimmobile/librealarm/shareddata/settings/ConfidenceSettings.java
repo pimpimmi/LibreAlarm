@@ -19,13 +19,13 @@ public class ConfidenceSettings extends Settings implements AlertRule {
     public float confidence = 1;
 
     @Override
-    public String getExtraData() {
-        setExtraData(mConfidenceEditText.getText().toString());
+    public String getSettingsValue() {
+        setSettingsValue(mConfidenceEditText.getText().toString());
         return String.valueOf(confidence);
     }
 
     @Override
-    public void setExtraData(String data) {
+    public void setSettingsValue(String data) {
         if (!TextUtils.isEmpty(data)) {
             confidence = Float.valueOf(data);
             if (mConfidenceEditText != null) mConfidenceEditText.setText(String.valueOf(confidence));

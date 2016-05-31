@@ -1,6 +1,5 @@
 package com.pimpimmobile.librealarm.shareddata;
 
-import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -15,6 +14,7 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
 
 public class WearableApi {
 
@@ -31,19 +31,12 @@ public class WearableApi {
 
     public static final String MESSAGE_ACK = "OK";
 
-    public static void sendData(GoogleApiClient client, String command, String data, ResultCallback<DataApi.DataItemResult> listener) {
-        Bundle bundle = new Bundle();
-        bundle.putString("data", data);
-        Log.i(TAG, "send data, message: " + command + ", " + data);
-        sendData(client, command, bundle, listener);
-    }
-
-    public static boolean sendData(GoogleApiClient client, String command, Bundle bundle, ResultCallback<DataApi.DataItemResult> listener) {
+    public static boolean sendData(GoogleApiClient client, String command, HashMap<String, String> pairs, ResultCallback<DataApi.DataItemResult> listener) {
         if (client.isConnected()) {
             Log.i(TAG, "send data, message: " + command);
             PutDataMapRequest putDataMapReq = PutDataMapRequest.create(command);
-            for (String key : bundle.keySet()) {
-                putDataMapReq.getDataMap().putString(key, bundle.getString(key));
+            for (String key : pairs.keySet()) {
+                putDataMapReq.getDataMap().putString(key, pairs.get(key));
             }
             putDataMapReq.setUrgent();
             putDataMapReq.getDataMap().putLong("timestamp", System.currentTimeMillis());

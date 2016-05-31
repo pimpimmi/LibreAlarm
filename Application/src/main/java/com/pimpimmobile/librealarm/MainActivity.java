@@ -32,6 +32,7 @@ import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class MainActivity extends Activity implements WearService.WearServiceListener, SimpleDatabase.DatabaseListener, HistoryAdapter.OnListItemClickedListener {
 
@@ -81,11 +82,10 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_close,
                 R.string.drawer_open) {
             public void onDrawerClosed(View view) {
-                String transferString =
-                        SettingsUtils.createSettingsTransferString(settingsView.settingsMap.values());
-                SettingsUtils.saveSettings(MainActivity.this, transferString);
-                mService.sendData(WearableApi.SETTINGS, transferString, null);
-                settingsView.settingsMap.get(PostponeSettings.class.getSimpleName()).setExtraData("");
+                HashMap<String, String> settings = SettingsUtils.getTransferHashMap(settingsView.settingsMap);
+                SettingsUtils.saveSettings(MainActivity.this, settings);
+                mService.sendData(WearableApi.SETTINGS, settings, null);
+                settingsView.settingsMap.get(PostponeSettings.class.getSimpleName()).setSettingsValue("");
             }
 
             public void onDrawerOpened(View drawerView) {

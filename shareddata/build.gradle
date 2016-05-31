@@ -14,5 +14,6 @@ android {
 
 dependencies {
     compile 'com.google.android.gms:play-services-wearable:8.4.0'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.6.2'
     compile files('libs/commons-math3-3.6.jar')
 }
