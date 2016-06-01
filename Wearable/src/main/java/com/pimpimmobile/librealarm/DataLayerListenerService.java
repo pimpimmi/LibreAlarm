@@ -76,7 +76,6 @@ public class DataLayerListenerService extends WearableListenerService {
         Type type = PreferencesUtil.getCurrentType(client.getContext());
         Status status = new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
                 AlarmReceiver.getNextCheck(client.getContext()));
-        Log.i("UITest", "GSON: " + new Gson().toJson(status));
         WearableApi.sendMessage(client, WearableApi.STATUS, new Gson().toJson(status), null);
     }
 
@@ -127,7 +126,7 @@ public class DataLayerListenerService extends WearableListenerService {
             case WearableApi.GET_UPDATE: {
                 SimpleDatabase database = new SimpleDatabase(client.getContext());
                 for (ReadingData.TransferObject message : database.getMessages()) {
-                    WearableApi.sendMessage(client, WearableApi.GLUCOSE, message.toString(), null);
+                    WearableApi.sendMessage(client, WearableApi.GLUCOSE, new Gson().toJson(message), null);
                 }
                 database.close();
                 sendStatus(client);
