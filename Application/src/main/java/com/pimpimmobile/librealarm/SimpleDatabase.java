@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
@@ -17,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SimpleDatabase extends SQLiteOpenHelper {
+
+    private static final String TAG = "GLUCOSE::" + SimpleDatabase.class.getSimpleName();
 
     private DatabaseListener mListener;
 
@@ -91,6 +94,25 @@ public class SimpleDatabase extends SQLiteOpenHelper {
     public void storeReading(ReadingData data) {
         SQLiteDatabase database = getWritableDatabase();
         database.beginTransaction();
+
+        // Checks for duplicates.
+        if (data.prediction.glucoseLevel != -1) {
+            Cursor c = null;
+            try {
+                c = database.query(TABLE_PREDICTIONS, null,
+                        Glucose.SENSOR_ID + "=? AND ?=" + Glucose.SENSOR_TIME,
+                        new String[]{String.valueOf(data.prediction.sensorTime), data.prediction.sensorId},
+                        null, null, null);
+                if (c.getCount() > 0) {
+                    Log.i(TAG, "Data already exist, sensor id: " + data.prediction.sensorId +
+                            ", sensor time: " + data.prediction.sensorTime);
+                    return;
+                }
+            } finally {
+                if (c != null) c.close();
+            }
+        }
+
         ContentValues predictionValues = getGlucoseContentValues(data.prediction, -1);
         long predictionId = database.insert(TABLE_PREDICTIONS, null, predictionValues);
         for (Object trend : data.trend) {
