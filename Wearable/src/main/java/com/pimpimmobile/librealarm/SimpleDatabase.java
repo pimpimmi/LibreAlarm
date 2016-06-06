@@ -41,6 +41,9 @@ public class SimpleDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+
     public List<ReadingData.TransferObject> getMessages() {
         SQLiteDatabase database = getReadableDatabase();
         List<ReadingData.TransferObject> list = new ArrayList<>();

@@ -23,6 +23,8 @@ import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
+import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
+import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -74,6 +76,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 break;
             case WearableApi.SETTINGS: // ACK
                 Toast.makeText(this, "Settings updated on watch", Toast.LENGTH_LONG).show();
+                SettingsUtils.saveSettings(this, PostponeSettings.class.getSimpleName(), null);
                 break;
             case WearableApi.STATUS:
                 Log.i("UITest", "Gson: " + new String(messageEvent.getData()));
@@ -217,7 +220,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 case ATTENPT_FAILED:
                     return "Attempt " + mReadingStatus.attempt + "/" + mReadingStatus.maxAttempts + " failed";
                 case WAITING:
-                    return AlgorithmUtil.format(new Date(mReadingStatus.nextCheck));
+                    return "Next check: " + AlgorithmUtil.format(new Date(mReadingStatus.nextCheck));
                 case NOT_RUNNING:
                     return "Not running";
                 default:

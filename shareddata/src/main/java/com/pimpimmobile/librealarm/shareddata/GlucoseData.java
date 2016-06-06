@@ -13,7 +13,7 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public GlucoseData(){}
 
     public String mmolGlucose() {
-        return new DecimalFormat("##.#").format(glucoseLevel/18f);
+        return new DecimalFormat("##.0").format(glucoseLevel/18f);
     }
 
     @Override

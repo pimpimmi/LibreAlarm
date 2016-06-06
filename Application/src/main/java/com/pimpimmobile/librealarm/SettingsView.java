@@ -32,7 +32,7 @@ public class SettingsView extends LinearLayout {
         setDividerDrawable(new ColorDrawable(Color.WHITE));
         setDividerPadding(3);
         setOrientation(VERTICAL);
-        settingsMap = SettingsUtils.getSettings(getContext());
+        settingsMap = SettingsUtils.getAllSettings(getContext());
         for (Settings settings : settingsMap.values()) {
             addView(new SettingsChild(getContext(), settings));
         }

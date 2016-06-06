@@ -20,7 +20,7 @@ public class ConfidenceSettings extends Settings implements AlertRule {
 
     @Override
     public String getSettingsValue() {
-        setSettingsValue(mConfidenceEditText.getText().toString());
+        if (mConfidenceEditText != null) setSettingsValue(mConfidenceEditText.getText().toString());
         return String.valueOf(confidence);
     }
 

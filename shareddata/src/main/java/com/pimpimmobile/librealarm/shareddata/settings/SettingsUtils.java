@@ -11,7 +11,7 @@ import java.util.List;
 
 public class SettingsUtils {
 
-    public static HashMap<String, Settings> getSettings(Context context) {
+    public static HashMap<String, Settings> getAllSettings(Context context) {
         // Decide which settings to use
         HashMap<String, Settings> settingsMap =  new LinkedHashMap<>();
         settingsMap.put(PostponeSettings.class.getSimpleName(), new PostponeSettings());
@@ -30,9 +30,13 @@ public class SettingsUtils {
         return settingsMap;
     }
 
+    public static Settings getSettings(Context context, String key) {
+        return getAllSettings(context).get(key);
+    }
+
     public static List<AlertRule> getAlertRules(Context context) {
         List<AlertRule> list = new ArrayList<>();
-        for (Settings settings : getSettings(context).values()) {
+        for (Settings settings : getAllSettings(context).values()) {
             if (settings instanceof AlertRule) list.add((AlertRule) settings);
         }
         return list;
@@ -43,6 +47,12 @@ public class SettingsUtils {
         for (String key : map.keySet()) {
             edit.putString(key, map.get(key));
         }
+        edit.apply();
+    }
+
+    public static void saveSettings(Context context, String key, String value) {
+        SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        edit.putString(key, value);
         edit.apply();
     }
 

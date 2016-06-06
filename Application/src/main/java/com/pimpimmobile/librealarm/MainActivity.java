@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -83,9 +84,9 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
                 R.string.drawer_open) {
             public void onDrawerClosed(View view) {
                 HashMap<String, String> settings = SettingsUtils.getTransferHashMap(settingsView.settingsMap);
-                SettingsUtils.saveSettings(MainActivity.this, settings);
                 mService.sendData(WearableApi.SETTINGS, settings, null);
                 settingsView.settingsMap.get(PostponeSettings.class.getSimpleName()).setSettingsValue("");
+                SettingsUtils.saveSettings(MainActivity.this, settings);
             }
 
             public void onDrawerOpened(View drawerView) {
@@ -162,6 +163,14 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
@@ -172,22 +181,27 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     public void onDataUpdated() {
         onDatabaseChange();
         Status status = mService.getReadingStatus();
-        mProgressBar.setVisibility((status != null && status.status == Type.ATTEMPTING) ? View.VISIBLE : View.INVISIBLE);
+        mProgressBar.setVisibility((status != null && status.status == Type.ATTEMPTING) ? View.VISIBLE : View.GONE);
         if (status != null && mService.isConnected()) {
             switch (status.status) {
                 case ALARM:
                     mActionButton.setText("ALARM");
+                    mTriggerGlucoseButton.setVisibility(View.GONE);
                     break;
                 case ATTEMPTING:
                 case ATTENPT_FAILED:
                 case WAITING:
                     mActionButton.setText("STOP");
+                    mTriggerGlucoseButton.setVisibility(View.VISIBLE);
                     break;
                 case NOT_RUNNING:
                     mActionButton.setText("START");
+                    mTriggerGlucoseButton.setVisibility(View.GONE);
+                    break;
             }
         } else {
             mActionButton.setText("WAIT");
+            mTriggerGlucoseButton.setVisibility(View.GONE);
         }
         mActionButton.setEnabled(mService != null && mService.isConnected());
         mTriggerGlucoseButton.setEnabled(mService != null && mService.isConnected());

@@ -18,7 +18,7 @@ public class PostponeSettings extends Settings {
     @Override
     public String getSettingsValue() {
         if (!TextUtils.isEmpty(mMinutesView.getText().toString())) {
-            setSettingsValue("" + Long.valueOf(mMinutesView.getText().toString()) * 60000);
+            setSettingsValue("" + Float.valueOf(mMinutesView.getText().toString()) * 60000);
         }
         return String.valueOf(time);
     }
@@ -26,7 +26,9 @@ public class PostponeSettings extends Settings {
     @Override
     public void setSettingsValue(String data) {
         if (!TextUtils.isEmpty(data)) {
-            time = Long.valueOf(data);
+            time = (long) ((float) Float.valueOf(data));
+        } else {
+            time = -1;
         }
         if (mMinutesView != null && data != null) mMinutesView.setText(data);
     }
