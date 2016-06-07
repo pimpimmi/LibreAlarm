@@ -78,7 +78,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
-                        mListener.onAdapterItemClicked(mHistory.get(getAdapterPosition()).phoneDatabaseId);
+                        mListener.onAdapterItemClicked(mHistory.get(getAdapterPosition()));
                     }
                 }
             });
@@ -126,6 +126,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     interface OnListItemClickedListener {
-        void onAdapterItemClicked(long id);
+        void onAdapterItemClicked(PredictionData prediction);
     }
 }

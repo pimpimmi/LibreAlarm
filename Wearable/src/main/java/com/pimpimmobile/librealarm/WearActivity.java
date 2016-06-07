@@ -45,7 +45,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     public static final String EXTRA_CANCEL_ALARM = "cancel_alarm";
 
-    public static final int MAX_ATTEMPTS = 1;
+    public static final int MAX_ATTEMPTS = 5;
 
     private GoogleApiClient mGoogleApiClient;
 

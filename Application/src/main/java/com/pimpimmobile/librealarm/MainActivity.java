@@ -2,17 +2,23 @@ package com.pimpimmobile.librealarm;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +32,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
+import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
@@ -47,6 +54,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     private WearService mService;
     private ProgressBar mProgressBar;
     private SettingsView mSettingsView;
+    private boolean mIsFirstStartup;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -83,6 +91,12 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
+        mStatusTextView = (TextView) layout.findViewById(R.id.status_view);
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("first_startup", true)) {
+            showDisclaimer(true);
+            mIsFirstStartup = true;
+        }
+
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_close,
                 R.string.drawer_open) {
             public void onDrawerClosed(View view) {
@@ -100,7 +114,6 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         bindService(new Intent(this, WearService.class), mConnection, BIND_AUTO_CREATE);
         startService(new Intent(this, WearService.class));
 
-        mStatusTextView = (TextView) layout.findViewById(R.id.status_view);
         mProgressBar = (ProgressBar) layout.findViewById(R.id.progress);
         mTriggerGlucoseButton = layout.findViewById(R.id.trigger_glucose);
         mTriggerGlucoseButton.setOnClickListener(new View.OnClickListener() {
@@ -146,6 +159,42 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         mAdapter.setHistory(null);
     }
 
+    private void showDisclaimer(final boolean mustBePositive) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (mustBePositive) {
+                            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit()
+                                    .putBoolean("first_startup", false).apply();
+                        }
+                    }
+                })
+                .setTitle("Disclaimer")
+                .setMessage(R.string.disclaimer_message);
+        if (mustBePositive) {
+            dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            dialogBuilder.setOnKeyListener(new Dialog.OnKeyListener() {
+
+                @Override
+                public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        finish();
+                    }
+                    return true;
+                }
+            });
+        }
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+
     @Override
     protected void onResume() {
         if (mService != null) onDataUpdated();
@@ -171,7 +220,16 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        if (item.getItemId() == R.id.disclaimer) {
+            showDisclaimer(false);
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
     }
 
     @Override
@@ -207,9 +265,11 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             mActionButton.setText("WAIT");
             mTriggerGlucoseButton.setVisibility(View.GONE);
         }
-        mActionButton.setEnabled(mService != null && mService.isConnected());
-        mTriggerGlucoseButton.setEnabled(mService != null && mService.isConnected());
-        mStatusTextView.setText(mService.getStatusString());
+        if (mIsFirstStartup && status == null) {
+            mStatusTextView.setText("This is the first startup. The watch app might not be installed yet. Please wait a moment, then restart the app.");
+        } else {
+            mStatusTextView.setText(mService.getStatusString());
+        }
     }
 
     @Override
@@ -218,12 +278,17 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     }
 
     @Override
-    public void onAdapterItemClicked(long id) {
+    public void onAdapterItemClicked(PredictionData predictionData) {
         String s = "";
-        for (GlucoseData data : mService.getDatabase().getTrend(id)) {
-            s += AlgorithmUtil.format(new Date(data.realDate)) +
-                    ": " + data.mmolGlucose() + "\n";
+        if (predictionData.glucoseLevel == -1) { // ERR
+            s = getString(R.string.err_explanation);
+        } else {
+            for (GlucoseData data : mService.getDatabase().getTrend(predictionData.phoneDatabaseId)) {
+                s += AlgorithmUtil.format(new Date(data.realDate)) +
+                        ": " + data.mmolGlucose() + "\n";
+            }
         }
+
         AlertDialog dialog = new AlertDialog.Builder(this).setPositiveButton("OK", null)
                 .setTitle("").setMessage(s).create();
         dialog.show();

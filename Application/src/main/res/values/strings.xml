@@ -21,4 +21,7 @@
     <string name="send_photo">Send Photo</string>
     <string name="drawer_open">open drawer</string>
     <string name="drawer_close">close drawer</string>
+    <string name="err_explanation">ERR means the watch has failed to fetch glucose data.\n\nMake sure the watch is right above the sensor with the watch screen facing the sensor.\n\nMake sure also that the watch has NFC turned on. Check this by opening the app \"NFC configuration\" on the watch. Should it be impossible to turn on NFC, restart the watch and try again.</string>
+    <string name="disclaimer_message">Please read through these points, it\'s important!\n\n1, This is an unofficial app and has not been approved in any way by Abbott.\n\n2, The glucose values produced by this app are not accurate. The only purpose with this app is to alarm the user when his or her glucose level is too high or too low. All values should be confirmed using official Abbott tools.\n\n3, Do not rely on the app to be fail safe. It may stop working without warning and/or produce unreliable results.</string>
+    <string name="disclaimer">Disclaimer</string>
 </resources>
