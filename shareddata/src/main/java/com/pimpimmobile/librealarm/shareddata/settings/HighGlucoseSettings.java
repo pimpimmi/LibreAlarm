@@ -17,11 +17,11 @@ public class HighGlucoseSettings extends Settings implements AlertRule {
     private static final float DEFAULT = 10F;
 
     private EditText mGlucoseEditView;
-    public float glucose = DEFAULT;
+    private float glucose = DEFAULT;
 
     @Override
     public String getSettingsValue() {
-        setSettingsValue(mGlucoseEditView.getText().toString());
+        if (mGlucoseEditView != null) setSettingsValue(mGlucoseEditView.getText().toString());
         return String.valueOf(glucose);
     }
 
@@ -34,15 +34,10 @@ public class HighGlucoseSettings extends Settings implements AlertRule {
     }
 
     @Override
-    public boolean isObligatory() {
-        return true;
-    }
-
-    @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View v = inflater.inflate(R.layout.settings_edit_text, parent, false);
         ((TextView)v.findViewById(R.id.title)).setText("High glucose limit");
-        mGlucoseEditView = (EditText) v.findViewById(R.id.value);
+        mGlucoseEditView = (EditText) v.findViewById(R.id.settings_value);
         mGlucoseEditView.setHint("mmol/l");
         mGlucoseEditView.setText(String.valueOf(glucose));
         mGlucoseEditView.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);

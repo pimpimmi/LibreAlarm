@@ -15,11 +15,11 @@ import com.pimpimmobile.librealarm.shareddata.R;
 public class LowGlucoseSettings extends Settings implements AlertRule {
 
     private EditText mLowGlucoseEditText;
-    public float glucose = 3.5F;
+    private float glucose = 3.5F;
 
     @Override
     public String getSettingsValue() {
-        setSettingsValue(mLowGlucoseEditText.getText().toString());
+        if (mLowGlucoseEditText != null) setSettingsValue(mLowGlucoseEditText.getText().toString());
         return String.valueOf(glucose);
     }
 
@@ -32,18 +32,13 @@ public class LowGlucoseSettings extends Settings implements AlertRule {
     }
 
     @Override
-    public boolean isObligatory() {
-        return true;
-    }
-
-    @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View v = inflater.inflate(R.layout.settings_edit_text, parent, false);
         ((TextView)v.findViewById(R.id.title)).setText("Low glucose limit");
-        mLowGlucoseEditText = (EditText) v.findViewById(R.id.value);
-        mLowGlucoseEditText.setText(String.valueOf(glucose));
+        mLowGlucoseEditText = (EditText) v.findViewById(R.id.settings_value);
         mLowGlucoseEditText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
         mLowGlucoseEditText.setHint("mmol/l");
+        mLowGlucoseEditText.setText(String.valueOf(glucose));
         return v;
     }
 

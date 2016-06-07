@@ -32,6 +32,16 @@ public class PreferencesUtil {
         setInt(context, "current_type", type.ordinal());
     }
 
+    public static int increaseErrorsInARow(Context context) {
+        int errorsInRow = getInt(context, "errors_in_a_row", 0) + 1;
+        setInt(context, "errors_in_a_row", errorsInRow);
+        return errorsInRow;
+    }
+
+    public static void resetErrorsInARow(Context context) {
+        setInt(context, "errors_in_a_row", 0);
+    }
+
     private static void setBoolean(Context context, String key, boolean value) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(key, value).apply();
     }

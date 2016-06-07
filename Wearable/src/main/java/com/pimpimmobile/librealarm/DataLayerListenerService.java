@@ -59,7 +59,7 @@ public class DataLayerListenerService extends WearableListenerService {
                     }
                     SettingsUtils.saveSettings(this, newSettings);
                     HashMap<String, Settings> settings = SettingsUtils.getAllSettings(getBaseContext());
-                    long nextAlarm = ((PostponeSettings)settings.get(PostponeSettings.class.getSimpleName())).time;
+                    long nextAlarm = ((PostponeSettings)settings.get(PostponeSettings.class.getSimpleName())).getTime();
                     if (nextAlarm > 0) {
                         AlarmReceiver.post(this, nextAlarm);
                     }

@@ -13,11 +13,11 @@ import com.pimpimmobile.librealarm.shareddata.R;
 public class PostponeSettings extends Settings {
 
     private EditText mMinutesView;
-    public long time = -1;
+    private long time = -1;
 
     @Override
     public String getSettingsValue() {
-        if (!TextUtils.isEmpty(mMinutesView.getText().toString())) {
+        if (mMinutesView != null && !TextUtils.isEmpty(mMinutesView.getText())) {
             setSettingsValue("" + Float.valueOf(mMinutesView.getText().toString()) * 60000);
         }
         return String.valueOf(time);
@@ -33,16 +33,15 @@ public class PostponeSettings extends Settings {
         if (mMinutesView != null && data != null) mMinutesView.setText(data);
     }
 
-    @Override
-    public boolean isObligatory() {
-        return true;
+    public long getTime() {
+        return time;
     }
 
     @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View v = inflater.inflate(R.layout.settings_edit_text, parent, false);
         ((TextView)v.findViewById(R.id.title)).setText("Next check in");
-        mMinutesView = (EditText) v.findViewById(R.id.value);
+        mMinutesView = (EditText) v.findViewById(R.id.settings_value);
         mMinutesView.setHint("Minutes");
         mMinutesView.setInputType(EditorInfo.TYPE_NUMBER_FLAG_SIGNED);
         return v;

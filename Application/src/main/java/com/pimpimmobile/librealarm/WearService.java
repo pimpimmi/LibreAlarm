@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,6 +25,7 @@ import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
+import com.pimpimmobile.librealarm.shareddata.settings.PhoneAlarmSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
@@ -32,7 +35,6 @@ import java.util.HashMap;
 
 /**
  * Service which keeps the phone connected to the watch.
- * TODO: Perhaps this is unnecessary and drains battery. Needed to get notified about alarms though.
  */
 public class WearService extends Service implements DataApi.DataListener, MessageApi.MessageListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -49,8 +51,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     public WearServiceListener mListener;
 
-    // TODO: Crashes for some reason.
-//    private MediaPlayer mAlarmPlayer;
+    private MediaPlayer mAlarmPlayer;
 
     private Status mReadingStatus;
 
@@ -79,8 +80,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 SettingsUtils.saveSettings(this, PostponeSettings.class.getSimpleName(), null);
                 break;
             case WearableApi.STATUS:
-                Log.i("UITest", "Gson: " + new String(messageEvent.getData()));
                 mReadingStatus = new Gson().fromJson(new String(messageEvent.getData()), Status.class);
+                if (mReadingStatus.status == Status.Type.ALARM) startAlarm();
                 if (mListener != null) mListener.onDataUpdated();
                 break;
             case WearableApi.GLUCOSE:
@@ -101,6 +102,10 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         WearableApi.sendMessage(mGoogleApiClient, WearableApi.STOP, "", null);
     }
 
+    public void getUpdate() {
+        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_UPDATE, "", null);
+    }
+
     public class WearServiceBinder extends Binder {
         public WearService getService() {
             return WearService.this;
@@ -116,7 +121,6 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 .addOnConnectionFailedListener(this)
                 .build();
         mGoogleApiClient.connect();
-
     }
 
     @Override
@@ -132,6 +136,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
             mGoogleApiClient.disconnect();
             stopAlarm();
         }
+        mAlarmPlayer.release();
         mDatabase.close();
         super.onDestroy();
     }
@@ -145,7 +150,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         Log.i(TAG, "Wear connected");
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
         Wearable.DataApi.addListener(mGoogleApiClient, this);
-        WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_UPDATE, "", null);
+        getUpdate();
         mResolvingError = false;
         if (mListener != null) mListener.onDataUpdated();
     }
@@ -186,28 +191,24 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     }
 
     private void startAlarm() {
-        stopAlarm();
-//        mAlarmPlayer =
-//                MediaPlayer.create(this, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM));
-//        mAlarmPlayer.start();
-        alarmisplaying = true;
+        if (((PhoneAlarmSettings) SettingsUtils.getSettings(
+                this, PhoneAlarmSettings.class.getSimpleName())).isChecked()) {
+            if (mAlarmPlayer == null) {
+                mAlarmPlayer = MediaPlayer.create(
+                        this, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM));
+            }
+            mAlarmPlayer.start();
+        }
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
-    private boolean alarmisplaying = false;
     public void stopAlarm() {
-        alarmisplaying = false;
-        if (mListener != null) mListener.onDataUpdated();
-//        if (mAlarmPlayer != null && mAlarmPlayer.isPlaying()) {
-//            mAlarmPlayer.stop();
-//            mAlarmPlayer.release();
-//        }
-    }
-
-    public boolean isAlarmPlaying() {
-        return alarmisplaying; //return mAlarmPlayer != null && mAlarmPlayer.isPlaying();
+        if (mAlarmPlayer != null) {
+            mAlarmPlayer.pause();
+            mAlarmPlayer.seekTo(0);
+        }
     }
 
     public String getStatusString() {

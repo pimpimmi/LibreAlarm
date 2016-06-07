@@ -46,6 +46,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     private ActionBarDrawerToggle mDrawerToggle;
     private WearService mService;
     private ProgressBar mProgressBar;
+    private SettingsView mSettingsView;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -54,6 +55,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             mService.setListener(MainActivity.this, MainActivity.this);
             onDataUpdated();
             mService.getDatabase().setListener(MainActivity.this);
+            mService.getUpdate();
         }
 
         @Override
@@ -71,10 +73,11 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         setContentView(R.layout.main_activity);
 
         ViewGroup layout = (ViewGroup) getLayoutInflater().inflate(R.layout.main_content, null);
+
         ((FrameLayout) findViewById(R.id.content_frame)).addView(layout);
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final SettingsView settingsView = (SettingsView) findViewById(R.id.drawer);
+        mSettingsView = (SettingsView) findViewById(R.id.settings);
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -83,9 +86,9 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_close,
                 R.string.drawer_open) {
             public void onDrawerClosed(View view) {
-                HashMap<String, String> settings = SettingsUtils.getTransferHashMap(settingsView.settingsMap);
+                HashMap<String, String> settings = SettingsUtils.getTransferHashMap(mSettingsView.settingsMap);
                 mService.sendData(WearableApi.SETTINGS, settings, null);
-                settingsView.settingsMap.get(PostponeSettings.class.getSimpleName()).setSettingsValue("");
+                mSettingsView.settingsMap.get(PostponeSettings.class.getSimpleName()).setSettingsValue("");
                 SettingsUtils.saveSettings(MainActivity.this, settings);
             }
 
@@ -95,6 +98,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         drawerLayout.setDrawerListener(mDrawerToggle);
 
         bindService(new Intent(this, WearService.class), mConnection, BIND_AUTO_CREATE);
+        startService(new Intent(this, WearService.class));
 
         mStatusTextView = (TextView) layout.findViewById(R.id.status_view);
         mProgressBar = (ProgressBar) layout.findViewById(R.id.progress);

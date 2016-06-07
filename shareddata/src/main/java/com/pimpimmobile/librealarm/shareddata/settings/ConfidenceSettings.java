@@ -16,7 +16,7 @@ import com.pimpimmobile.librealarm.shareddata.R;
 public class ConfidenceSettings extends Settings implements AlertRule {
 
     private EditText mConfidenceEditText;
-    public float confidence = 1;
+    private float confidence = 1;
 
     @Override
     public String getSettingsValue() {
@@ -33,15 +33,10 @@ public class ConfidenceSettings extends Settings implements AlertRule {
     }
 
     @Override
-    public boolean isObligatory() {
-        return true;
-    }
-
-    @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View v = inflater.inflate(R.layout.settings_edit_text, parent, false);
         ((TextView)v.findViewById(R.id.title)).setText("Min confidence for alarm");
-        mConfidenceEditText = (EditText) v.findViewById(R.id.value);
+        mConfidenceEditText = (EditText) v.findViewById(R.id.settings_value);
         mConfidenceEditText.setText(String.valueOf(confidence));
         mConfidenceEditText.setHint("Confidence");
         mConfidenceEditText.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);

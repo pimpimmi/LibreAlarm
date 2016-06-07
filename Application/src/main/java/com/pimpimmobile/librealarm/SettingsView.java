@@ -7,8 +7,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -49,19 +47,6 @@ public class SettingsView extends LinearLayout {
             mSettings = settings;
             int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
             setPadding(padding, padding, padding, padding);
-
-            if (!mSettings.isObligatory()) {
-                CheckBox checkBox = new CheckBox(getContext());
-                checkBox.setPadding(padding, padding, padding, padding);
-                checkBox.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        mSettings.enabled(isChecked);
-                    }
-                });
-                addView(checkBox);
-            }
 
             FrameLayout frameLayout = new FrameLayout(getContext());
             frameLayout.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));

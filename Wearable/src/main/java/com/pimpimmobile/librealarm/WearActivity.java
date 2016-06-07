@@ -32,6 +32,7 @@ import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
+import com.pimpimmobile.librealarm.shareddata.settings.ErrAlarmSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     public static final String EXTRA_CANCEL_ALARM = "cancel_alarm";
 
-    public static final int MAX_ATTEMPTS = 5;
+    public static final int MAX_ATTEMPTS = 1;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -84,14 +85,23 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             if (retries >= MAX_ATTEMPTS) {
                 PreferencesUtil.setRetries(WearActivity.this, 1);
                 setNextAlarm();
-                sendStatusUpdate(Type.WAITING);
                 sendResultAndFinish();
+                if (shouldDoErrorAlarm()) {
+                    doAlarm();
+                } else {
+                    sendStatusUpdate(Type.WAITING);
+                }
             } else {
                 sendStatusUpdate(Type.ATTENPT_FAILED);
                 PreferencesUtil.setRetries(WearActivity.this, ++retries);
             }
         }
     };
+
+    private boolean shouldDoErrorAlarm() {
+        return PreferencesUtil.increaseErrorsInARow(this) >= ((ErrAlarmSettings)SettingsUtils
+                .getSettings(this, ErrAlarmSettings.class.getSimpleName())).getErrCount();
+    }
 
     private ReadingData mResult = new ReadingData(PredictionData.Result.ERROR_NO_NFC);
 
@@ -209,6 +219,21 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         return true;
     }
 
+    private void doAlarm() {
+        mFinishAfterSentMessages = false;
+        sendStatusUpdate(Type.ALARM);
+        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        mVibrator.vibrate(30000);
+        // Close app after it has vibrated for 30 seconds.
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mFinishAfterSentMessages = true;
+                sendStatusUpdate(Type.WAITING);
+            }
+        }, 30000);
+    }
+
     private void sendResultAndFinish() {
         SimpleDatabase database = new SimpleDatabase(this);
         long id = database.saveMessage(mResult);
@@ -235,20 +260,12 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             int attempt = PreferencesUtil.getRetries(WearActivity.this);
             mResult = AlgorithmUtil.parseData(attempt, tagId, data);
             PreferencesUtil.setRetries(WearActivity.this, 1);
+            PreferencesUtil.resetErrorsInARow(WearActivity.this);
             sendResultAndFinish();
             setNextAlarm();
             if (AlgorithmUtil.danger(WearActivity.this, mResult.prediction, SettingsUtils.getAlertRules(WearActivity.this))) {
-                sendStatusUpdate(Type.ALARM);
-                mFinishAfterSentMessages = false;
-                mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                mVibrator.vibrate(10000);
-                // Close app after it has vibrated for 10 seconds.
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                }, 10000);
+                mHandler.removeCallbacks(mStopActivityRunnable);
+                doAlarm();
             } else {
                 sendStatusUpdate(Type.WAITING);
             }

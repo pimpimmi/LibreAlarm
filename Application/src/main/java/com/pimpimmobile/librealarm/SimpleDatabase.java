@@ -127,7 +127,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
 
         database.setTransactionSuccessful();
         database.endTransaction();
-        mListener.onDatabaseChange();
+        if (mListener != null) mListener.onDatabaseChange();
     }
 
     public List<PredictionData> getPredictions() {

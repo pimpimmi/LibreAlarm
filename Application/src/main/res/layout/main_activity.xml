@@ -10,10 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.pimpimmobile.librealarm.SettingsView
+    <ScrollView
         android:id="@+id/drawer"
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:background="#aa000000"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start">
+        <com.pimpimmobile.librealarm.SettingsView
+            android:id="@+id/settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 </android.support.v4.widget.DrawerLayout>

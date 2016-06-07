@@ -17,7 +17,10 @@ public class SettingsUtils {
         settingsMap.put(PostponeSettings.class.getSimpleName(), new PostponeSettings());
         settingsMap.put(HighGlucoseSettings.class.getSimpleName(), new HighGlucoseSettings());
         settingsMap.put(LowGlucoseSettings.class.getSimpleName(), new LowGlucoseSettings());
+        settingsMap.put(ErrAlarmSettings.class.getSimpleName(), new ErrAlarmSettings());
+        settingsMap.put(PhoneAlarmSettings.class.getSimpleName(), new PhoneAlarmSettings());
         settingsMap.put(ConfidenceSettings.class.getSimpleName(), new ConfidenceSettings());
+
 
         // Load settings saved values
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
