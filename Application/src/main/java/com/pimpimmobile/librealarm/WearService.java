@@ -81,7 +81,11 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 break;
             case WearableApi.STATUS:
                 mReadingStatus = new Gson().fromJson(new String(messageEvent.getData()), Status.class);
-                if (mReadingStatus.status == Status.Type.ALARM) startAlarm();
+                if (mReadingStatus.status == Status.Type.ALARM) {
+                    startAlarm();
+                } else {
+                    stopAlarm();
+                }
                 if (mListener != null) mListener.onDataUpdated();
                 break;
             case WearableApi.GLUCOSE:
@@ -205,7 +209,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     }
 
     public void stopAlarm() {
-        if (mAlarmPlayer != null) {
+        if (mAlarmPlayer != null && mAlarmPlayer.isPlaying()) {
             mAlarmPlayer.pause();
             mAlarmPlayer.seekTo(0);
         }
