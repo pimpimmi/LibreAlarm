@@ -18,6 +18,7 @@ public class SettingsUtils {
         settingsMap.put(HighGlucoseSettings.class.getSimpleName(), new HighGlucoseSettings());
         settingsMap.put(LowGlucoseSettings.class.getSimpleName(), new LowGlucoseSettings());
         settingsMap.put(ErrAlarmSettings.class.getSimpleName(), new ErrAlarmSettings());
+        settingsMap.put(GlucoseUnitSettings.class.getSimpleName(), new GlucoseUnitSettings());
         settingsMap.put(PhoneAlarmSettings.class.getSimpleName(), new PhoneAlarmSettings());
         settingsMap.put(ConfidenceSettings.class.getSimpleName(), new ConfidenceSettings());
 

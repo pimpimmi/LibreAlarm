@@ -36,6 +36,7 @@ import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
+import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
@@ -54,6 +55,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
     private WearService mService;
     private ProgressBar mProgressBar;
     private SettingsView mSettingsView;
+    private GlucoseUnitSettings mGlucoseUnitSettings;
     private boolean mIsFirstStartup;
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -86,6 +88,8 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mSettingsView = (SettingsView) findViewById(R.id.settings);
+        mGlucoseUnitSettings = (GlucoseUnitSettings)
+                mSettingsView.settingsMap.get(GlucoseUnitSettings.class.getSimpleName());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -152,7 +156,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             }
         });
 
-        mAdapter = new HistoryAdapter(this, this);
+        mAdapter = new HistoryAdapter(this, this, mGlucoseUnitSettings);
         RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.history);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -285,7 +289,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         } else {
             for (GlucoseData data : mService.getDatabase().getTrend(predictionData.phoneDatabaseId)) {
                 s += AlgorithmUtil.format(new Date(data.realDate)) +
-                        ": " + data.mmolGlucose() + "\n";
+                        ": " + data.glucose(mGlucoseUnitSettings.isMmol()) + "\n";
             }
         }
 

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.settings.ConfidenceSettings;
+import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.text.SimpleDateFormat;
@@ -35,10 +36,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private OnListItemClickedListener mListener;
 
-    public HistoryAdapter(Context context, OnListItemClickedListener listener) {
+    private GlucoseUnitSettings mGlucoseUnitSettings;
+
+    public HistoryAdapter(Context context, OnListItemClickedListener listener, GlucoseUnitSettings settings) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mListener = listener;
+        mGlucoseUnitSettings = settings;
     }
 
     public void setHistory(List<PredictionData> history) {
@@ -96,7 +100,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 mGlucoseView.setText("ERR");
                 mTrendArrow.setImageDrawable(null);
             } else {
-                mGlucoseView.setText(String.valueOf(data.mmolGlucose()));
+                mGlucoseView.setText(String.valueOf(data.glucose(mGlucoseUnitSettings.isMmol())));
                 updateTrendArrow(data.prediction, data.confidence);
             }
 
