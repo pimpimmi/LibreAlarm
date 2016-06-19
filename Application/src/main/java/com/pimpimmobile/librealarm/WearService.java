@@ -208,10 +208,6 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         startActivity(intent);
     }
 
-    public boolean isAlarmRunning() {
-        return mAlarmPlayer != null && mAlarmPlayer.isPlaying();
-    }
-
     public void stopAlarm() {
         if (mAlarmPlayer != null && mAlarmPlayer.isPlaying()) {
             mAlarmPlayer.pause();

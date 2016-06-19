@@ -127,14 +127,18 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             @Override
             public void onClick(View v) {
                 if (mService != null) {
-                    if (mService.isAlarmRunning()) {
-                        mService.sendMessage(WearableApi.CANCEL_ALARM, "", null);
-                        mService.stopAlarm();
-                        mActionButton.setText(R.string.button_stop);
-                    } else if (mService.getReadingStatus().status == Type.NOT_RUNNING) {
-                        mService.start();
-                    } else {
-                        mService.stop();
+                    switch (mService.getReadingStatus().status) {
+                        case ALARM:
+                            mService.sendMessage(WearableApi.CANCEL_ALARM, "", null);
+                            mService.stopAlarm();
+                            mActionButton.setText(R.string.button_stop);
+                            break;
+                        case NOT_RUNNING:
+                            mService.start();
+                            break;
+                        default:
+                            mService.stop();
+                            break;
                     }
                 }
             }

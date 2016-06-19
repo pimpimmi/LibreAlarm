@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".AlarmReceiver" />
+        <receiver android:name=".AlarmReceiver" android:process=":remote" android:enabled="true" />
         <service android:name=".AlarmIntentService" />
 
     </application>
