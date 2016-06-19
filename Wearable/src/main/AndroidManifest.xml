@@ -40,11 +40,5 @@
         <receiver android:name=".AlarmReceiver" />
         <service android:name=".AlarmIntentService" />
 
-        <receiver android:name=".BootReceiver"
-            android:process=":remote">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

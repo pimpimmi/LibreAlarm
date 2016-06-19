@@ -1,7 +1,9 @@
 package com.pimpimmobile.librealarm;
 
 import android.content.Intent;
+
 import android.util.Log;
+import android.os.SystemClock;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataEvent;
@@ -37,6 +39,20 @@ public class DataLayerListenerService extends WearableListenerService {
                 .addApi(Wearable.API)
                 .build();
         mGoogleApiClient.connect();
+        if (hasBeenRebooted() && PreferencesUtil.getIsStarted(this)) {
+            AlarmReceiver.start(this);
+            AlarmReceiver.post(this, 120000);
+        }
+    }
+
+    private boolean hasBeenRebooted() {
+        long lastBoot = PreferencesUtil.getLastBoot(this);
+        long boot = System.currentTimeMillis() - SystemClock.elapsedRealtime();
+        if (Math.abs(lastBoot - boot) > 1000) {
+            PreferencesUtil.setLastBoot(this, boot);
+            return true;
+        }
+        return false;
     }
 
     @Override

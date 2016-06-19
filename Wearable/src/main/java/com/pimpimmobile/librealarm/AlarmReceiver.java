@@ -64,7 +64,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         manager.cancel(getAlarmReceiverIntent(context));
 
-        ComponentName receiver = new ComponentName(context, BootReceiver.class);
+        ComponentName receiver = new ComponentName(context, AlarmReceiver.class);
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,

@@ -24,6 +24,14 @@ public class PreferencesUtil {
         return getInt(context, "retries", 1);
     }
 
+    public static long getLastBoot(Context context) {
+        return getLong(context, "last_boot");
+    }
+
+    public static void setLastBoot(Context context, long time) {
+        setLong(context, "last_boot", time);
+    }
+
     public static Status.Type getCurrentType(Context context) {
         return Status.Type.values()[getInt(context, "current_type", Status.Type.NOT_RUNNING.ordinal())];
     }
@@ -58,4 +66,11 @@ public class PreferencesUtil {
         return PreferenceManager.getDefaultSharedPreferences(context).getInt(key, default_);
     }
 
+    private static void setLong(Context context, String key, long value) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putLong(key, value).apply();
+    }
+
+    private static long getLong(Context context, String key) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getLong(key, -1);
+    }
 }
