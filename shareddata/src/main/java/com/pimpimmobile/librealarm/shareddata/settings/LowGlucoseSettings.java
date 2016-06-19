@@ -1,6 +1,7 @@
 package com.pimpimmobile.librealarm.shareddata.settings;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,22 +13,37 @@ import android.widget.TextView;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
 import com.pimpimmobile.librealarm.shareddata.R;
 
-public class LowGlucoseSettings extends Settings implements AlertRule {
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+public class LowGlucoseSettings extends Settings implements AlertRule, GlucoseUnitSettings.GlucoseUnitSettingsListener {
+
+    private static final DecimalFormat mFormat = new DecimalFormat("##.0", new DecimalFormatSymbols(Locale.UK));
 
     private EditText mLowGlucoseEditText;
-    private float glucose = 3.5F;
+    private float mGlucose = 63f;
+    private boolean mIsMmol;
+
+    public LowGlucoseSettings(Context context) {
+        mIsMmol = "1".equals(PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(GlucoseUnitSettings.class.getSimpleName(), "1"));
+    }
 
     @Override
     public String getSettingsValue() {
-        if (mLowGlucoseEditText != null) setSettingsValue(mLowGlucoseEditText.getText().toString());
-        return String.valueOf(glucose);
+        if (mLowGlucoseEditText != null) {
+            float glucose = Float.valueOf(mLowGlucoseEditText.getText().toString()) * (mIsMmol ? 18 : 1);
+            setSettingsValue(String.valueOf(glucose));
+        }
+        return String.valueOf(mGlucose);
     }
 
     @Override
     public void setSettingsValue(String data) {
         if (!TextUtils.isEmpty(data)) {
-            glucose = Float.valueOf(data);
-            if (mLowGlucoseEditText != null) mLowGlucoseEditText.setText(String.valueOf(glucose));
+            mGlucose = Float.valueOf(data);
+            updateView();
         }
     }
 
@@ -37,20 +53,30 @@ public class LowGlucoseSettings extends Settings implements AlertRule {
         ((TextView)v.findViewById(R.id.title)).setText(R.string.settings_low_glucose_text);
         mLowGlucoseEditText = (EditText) v.findViewById(R.id.settings_value);
         mLowGlucoseEditText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        boolean isMmol = ((GlucoseUnitSettings)SettingsUtils
-                .getSettings(v.getContext(), GlucoseUnitSettings.class.getSimpleName())).isMmol();
-        mLowGlucoseEditText.setHint(isMmol ? "mmol/l" : "mg/dl");
-        mLowGlucoseEditText.setText(String.valueOf(glucose));
+        mLowGlucoseEditText.setHint(mIsMmol ? "mmol/l" : "mg/dl");
+        updateView();
         return v;
     }
 
     @Override
     public AlertResult doFilter(Context context, GlucoseData prediction) {
-        return prediction.glucoseLevel > glucose * 18 ? AlertResult.NOTHING : AlertResult.ALERT;
+        return prediction.glucoseLevel > mGlucose ? AlertResult.NOTHING : AlertResult.ALERT;
     }
 
     @Override
     public void afterFilter(AlertResult result) {
 
+    }
+
+    @Override
+    public void setIsMmol(boolean isMmol) {
+        mIsMmol = isMmol;
+        updateView();
+    }
+
+    private void updateView() {
+        if (mLowGlucoseEditText != null) {
+            mLowGlucoseEditText.setText(mIsMmol ? mFormat.format(mGlucose / 18) : String.valueOf(mGlucose));
+        }
     }
 }

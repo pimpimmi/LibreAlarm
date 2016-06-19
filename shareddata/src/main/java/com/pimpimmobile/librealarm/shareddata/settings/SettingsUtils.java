@@ -15,8 +15,8 @@ public class SettingsUtils {
         // Decide which settings to use
         HashMap<String, Settings> settingsMap =  new LinkedHashMap<>();
         settingsMap.put(PostponeSettings.class.getSimpleName(), new PostponeSettings());
-        settingsMap.put(HighGlucoseSettings.class.getSimpleName(), new HighGlucoseSettings());
-        settingsMap.put(LowGlucoseSettings.class.getSimpleName(), new LowGlucoseSettings());
+        settingsMap.put(HighGlucoseSettings.class.getSimpleName(), new HighGlucoseSettings(context));
+        settingsMap.put(LowGlucoseSettings.class.getSimpleName(), new LowGlucoseSettings(context));
         settingsMap.put(ErrAlarmSettings.class.getSimpleName(), new ErrAlarmSettings());
         settingsMap.put(GlucoseUnitSettings.class.getSimpleName(), new GlucoseUnitSettings());
         settingsMap.put(PhoneAlarmSettings.class.getSimpleName(), new PhoneAlarmSettings());

@@ -10,6 +10,10 @@ import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings;
+import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings.GlucoseUnitSettingsListener;
+import com.pimpimmobile.librealarm.shareddata.settings.HighGlucoseSettings;
+import com.pimpimmobile.librealarm.shareddata.settings.LowGlucoseSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.Settings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
@@ -34,6 +38,12 @@ public class SettingsView extends LinearLayout {
         for (Settings settings : settingsMap.values()) {
             addView(new SettingsChild(getContext(), settings));
         }
+        GlucoseUnitSettings glucoseUnitSettings =
+                (GlucoseUnitSettings) settingsMap.get(GlucoseUnitSettings.class.getSimpleName());
+        glucoseUnitSettings.addListener(
+                (GlucoseUnitSettingsListener) settingsMap.get(HighGlucoseSettings.class.getSimpleName()));
+        glucoseUnitSettings.addListener(
+                (GlucoseUnitSettingsListener) settingsMap.get(LowGlucoseSettings.class.getSimpleName()));
     }
 
     private class SettingsChild extends LinearLayout {
