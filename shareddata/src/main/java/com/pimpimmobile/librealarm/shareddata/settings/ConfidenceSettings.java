@@ -35,10 +35,10 @@ public class ConfidenceSettings extends Settings implements AlertRule {
     @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View v = inflater.inflate(R.layout.settings_edit_text, parent, false);
-        ((TextView)v.findViewById(R.id.title)).setText("Min confidence for alarm");
+        ((TextView)v.findViewById(R.id.title)).setText(R.string.settings_confidence_text);
         mConfidenceEditText = (EditText) v.findViewById(R.id.settings_value);
         mConfidenceEditText.setText(String.valueOf(confidence));
-        mConfidenceEditText.setHint("Confidence");
+        mConfidenceEditText.setHint(R.string.settings_confidence_hint);
         mConfidenceEditText.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
         return v;
     }

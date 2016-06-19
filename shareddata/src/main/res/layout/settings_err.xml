@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <TextView
-        android:text="Alarm after "
+        android:text="@string/settings_err_text_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -24,7 +24,7 @@
         android:saveEnabled="false"
         android:layout_height="wrap_content" />
     <TextView
-        android:text=" ERR in a row"
+        android:text="@string/settings_err_text_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>

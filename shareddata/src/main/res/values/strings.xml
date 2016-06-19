@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Minimum confidence interval required for alarm to be executed -->
+    <string name="settings_confidence_text">Min confidence for alarm</string>
+    <!-- Hint shown in confidence edit text -->
+    <string name="settings_confidence_hint">Confidence</string>
+    <!-- Use mmol hint -->
+    <string name="settings_glucose_units_text">Use mmol/l</string>
+    <!-- Limit for high glucose -->
+    <string name="settings_high_glucose_text">High glucose limit</string>
+    <!-- Limit for low glucose -->
+    <string name="settings_low_glucose_text">Low glucose limit</string>
+    <!-- If alarm should sound from phone -->
+    <string name="settings_phone_alarm_text">Use alarm sound from phone</string>
+    <!-- Postpone next glucose check -->
+    <string name="settings_postpone_text">Next check in</string>
+    <!-- Minutes -->
+    <string name="minutes">Minutes</string>
+    <!-- If the alarm should sound after X ERR messages in a row -->
+    <string name="settings_err_text_1">Alarm after</string>
+    <!-- See above -->
+    <string name="settings_err_text_2">ERR in a row</string>
+</resources>

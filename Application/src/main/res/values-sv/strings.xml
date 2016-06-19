@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- String for opening settings drawer, used for accessibility -->
+    <string name="drawer_open">Öppna drawer</string>
+    <!-- String for closing settings drawer, used for accessibility -->
+    <string name="drawer_close">Stäng drawer</string>
+    <!-- Explanation shown when user presses on an error message in the glucose list -->
+    <string name="err_explanation">ERR betyder att klockan misslyckats hämta glukosvärden.\n\nSe till att klockan sitter direkt på sensorn med klockskärmen mot sensorn.\n\nSe också till att NFC är igång på klockan. Kolla detta genom att öppna \"NFC configuration\" på klockan. Om det inte går att sätta igång NFC, starta om klockan och försök igen.</string>
+    <!-- Disclaimer message shown when user first starts app -->
+    <string name="disclaimer_message">Läs genom detta, det är viktigt!\n\n1, Detta är en inofficiell app som inte har godkänts av Abbott.\n\n2, Glukosvärderna från appen är inte exakta och går ej att lita på. Den enda meningen med appen är att larma vid för högt eller för lågt glukosvärde. Alla värden bör verifieras mot Abbotts egna verktyg.\n\n3, Lita inte på att appen alltid fungerar. Den kan sluta fungera utan varning eller ge felaktiga resultat.</string>
+    <!-- Disclaimer title message shown when user first starts app -->
+    <string name="disclaimer_title">Disclaimer</string>
+    <!-- Error text shown in glucose list (max 3 characters) -->
+    <string name="err">ERR</string>
+    <!-- Stop button text-->
+    <string name="button_stop">SLUTA</string>
+    <!-- Alarm button text-->
+    <string name="button_alarm">LARMA AV</string>
+    <!-- Start button text-->
+    <string name="button_start">STARTA</string>
+    <!-- Wait button text-->
+    <string name="button_wait">VÄNTA</string>
+    <!-- Check glucose now button text -->
+    <string name="button_check_now">Kolla nu</string>
+    <!-- Message shown when user first starts app -->
+    <string name="status_message_first_startup">Detta är första gången ni öppar appen. Appen kanske inte har installerats på klockan ännu. V.g. vänta en kort stund och starta sen om appen.</string>
+    <!-- Status text alarm -->
+    <string name="status_text_alarm">LARM!!</string>
+    <!-- Status text showing how many times the watch has attempted to get glucose value -->
+    <string name="status_check_attempt" formatted="false">"Försök %d/%d"</string>
+    <!-- Status text showing how many times the watch has failed to get glucose value -->
+    <string name="status_check_attempt_failed" formatted="false">"Försök %d/%d misslyckades"</string>
+    <!-- Status text next check -->
+    <string name="status_text_next_check" formatted="false">"Nästa koll: %s"</string>
+    <!-- Status text not running -->
+    <string name="status_text_not_running">Not running</string>
+</resources>

@@ -34,10 +34,12 @@ public class LowGlucoseSettings extends Settings implements AlertRule {
     @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View v = inflater.inflate(R.layout.settings_edit_text, parent, false);
-        ((TextView)v.findViewById(R.id.title)).setText("Low glucose limit");
+        ((TextView)v.findViewById(R.id.title)).setText(R.string.settings_low_glucose_text);
         mLowGlucoseEditText = (EditText) v.findViewById(R.id.settings_value);
         mLowGlucoseEditText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        mLowGlucoseEditText.setHint("mmol/l");
+        boolean isMmol = ((GlucoseUnitSettings)SettingsUtils
+                .getSettings(v.getContext(), GlucoseUnitSettings.class.getSimpleName())).isMmol();
+        mLowGlucoseEditText.setHint(isMmol ? "mmol/l" : "mg/dl");
         mLowGlucoseEditText.setText(String.valueOf(glucose));
         return v;
     }

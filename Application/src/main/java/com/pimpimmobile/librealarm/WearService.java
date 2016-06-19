@@ -208,6 +208,10 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         startActivity(intent);
     }
 
+    public boolean isAlarmRunning() {
+        return mAlarmPlayer != null && mAlarmPlayer.isPlaying();
+    }
+
     public void stopAlarm() {
         if (mAlarmPlayer != null && mAlarmPlayer.isPlaying()) {
             mAlarmPlayer.pause();
@@ -219,15 +223,15 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         if (isConnected() && mReadingStatus != null) {
             switch (mReadingStatus.status) {
                 case ALARM:
-                    return "ALARM!!";
+                    return getString(R.string.status_text_alarm);
                 case ATTEMPTING:
-                    return "Attempt " + mReadingStatus.attempt + "/" + mReadingStatus.maxAttempts;
+                    return getString(R.string.status_check_attempt, mReadingStatus.attempt, mReadingStatus.maxAttempts);
                 case ATTENPT_FAILED:
-                    return "Attempt " + mReadingStatus.attempt + "/" + mReadingStatus.maxAttempts + " failed";
+                    return getString(R.string.status_check_attempt_failed, mReadingStatus.attempt, mReadingStatus.maxAttempts);
                 case WAITING:
-                    return "Next check: " + AlgorithmUtil.format(new Date(mReadingStatus.nextCheck));
+                    return getString(R.string.status_text_next_check, AlgorithmUtil.format(new Date(mReadingStatus.nextCheck)));
                 case NOT_RUNNING:
-                    return "Not running";
+                    return getString(R.string.status_text_not_running);
                 default:
                     return "";
             }

@@ -40,7 +40,7 @@
             android:id="@+id/trigger_glucose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Check now"/>
+            android:text="@string/button_check_now"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

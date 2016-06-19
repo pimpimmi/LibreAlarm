@@ -35,7 +35,7 @@ public class PhoneAlarmSettings extends Settings {
     @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View v = inflater.inflate(R.layout.settings_checkbox, parent, false);
-        ((TextView)v.findViewById(R.id.title)).setText("Use alarm sound from phone");
+        ((TextView)v.findViewById(R.id.title)).setText(R.string.settings_phone_alarm_text);
         mPhoneAlarmCheckbox = (CheckBox) v.findViewById(R.id.settings_value);
         mPhoneAlarmCheckbox.setChecked(mValue);
         v.setOnClickListener(new View.OnClickListener() {

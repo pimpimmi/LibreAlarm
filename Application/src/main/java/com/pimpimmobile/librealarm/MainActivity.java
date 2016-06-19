@@ -11,7 +11,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,10 +25,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.MessageApi;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
@@ -123,35 +119,23 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         mTriggerGlucoseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.sendMessage(WearableApi.TRIGGER_GLUCOSE, "",
-                        new ResultCallback<MessageApi.SendMessageResult>() {
-                            @Override
-                            public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
-                                if (!sendMessageResult.getStatus().isSuccess()) {
-                                    Toast.makeText(MainActivity.this, "Trigger failed: " + sendMessageResult.
-                                            getStatus().getStatusMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
+                mService.sendMessage(WearableApi.TRIGGER_GLUCOSE, "", null);
             }
         });
         mActionButton = (Button) layout.findViewById(R.id.action);
         mActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (mActionButton.getText().toString().toLowerCase()) {
-                    case "alarm":
+                if (mService != null) {
+                    if (mService.isAlarmRunning()) {
                         mService.sendMessage(WearableApi.CANCEL_ALARM, "", null);
                         mService.stopAlarm();
-                        boolean notRunning = mService.getReadingStatus().status == Type.NOT_RUNNING;
-                        mActionButton.setText(notRunning ? "START" : "STOP");
-                        break;
-                    case "start":
+                        mActionButton.setText(R.string.button_stop);
+                    } else if (mService.getReadingStatus().status == Type.NOT_RUNNING) {
                         mService.start();
-                        break;
-                    case "stop":
+                    } else {
                         mService.stop();
-                        break;
+                    }
                 }
             }
         });
@@ -165,7 +149,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
 
     private void showDisclaimer(final boolean mustBePositive) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (mustBePositive) {
@@ -174,10 +158,10 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
                         }
                     }
                 })
-                .setTitle("Disclaimer")
+                .setTitle(R.string.disclaimer_title)
                 .setMessage(R.string.disclaimer_message);
         if (mustBePositive) {
-            dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            dialogBuilder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     finish();
@@ -251,26 +235,26 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         if (status != null && mService.isConnected()) {
             switch (status.status) {
                 case ALARM:
-                    mActionButton.setText("ALARM");
+                    mActionButton.setText(R.string.button_alarm);
                     mTriggerGlucoseButton.setVisibility(View.GONE);
                     break;
                 case ATTEMPTING:
                 case ATTENPT_FAILED:
                 case WAITING:
-                    mActionButton.setText("STOP");
+                    mActionButton.setText(android.R.string.cancel);
                     mTriggerGlucoseButton.setVisibility(View.VISIBLE);
                     break;
                 case NOT_RUNNING:
-                    mActionButton.setText("START");
+                    mActionButton.setText(R.string.button_start);
                     mTriggerGlucoseButton.setVisibility(View.GONE);
                     break;
             }
         } else {
-            mActionButton.setText("WAIT");
+            mActionButton.setText(R.string.button_wait);
             mTriggerGlucoseButton.setVisibility(View.GONE);
         }
         if (mIsFirstStartup && status == null) {
-            mStatusTextView.setText("This is the first startup. The watch app might not be installed yet. Please wait a moment, then restart the app.");
+            mStatusTextView.setText(R.string.status_message_first_startup);
         } else {
             mStatusTextView.setText(mService.getStatusString());
         }
@@ -293,7 +277,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             }
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(this).setPositiveButton("OK", null)
+        AlertDialog dialog = new AlertDialog.Builder(this).setPositiveButton(android.R.string.ok, null)
                 .setTitle("").setMessage(s).create();
         dialog.show();
     }

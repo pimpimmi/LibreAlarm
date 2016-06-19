@@ -97,7 +97,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             boolean error = data.errorCode != PredictionData.Result.OK;
             mGlucoseView.setTextColor(error ? Color.YELLOW : (alarm ? Color.RED : Color.WHITE));
             if (error) {
-                mGlucoseView.setText("ERR");
+                mGlucoseView.setText(R.string.err);
                 mTrendArrow.setImageDrawable(null);
             } else {
                 mGlucoseView.setText(String.valueOf(data.glucose(mGlucoseUnitSettings.isMmol())));

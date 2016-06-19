@@ -37,7 +37,7 @@ public class GlucoseUnitSettings extends Settings {
         mSwitch = (Switch) v.findViewById(R.id.settings_value);
         mSwitch.setTextOn("mmol/l");
         mSwitch.setTextOff("mg/dl");
-        mSwitch.setText("Use mmol/l");
+        mSwitch.setText(R.string.settings_glucose_units_text);
         return v;
     }
 
