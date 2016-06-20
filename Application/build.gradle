@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         minSdkVersion 18
@@ -14,10 +15,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'com.google.android.gms:play-services-wearable:8.4.0'
     compile project(':shareddata')
     wearApp project(':Wearable')
-    compile 'com.androidplot:androidplot-core:0.9.8'
     compile 'com.android.support:appcompat-v7:23.3.0'
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.pimpimmobile.librealarm.shareddata.settings.AlertRule;
+import com.pimpimmobile.librealarm.shareddata.settings.ConfidenceSettings;
+import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
@@ -13,6 +15,18 @@ import java.util.Date;
 import java.util.List;
 
 public class AlgorithmUtil {
+
+    private static final double TREND_UP_DOWN_LIMIT = 1;
+    private static final double TREND_SLIGHT_UP_DOWN_LIMIT = 0.5;
+
+    public enum TrendArrow {
+        UNKNOWN,
+        DOWN,
+        SLIGHTLY_DOWN,
+        FLAT,
+        SLIGHTLY_UP,
+        UP
+    }
 
     private static final int MINUTE = 60000;
 
@@ -27,6 +41,31 @@ public class AlgorithmUtil {
 
     private static int getGlucose(byte[] bytes) {
         return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x3FFF) / 10;
+    }
+
+    public static TrendArrow getTrendArrow(Context context, GlucoseData data) {
+        if (data instanceof PredictionData) {
+            PredictionData predictionData = (PredictionData) data;
+            float confidenceLimit = Float.valueOf(SettingsUtils.getSettings(
+                    context, ConfidenceSettings.class.getSimpleName()).getSettingsValue());
+            if (predictionData.confidence > confidenceLimit) {
+                return TrendArrow.UNKNOWN;
+            } else {
+                if (predictionData.trend > TREND_UP_DOWN_LIMIT) {
+                    return TrendArrow.UP;
+                } else if (predictionData.trend < -TREND_UP_DOWN_LIMIT) {
+                    return TrendArrow.DOWN;
+                } else if (predictionData.trend > TREND_SLIGHT_UP_DOWN_LIMIT) {
+                    return TrendArrow.SLIGHTLY_UP;
+                } else if (predictionData.trend < -TREND_SLIGHT_UP_DOWN_LIMIT) {
+                    return TrendArrow.SLIGHTLY_DOWN;
+                } else {
+                    return TrendArrow.FLAT;
+                }
+            }
+        } else {
+            return TrendArrow.UNKNOWN;
+        }
     }
 
     public static boolean danger(Context context, PredictionData data, List<AlertRule> rules) {
@@ -108,7 +147,7 @@ public class AlgorithmUtil {
             regression.addData(trendList.size() - i, (trendList.get(i)).glucoseLevel);
         }
         predictedGlucose.glucoseLevel = (int)regression.predict(15 + PREDICTION_TIME);
-        predictedGlucose.prediction = regression.getSlope();
+        predictedGlucose.trend = regression.getSlope();
         predictedGlucose.confidence = regression.getSlopeConfidenceInterval();
         predictedGlucose.errorCode = PredictionData.Result.OK;
         predictedGlucose.realDate = trendList.get(0).realDate;

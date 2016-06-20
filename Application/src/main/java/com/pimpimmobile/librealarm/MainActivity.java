@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.pimpimmobile.librealarm.nightscout.NightscoutPreferences;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
@@ -214,6 +215,9 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         }
         if (item.getItemId() == R.id.disclaimer) {
             showDisclaimer(false);
+        }
+        if (item.getItemId() == R.id.nightscout) {
+            startActivity(new Intent(this, NightscoutPreferences.class));
         }
         return super.onOptionsItemSelected(item);
     }

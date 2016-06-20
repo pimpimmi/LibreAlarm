@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="RestApi">
+        <CheckBoxPreference
+            android:key="ns_rest"
+            android:summary="@string/nightscout_enable"
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="ns_rest_uri"
+            android:dependency="ns_rest"
+            android:summary="URL"
+            android:defaultValue="{API_SECRET}@https://{SITE}.azurewebsites.net/api/v1/"
+            android:title="@string/nightscout_set_url" />
+    </PreferenceCategory>
+</PreferenceScreen>

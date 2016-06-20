@@ -33,5 +33,11 @@
     <!-- Status text next check -->
     <string name="status_text_next_check" formatted="false">"Nästa koll: %s"</string>
     <!-- Status text not running -->
-    <string name="status_text_not_running">Not running</string>
+    <string name="status_text_not_running">Inte igång</string>
+    <!-- Nightscout menu item -->
+    <string name="nightscout">Nightscout</string>
+    <!-- Checkbox to enable nightscout -->
+    <string name="nightscout_enable">Sätt igång Nightscout Rest API</string>
+    <!-- EditText settings for setting Nightscout URL -->
+    <string name="nightscout_set_url">Sätt URL</string>
 </resources>

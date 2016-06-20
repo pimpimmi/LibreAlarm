@@ -24,7 +24,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
     private DatabaseListener mListener;
 
     public SimpleDatabase(Context context) {
-        super(context, "data", null, 1);
+        super(context, "data", null, 2);
     }
 
     public interface Prediction extends Glucose {
@@ -32,6 +32,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
         String CONFIDENCE = "confidence";
         String PREDICTION = "prediction";
         String ATTEMPT = "attempt";
+        String NIGHTSCOUT_SYNC = "ns_uploaded";
     }
 
     public interface Glucose {
@@ -75,7 +76,8 @@ public class SimpleDatabase extends SQLiteOpenHelper {
                     + Prediction.CONFIDENCE + " real,"
                     + Prediction.PREDICTION + " real,"
                     + Prediction.ERROR_CODE + " integer,"
-                    + Prediction.ATTEMPT + " integer);";
+                    + Prediction.ATTEMPT + " integer,"
+                    + Prediction.NIGHTSCOUT_SYNC + " integer default 0);";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -85,7 +87,11 @@ public class SimpleDatabase extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 2 && newVersion >= 2) {
+            db.execSQL("ALTER TABLE " + TABLE_PREDICTIONS + " ADD " + Prediction.NIGHTSCOUT_SYNC + " integer default 0");
+        }
+    }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
@@ -131,9 +137,13 @@ public class SimpleDatabase extends SQLiteOpenHelper {
     }
 
     public List<PredictionData> getPredictions() {
+        return getPredictions(null, null);
+    }
+
+    private List<PredictionData> getPredictions(String selection, String[] selectionArgs) {
         List<PredictionData> prediction = new ArrayList<>();
         SQLiteDatabase database = getReadableDatabase();
-        Cursor c = database.query(TABLE_PREDICTIONS, null, null, null, null, null, null);
+        Cursor c = database.query(TABLE_PREDICTIONS, null, selection, selectionArgs, null, null, null);
         if (c != null) {
             if (c.moveToFirst()) {
                 int idIndex = c.getColumnIndex(Prediction.ID);
@@ -153,7 +163,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
                     data.sensorId = c.getString(sensorIdIndex);
                     data.sensorTime = c.getLong(sensorTimeIndex);
                     data.confidence = c.getFloat(confidenceIndex);
-                    data.prediction = c.getFloat(predictionIndex);
+                    data.trend = c.getFloat(predictionIndex);
                     data.attempt = c.getInt(attemptIndex);
                     data.errorCode = PredictionData.Result.values()[c.getInt(errorIndex)];
                     prediction.add(data);
@@ -164,6 +174,23 @@ public class SimpleDatabase extends SQLiteOpenHelper {
         }
         Collections.reverse(prediction);
         return prediction;
+    }
+
+
+    public List<PredictionData> getNsSyncData() {
+        return getPredictions(Prediction.NIGHTSCOUT_SYNC + "=0 AND -1 !=" + Prediction.GLUCOSE, null);
+    }
+
+    public void setNsSynced(List<PredictionData> list) {
+        SQLiteDatabase database = getWritableDatabase();
+        database.beginTransaction();
+        for (PredictionData data : list) {
+            ContentValues values = new ContentValues();
+            values.put(Prediction.NIGHTSCOUT_SYNC, 1);
+            database.update(TABLE_PREDICTIONS, values, Prediction.ID + "=?", new String[] {String.valueOf(data.phoneDatabaseId)});
+        }
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
     public List<GlucoseData> getTrend(long predictionId) {
@@ -207,7 +234,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
         if (g instanceof PredictionData) {
             PredictionData p = (PredictionData) g;
             values.put(Prediction.CONFIDENCE, p.confidence);
-            values.put(Prediction.PREDICTION, p.prediction);
+            values.put(Prediction.PREDICTION, p.trend);
             values.put(Prediction.ERROR_CODE, p.errorCode.ordinal());
             values.put(Prediction.ATTEMPT, p.attempt);
         }

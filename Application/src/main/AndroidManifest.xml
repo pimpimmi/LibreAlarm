@@ -17,12 +17,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.pimpimmobile.librealarm">
 
-    <uses-sdk android:minSdkVersion="18" />
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
             android:allowBackup="true"
@@ -50,5 +49,8 @@
                 <action android:name="android.intent.action.USER_PRESENT"/>
             </intent-filter>
         </service>
+
+        <activity android:name=".nightscout.NightscoutPreferences" />
+
     </application>
 </manifest>

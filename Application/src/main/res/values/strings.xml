@@ -34,4 +34,10 @@
     <string name="status_text_next_check" formatted="false">"Next check: %s"</string>
     <!-- Status text not running -->
     <string name="status_text_not_running">Not running</string>
+    <!-- Nightscout menu item -->
+    <string name="nightscout">Nightscout</string>
+    <!-- Checkbox to enable nightscout -->
+    <string name="nightscout_enable">Enable Nightscout Rest API</string>
+    <!-- EditText settings for setting Nightscout URL -->
+    <string name="nightscout_set_url">Set URL</string>
 </resources>

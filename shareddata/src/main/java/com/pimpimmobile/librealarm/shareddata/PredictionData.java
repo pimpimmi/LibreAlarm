@@ -8,7 +8,7 @@ public class PredictionData extends GlucoseData {
         ERROR_NFC_READ
     }
 
-    public double prediction = -1;
+    public double trend = -1;
     public double confidence = -1;
     public Result errorCode;
     public int attempt;

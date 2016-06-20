@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
-import com.pimpimmobile.librealarm.shareddata.settings.ConfidenceSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
@@ -21,9 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    private static final double TREND_UP_DOWN_LIMIT = 1;
-    private static final double TREND_SLIGHT_UP_DOWN_LIMIT = 0.5;
 
     private SimpleDateFormat mTimeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -101,30 +97,34 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 mTrendArrow.setImageDrawable(null);
             } else {
                 mGlucoseView.setText(String.valueOf(data.glucose(mGlucoseUnitSettings.isMmol())));
-                updateTrendArrow(data.prediction, data.confidence);
+                updateTrendArrow(data);
             }
 
             mTimeView.setText(mTimeFormat.format(new Date(data.realDate)));
             mDateView.setText(mDateFormat.format(new Date(data.realDate)));
         }
 
-        private void updateTrendArrow(double trend, double confidence) {
-            float confidenceLimit = Float.valueOf(SettingsUtils.getSettings(
-                    mContext, ConfidenceSettings.class.getSimpleName()).getSettingsValue());
-            if (confidence > confidenceLimit) {
-                mTrendArrow.setImageDrawable(null);
-            } else {
-                if (trend > TREND_UP_DOWN_LIMIT) {
+        private void updateTrendArrow(PredictionData data) {
+            AlgorithmUtil.TrendArrow arrow = AlgorithmUtil.getTrendArrow(mContext, data);
+            switch (arrow) {
+                case UP:
                     mTrendArrow.setImageResource(R.drawable.ic_arrow_upward_white_24dp);
-                } else if (trend < -TREND_UP_DOWN_LIMIT) {
+                    break;
+                case DOWN:
                     mTrendArrow.setImageResource(R.drawable.ic_arrow_downward_white_24dp);
-                } else if (trend > TREND_SLIGHT_UP_DOWN_LIMIT) {
-                    mTrendArrow.setImageResource(R.drawable.ic_arrow_slight_up_white_24dp);
-                } else if (trend < -TREND_SLIGHT_UP_DOWN_LIMIT) {
-                    mTrendArrow.setImageResource(R.drawable.ic_arrow_slight_down_white_24dp);
-                } else {
+                    break;
+                case FLAT:
                     mTrendArrow.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
-                }
+                    break;
+                case SLIGHTLY_DOWN:
+                    mTrendArrow.setImageResource(R.drawable.ic_arrow_slight_down_white_24dp);
+                    break;
+                case SLIGHTLY_UP:
+                    mTrendArrow.setImageResource(R.drawable.ic_arrow_slight_up_white_24dp);
+                    break;
+                case UNKNOWN:
+                    mTrendArrow.setImageDrawable(null);
+                    break;
             }
         }
     }

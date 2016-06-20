@@ -21,7 +21,9 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
+import com.pimpimmobile.librealarm.nightscout.NightscoutUploader;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
+import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
@@ -32,6 +34,7 @@ import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Service which keeps the phone connected to the watch.
@@ -94,8 +97,22 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 mDatabase.storeReading(object.data);
                 WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, String.valueOf(object.id), null);
                 if (mListener != null) mListener.onDataUpdated();
+                if (PreferencesUtil.isNsRestEnabled(this)) syncNightscout();
                 break;
         }
+    }
+
+
+    private void syncNightscout() {
+        new Thread() {
+            @Override
+            public void run() {
+                NightscoutUploader uploader = new NightscoutUploader(WearService.this);
+                List<PredictionData> result = uploader.upload(mDatabase.getNsSyncData());
+                mDatabase.setNsSynced(result);
+                super.run();
+            }
+        }.start();
     }
 
     public void start() {
