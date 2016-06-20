@@ -42,6 +42,9 @@ public class DataLayerListenerService extends WearableListenerService {
         if (hasBeenRebooted() && PreferencesUtil.getIsStarted(this)) {
             AlarmReceiver.start(this);
             AlarmReceiver.post(this, 120000);
+        } else if (System.currentTimeMillis() > AlarmReceiver.getNextCheck(this) &&
+                PreferencesUtil.getIsStarted(this)) {
+            startActivity(new Intent(this, WearActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
 
