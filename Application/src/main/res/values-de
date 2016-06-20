@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- String for opening settings drawer, used for accessibility -->
+    <string name="drawer_open">Öffne Drawer</string>
+    <!-- String for closing settings drawer, used for accessibility -->
+    <string name="drawer_close">Schließe Drawer</string>
+    <!-- Explanation shown when user presses on an error message in the glucose list -->
+    <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukose-Daten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte Anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
+    <!-- Disclaimer message shown when user first starts app -->
+    <string name="disclaimer_message">Bitte die folgenden Punkte gründlich durchlesen, es ist sehr wichtig!\n\n1, Dies ist eine inoffizielle App und wurde von Abbott nicht genehmigt.\n\n2, Die Zuckerwerte die durch diese App erzeugt werden, sind nicht korrekt. Der einzigste Zweck dieser App ist es, den Benutzer zu warnen, sobald ein Wert zu hoch oder zu niedrig ist. Alle Werte sollten mit den offiziellen Werkzeugen von Abbott überprüft werden.\n\n3, Nicht zu sehr auf die Zuverlässigkeit dieser App vertrauen. Es kann möglicherweise ohne Warnung und/oder zu unzuverlässigen Ergebnissen kommen.</string>
+    <!-- Disclaimer title message shown when user first starts app -->
+    <string name="disclaimer_title">Disclaimer</string>
+    <!-- Error text shown in glucose list (max 3 characters) -->
+    <string name="err">ERR</string>
+    <!-- Stop button text-->
+    <string name="button_stop">STOP</string>
+    <!-- Alarm button text-->
+    <string name="button_alarm">ALARM</string>
+    <!-- Start button text-->
+    <string name="button_start">START</string>
+    <!-- Wait button text-->
+    <string name="button_wait">WARTEN</string>
+    <!-- Check glucose now button text -->
+    <string name="button_check_now">Jetzt prüfen</string>
+    <!-- Message shown when user first starts app -->
+    <string name="status_message_first_startup">Dies ist der erste Start. Bitte einen Moment warten, dann die App erneut ausführen.</string>
+    <!-- Status text alarm -->
+    <string name="status_text_alarm">ALARM!!</string>
+    <!-- Status text showing how many times the watch has attempted to get glucose value -->
+    <string name="status_check_attempt" formatted="false">"Versuch %d/%d"</string>
+    <!-- Status text showing how many times the watch has failed to get glucose value -->
+    <string name="status_check_attempt_failed" formatted="false">"Versuch %d/%d fehlgeschlagen"</string>
+    <!-- Status text next check -->
+    <string name="status_text_next_check" formatted="false">"Nächste Überprüfung: %s"</string>
+    <!-- Status text not running -->
+    <string name="status_text_not_running">Nicht im Betrieb</string>
+</resources>
