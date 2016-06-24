@@ -12,8 +12,8 @@
     <string name="settings_low_glucose_text">Nivå låg glukos</string>
     <!-- If alarm should sound from phone -->
     <string name="settings_phone_alarm_text">Använd larm från telefon</string>
-    <!-- Postpone next glucose check -->
-    <string name="settings_postpone_text">Nästa kontroll</string>
+    <!-- Disable alarm for X minutes -->
+    <string name="settings_postpone_text">Inaktivera larm X minuter</string>
     <!-- Minutes -->
     <string name="minutes">Minuter</string>
     <!-- If the alarm should sound after X ERR messages in a row -->

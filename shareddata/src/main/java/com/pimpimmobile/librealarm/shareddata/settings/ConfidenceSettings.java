@@ -49,8 +49,4 @@ public class ConfidenceSettings extends Settings implements AlertRule {
                 ? AlertResult.NOTHING : AlertResult.NO_ALERTS;
     }
 
-    @Override
-    public void afterFilter(AlertResult result) {
-
-    }
 }

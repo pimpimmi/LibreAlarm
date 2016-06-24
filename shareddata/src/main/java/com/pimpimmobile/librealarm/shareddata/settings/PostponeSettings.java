@@ -1,5 +1,6 @@
 package com.pimpimmobile.librealarm.shareddata.settings;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,33 +9,32 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.pimpimmobile.librealarm.shareddata.GlucoseData;
 import com.pimpimmobile.librealarm.shareddata.R;
 
-public class PostponeSettings extends Settings {
+public class PostponeSettings extends Settings implements AlertRule {
 
     private EditText mMinutesView;
-    private long time = -1;
+    private long mAlarmTime = -1;
 
     @Override
     public String getSettingsValue() {
-        if (mMinutesView != null && !TextUtils.isEmpty(mMinutesView.getText())) {
-            setSettingsValue("" + Float.valueOf(mMinutesView.getText().toString()) * 60000);
-        }
-        return String.valueOf(time);
+        return String.valueOf(mAlarmTime);
     }
 
     @Override
     public void setSettingsValue(String data) {
         if (!TextUtils.isEmpty(data)) {
-            time = (long) ((float) Float.valueOf(data));
+            mAlarmTime = Long.valueOf(data);
         } else {
-            time = -1;
+            mAlarmTime = -1;
         }
-        if (mMinutesView != null && data != null) mMinutesView.setText(data);
     }
 
-    public long getTime() {
-        return time;
+    public void setValueFromView() {
+        if (mMinutesView != null && !TextUtils.isEmpty(mMinutesView.getText())) {
+            setSettingsValue("" + (((long) (Float.valueOf(mMinutesView.getText().toString()) * 60000)) + System.currentTimeMillis()));
+        }
     }
 
     @Override
@@ -45,6 +45,11 @@ public class PostponeSettings extends Settings {
         mMinutesView.setHint(R.string.minutes);
         mMinutesView.setInputType(EditorInfo.TYPE_NUMBER_FLAG_SIGNED);
         return v;
+    }
+
+    @Override
+    public AlertResult doFilter(Context context, GlucoseData prediction) {
+        return mAlarmTime < System.currentTimeMillis() ? AlertResult.NOTHING : AlertResult.NO_ALERTS;
     }
 
 }

@@ -32,7 +32,6 @@
         android:layout_gravity="center_horizontal">
         <Button
             android:id="@+id/action"
-            android:width="70dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -41,6 +40,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_check_now"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/alarm_disabled_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal">
+        <TextView
+            android:id="@+id/alarm_disabled_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/alarm_disabled_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_alarm_disabled"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

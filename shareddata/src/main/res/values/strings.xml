@@ -12,8 +12,8 @@
     <string name="settings_low_glucose_text">Low glucose limit</string>
     <!-- If alarm should sound from phone -->
     <string name="settings_phone_alarm_text">Use alarm sound from phone</string>
-    <!-- Postpone next glucose check -->
-    <string name="settings_postpone_text">Next check in</string>
+    <!-- Disable alarm for X minutes -->
+    <string name="settings_postpone_text">Disable alarm X minutes</string>
     <!-- Minutes -->
     <string name="minutes">Minutes</string>
     <!-- If the alarm should sound after X ERR messages in a row -->

@@ -19,8 +19,6 @@ import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
-import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
-import com.pimpimmobile.librealarm.shareddata.settings.Settings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.util.HashMap;
@@ -77,11 +75,7 @@ public class DataLayerListenerService extends WearableListenerService {
                         newSettings.put(key, dataMap.getString(key, null));
                     }
                     SettingsUtils.saveSettings(this, newSettings);
-                    HashMap<String, Settings> settings = SettingsUtils.getAllSettings(getBaseContext());
-                    long nextAlarm = ((PostponeSettings)settings.get(PostponeSettings.class.getSimpleName())).getTime();
-                    if (nextAlarm > 0) {
-                        AlarmReceiver.post(this, nextAlarm);
-                    }
+
                     WearableApi.sendMessage(mGoogleApiClient, WearableApi.SETTINGS, WearableApi.MESSAGE_ACK, null);
 
                     sendStatus(mGoogleApiClient);

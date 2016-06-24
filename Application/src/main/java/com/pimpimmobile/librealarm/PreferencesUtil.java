@@ -13,6 +13,22 @@ public class PreferencesUtil {
         return getString(context, "ns_rest_uri");
     }
 
+    public static void setPreviousAlarmPostponeHigh(Context context, int value) {
+        setInt(context, "prev_alarm_postpone_high", value);
+    }
+
+    public static int getPreviousAlarmPostponeHigh(Context context) {
+        return getInt(context, "prev_alarm_postpone_high", 90);
+    }
+
+    public static void setPreviousAlarmPostponeLow(Context context, int value) {
+        setInt(context, "prev_alarm_postpone_low", value);
+    }
+
+    public static int getPreviousAlarmPostponeLow(Context context) {
+        return getInt(context, "prev_alarm_postpone_low", 30);
+    }
+
     private static void setBoolean(Context context, String key, boolean value) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(key, value).apply();
     }

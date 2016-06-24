@@ -11,12 +11,15 @@ import android.widget.TextView;
 
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
+import com.pimpimmobile.librealarm.shareddata.settings.AlertRule;
 import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings;
+import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -78,7 +81,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
-                        mListener.onAdapterItemClicked(mHistory.get(getAdapterPosition()));
+                        int position = getAdapterPosition();
+                        if (position != -1) mListener.onAdapterItemClicked(mHistory.get(position));
+
                     }
                 }
             });
@@ -89,9 +94,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         private void onBind(PredictionData data) {
-            boolean alarm = AlgorithmUtil.danger(mContext, data, SettingsUtils.getAlertRules(mContext));
+            List<AlertRule> settings = SettingsUtils.getAlertRules(mContext);
+            Iterator<AlertRule> iterator = settings.iterator();
+            while (iterator.hasNext()) {
+                AlertRule rule = iterator.next();
+                if (rule instanceof PostponeSettings) iterator.remove();
+            }
+
+            AlgorithmUtil.Danger danger = AlgorithmUtil.danger(mContext, data, settings);
             boolean error = data.errorCode != PredictionData.Result.OK;
-            mGlucoseView.setTextColor(error ? Color.YELLOW : (alarm ? Color.RED : Color.WHITE));
+            mGlucoseView.setTextColor(error ? Color.YELLOW :
+                    (danger != AlgorithmUtil.Danger.NOTHING ? Color.RED : Color.WHITE));
             if (error) {
                 mGlucoseView.setText(R.string.err);
                 mTrendArrow.setImageDrawable(null);
@@ -105,28 +118,29 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         private void updateTrendArrow(PredictionData data) {
-            AlgorithmUtil.TrendArrow arrow = AlgorithmUtil.getTrendArrow(mContext, data);
-            switch (arrow) {
-                case UP:
-                    mTrendArrow.setImageResource(R.drawable.ic_arrow_upward_white_24dp);
-                    break;
-                case DOWN:
-                    mTrendArrow.setImageResource(R.drawable.ic_arrow_downward_white_24dp);
-                    break;
-                case FLAT:
-                    mTrendArrow.setImageResource(R.drawable.ic_arrow_forward_white_24dp);
-                    break;
-                case SLIGHTLY_DOWN:
-                    mTrendArrow.setImageResource(R.drawable.ic_arrow_slight_down_white_24dp);
-                    break;
-                case SLIGHTLY_UP:
-                    mTrendArrow.setImageResource(R.drawable.ic_arrow_slight_up_white_24dp);
-                    break;
-                case UNKNOWN:
-                    mTrendArrow.setImageDrawable(null);
-                    break;
+            int drawableResource = getTrendDrawable(AlgorithmUtil.getTrendArrow(mContext, data));
+            if (drawableResource == -1) {
+                mTrendArrow.setImageDrawable(null);
+            } else {
+                mTrendArrow.setImageResource(drawableResource);
             }
         }
+    }
+
+    public static int getTrendDrawable(AlgorithmUtil.TrendArrow arrow) {
+        switch (arrow) {
+            case UP:
+                return R.drawable.ic_arrow_upward_white_24dp;
+            case DOWN:
+                return R.drawable.ic_arrow_downward_white_24dp;
+            case FLAT:
+                return R.drawable.ic_arrow_forward_white_24dp;
+            case SLIGHTLY_DOWN:
+                return R.drawable.ic_arrow_slight_down_white_24dp;
+            case SLIGHTLY_UP:
+                return R.drawable.ic_arrow_slight_up_white_24dp;
+        }
+        return -1;
     }
 
     interface OnListItemClickedListener {

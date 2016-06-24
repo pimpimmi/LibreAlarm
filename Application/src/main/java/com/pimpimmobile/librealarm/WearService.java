@@ -29,6 +29,7 @@ import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.shareddata.settings.PhoneAlarmSettings;
 import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
+import com.pimpimmobile.librealarm.shareddata.settings.Settings;
 import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.nio.charset.Charset;
@@ -80,12 +81,12 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 break;
             case WearableApi.SETTINGS: // ACK
                 Toast.makeText(this, "Settings updated on watch", Toast.LENGTH_LONG).show();
-                SettingsUtils.saveSettings(this, PostponeSettings.class.getSimpleName(), null);
                 break;
             case WearableApi.STATUS:
                 mReadingStatus = new Gson().fromJson(new String(messageEvent.getData()), Status.class);
-                if (mReadingStatus.status == Status.Type.ALARM) {
-                    startAlarm();
+                Status.Type type = mReadingStatus.status;
+                if (type == Status.Type.ALARM_HIGH || type == Status.Type.ALARM_LOW) {
+                    startAlarm(mReadingStatus);
                 } else {
                     stopAlarm();
                 }
@@ -125,6 +126,15 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     public void getUpdate() {
         WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_UPDATE, "", null);
+    }
+
+    public void disableAlarm(int minutes) {
+        HashMap<String, Settings> settingsMap = SettingsUtils.getAllSettings(this);
+        settingsMap.get(PostponeSettings.class.getSimpleName())
+                .setSettingsValue(String.valueOf((long) minutes * 60000 + System.currentTimeMillis()));
+        HashMap<String, String> settingsValues = SettingsUtils.getTransferHashMap(settingsMap);
+        SettingsUtils.saveSettings(this, settingsValues);
+        sendData(WearableApi.SETTINGS, settingsValues, null);
     }
 
     public class WearServiceBinder extends Binder {
@@ -211,7 +221,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         return mReadingStatus;
     }
 
-    private void startAlarm() {
+    private void startAlarm(Status status) {
         if (((PhoneAlarmSettings) SettingsUtils.getSettings(
                 this, PhoneAlarmSettings.class.getSimpleName())).isChecked()) {
             if (mAlarmPlayer == null) {
@@ -220,9 +230,9 @@ public class WearService extends Service implements DataApi.DataListener, Messag
             }
             mAlarmPlayer.start();
         }
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+
+
+        startActivity(MainActivity.buildAlarmIntent(this, status));
     }
 
     public void stopAlarm() {
@@ -235,7 +245,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     public String getStatusString() {
         if (isConnected() && mReadingStatus != null) {
             switch (mReadingStatus.status) {
-                case ALARM:
+                case ALARM_HIGH:
+                case ALARM_LOW:
                     return getString(R.string.status_text_alarm);
                 case ATTEMPTING:
                     return getString(R.string.status_check_attempt, mReadingStatus.attempt, mReadingStatus.maxAttempts);

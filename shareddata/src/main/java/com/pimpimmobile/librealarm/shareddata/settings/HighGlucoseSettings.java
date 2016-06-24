@@ -61,12 +61,7 @@ public class HighGlucoseSettings extends Settings implements AlertRule, GlucoseU
 
     @Override
     public AlertResult doFilter(Context context, GlucoseData prediction) {
-        return prediction.glucoseLevel < mGlucose ? AlertResult.NOTHING : AlertResult.ALERT;
-    }
-
-    @Override
-    public void afterFilter(AlertResult result) {
-
+        return prediction.glucoseLevel < mGlucose ? AlertResult.NOTHING : AlertResult.ALERT_HIGH;
     }
 
     @Override

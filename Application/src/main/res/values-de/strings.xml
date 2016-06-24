@@ -40,4 +40,14 @@
     <string name="nightscout_enable">Enable Nightscout Rest API</string>
     <!-- EditText settings for setting Nightscout URL -->
     <string name="nightscout_set_url">Set URL</string>
+    <!-- Button visible when alarm is snoozing -->
+    <string name="button_alarm_disabled">Enable</string>
+    <!-- Button text to disable alarm for a period of time-->
+    <string name="alarm_disable_button" formatted="false">Disable %d min</string>
+    <!-- Button text to turn off alarm -->
+    <string name="alarm_turn_off">Turn off</string>
+    <!-- Toast message telling us we failed to turn off alarm -->
+    <string name="toast_turn_off_alarm_failed">Failed to turn off alarm</string>
+    <!-- Text message telling us the alarm is disabled -->
+    <string name="alarm_disabled_text" formatted="false">Alarm is disabled until %s</string>
 </resources>

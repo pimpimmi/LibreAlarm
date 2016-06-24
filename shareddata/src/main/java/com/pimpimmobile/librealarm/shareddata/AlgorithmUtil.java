@@ -28,12 +28,18 @@ public class AlgorithmUtil {
         UP
     }
 
+    public enum Danger {
+        HIGH,
+        LOW,
+        NOTHING
+    }
+
     private static final int MINUTE = 60000;
 
     // TODO: 15 a good value?
     private static final int PREDICTION_TIME = 15;
 
-    private static final SimpleDateFormat mFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm:ss");
 
     public static String format(Date date) {
         return mFormat.format(date);
@@ -68,24 +74,25 @@ public class AlgorithmUtil {
         }
     }
 
-    public static boolean danger(Context context, PredictionData data, List<AlertRule> rules) {
-        if (data.glucoseLevel < 10) return false;
+    public static Danger danger(Context context, PredictionData data, List<AlertRule> rules) {
+        if (data.glucoseLevel < 10) return Danger.NOTHING;
 
-        boolean alert = false;
+        Danger danger = Danger.NOTHING;
         for (AlertRule rule : rules) {
             AlertRule.AlertResult result = rule.doFilter(context, data);
             switch (result) {
-                case FORCE_ALERT:
-                    return true;
-                case ALERT:
-                    alert = true;
+                case ALERT_HIGH:
+                    danger = Danger.HIGH;
+                    break;
+                case ALERT_LOW:
+                    danger = Danger.LOW;
                     break;
                 case NO_ALERTS:
-                    return false;
+                    return Danger.NOTHING;
             }
         }
 
-        return alert;
+        return danger;
     }
 
     public static ReadingData parseData(int attempt, String tagId, byte[] data) {

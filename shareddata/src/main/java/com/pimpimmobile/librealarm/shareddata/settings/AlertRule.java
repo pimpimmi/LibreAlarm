@@ -9,11 +9,10 @@ public interface AlertRule {
         INVALID,
         NO_ALERTS,
         NOTHING,
-        ALERT,
-        FORCE_ALERT,
+        ALERT_HIGH,
+        ALERT_LOW,
     }
 
     AlertResult doFilter(Context context, GlucoseData prediction);
-    void afterFilter(AlertResult result);
 
 }

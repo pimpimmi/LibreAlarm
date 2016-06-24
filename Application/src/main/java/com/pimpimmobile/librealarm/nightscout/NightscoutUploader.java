@@ -162,7 +162,6 @@ public class NightscoutUploader {
             post.setEntity(se);
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
-            Log.i("UITest", post.toString());
 
             ResponseHandler responseHandler = new BasicResponseHandler();
             try {

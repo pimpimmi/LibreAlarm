@@ -87,7 +87,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 setNextAlarm();
                 sendResultAndFinish();
                 if (shouldDoErrorAlarm()) {
-                    doAlarm();
+                    doAlarm(Type.ALARM_OTHER, -1, AlgorithmUtil.TrendArrow.UNKNOWN);
                 } else {
                     sendStatusUpdate(Type.WAITING);
                 }
@@ -192,12 +192,23 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         sendStatusUpdate(Type.ATTEMPTING);
     }
 
-    private void sendStatusUpdate(Type type) {
-        PreferencesUtil.setCurrentType(this, type);
+    private void sendAlarmStatusUpdate(Type type, int value, AlgorithmUtil.TrendArrow trendArrow) {
         int attempt = PreferencesUtil.getRetries(this);
-        mMessagesBeingSent++;
+        Status status = new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
+                AlarmReceiver.getNextCheck(mGoogleApiClient.getContext()), value, trendArrow);
+        sendStatusUpdate(type, status);
+    }
+
+    private void sendStatusUpdate(Type type) {
+        int attempt = PreferencesUtil.getRetries(this);
         Status status = new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
                 AlarmReceiver.getNextCheck(mGoogleApiClient.getContext()));
+        sendStatusUpdate(type, status);
+    }
+
+    private void sendStatusUpdate(Type type, Status status) {
+        PreferencesUtil.setCurrentType(this, type);
+        mMessagesBeingSent++;
         WearableApi.sendMessage(mGoogleApiClient, WearableApi.STATUS, new Gson().toJson(status), mMessageListener);
     }
 
@@ -219,9 +230,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         return true;
     }
 
-    private void doAlarm() {
+    private void doAlarm(Type type, int value, AlgorithmUtil.TrendArrow arrow) {
         mFinishAfterSentMessages = false;
-        sendStatusUpdate(Type.ALARM);
+        sendAlarmStatusUpdate(type, value, arrow);
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         mVibrator.vibrate(30000);
         // Close app after it has vibrated for 30 seconds.
@@ -263,9 +274,13 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             PreferencesUtil.resetErrorsInARow(WearActivity.this);
             sendResultAndFinish();
             setNextAlarm();
-            if (AlgorithmUtil.danger(WearActivity.this, mResult.prediction, SettingsUtils.getAlertRules(WearActivity.this))) {
+            AlgorithmUtil.Danger danger = AlgorithmUtil.danger(WearActivity.this, mResult.prediction,
+                    SettingsUtils.getAlertRules(WearActivity.this));
+            if (AlgorithmUtil.Danger.NOTHING != danger) {
                 mHandler.removeCallbacks(mStopActivityRunnable);
-                doAlarm();
+                Type type = danger == AlgorithmUtil.Danger.LOW ? Type.ALARM_LOW : Type.ALARM_HIGH;
+                doAlarm(type, mResult.prediction.glucoseLevel,
+                        AlgorithmUtil.getTrendArrow(WearActivity.this, mResult.prediction));
             } else {
                 sendStatusUpdate(Type.WAITING);
             }

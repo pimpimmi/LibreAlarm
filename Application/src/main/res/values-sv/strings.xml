@@ -13,7 +13,7 @@
     <!-- Error text shown in glucose list (max 3 characters) -->
     <string name="err">ERR</string>
     <!-- Stop button text-->
-    <string name="button_stop">SLUTA</string>
+    <string name="button_stop">STOPPA</string>
     <!-- Alarm button text-->
     <string name="button_alarm">LARMA AV</string>
     <!-- Start button text-->
@@ -40,4 +40,14 @@
     <string name="nightscout_enable">Sätt igång Nightscout Rest API</string>
     <!-- EditText settings for setting Nightscout URL -->
     <string name="nightscout_set_url">Sätt URL</string>
+    <!-- Button visible when alarm is snoozing -->
+    <string name="button_alarm_disabled">Aktivera</string>
+    <!-- Button text to disable alarm for a period of time-->
+    <string name="alarm_disable_button" formatted="false">Avaktivera %d min</string>
+    <!-- Button text to turn off alarm -->
+    <string name="alarm_turn_off">Stäng av</string>
+    <!-- Toast message telling us we failed to turn off alarm -->
+    <string name="toast_turn_off_alarm_failed">Misslyckades att stänga av alarm</string>
+    <!-- Text message telling us the alarm is disabled -->
+    <string name="alarm_disabled_text" formatted="false">Larmet är inaktiverat tills %s</string>
 </resources>
