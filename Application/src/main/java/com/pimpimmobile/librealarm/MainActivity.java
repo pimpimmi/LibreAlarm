@@ -3,7 +3,6 @@ package com.pimpimmobile.librealarm;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -180,19 +179,25 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter.setHistory(null);
-
+        perhapsShowAlarmFragment(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (INTENT_ALARM_ACTION.equals(intent.getAction())) {
+        super.onNewIntent(intent);
+        perhapsShowAlarmFragment(intent);
+    }
+
+    private void perhapsShowAlarmFragment(Intent intent) {
+        int extraValue = intent.getIntExtra(AlarmDialogFragment.EXTRA_VALUE, 0);
+
+        if (INTENT_ALARM_ACTION.equals(intent.getAction()) && extraValue != 0) {
+
             AlarmDialogFragment fragment = AlarmDialogFragment.build(
                     intent.getBooleanExtra(AlarmDialogFragment.EXTRA_IS_HIGH, false),
-                    intent.getIntExtra(AlarmDialogFragment.EXTRA_TREND_ORDINAL, 0),
-                    intent.getIntExtra(AlarmDialogFragment.EXTRA_VALUE, 0));
+                    intent.getIntExtra(AlarmDialogFragment.EXTRA_TREND_ORDINAL, 0), extraValue);
 
-            FragmentTransaction manager = getFragmentManager().beginTransaction();
-            fragment.show(manager, "alarm");
+            fragment.show(getFragmentManager().beginTransaction(), "alarm");
         }
     }
 

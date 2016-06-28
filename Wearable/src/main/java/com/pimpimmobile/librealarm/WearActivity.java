@@ -109,6 +109,10 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     public void onCreate(Bundle b) {
         super.onCreate(b);
         Log.i(TAG, "onCreate()");
+        if (getIntent().hasExtra(EXTRA_CANCEL_ALARM)) {
+            finish();
+            return;
+        }
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
                         WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |

@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import android.util.Log;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataEvent;
@@ -42,6 +43,7 @@ public class DataLayerListenerService extends WearableListenerService {
             AlarmReceiver.post(this, 120000);
         } else if (System.currentTimeMillis() > AlarmReceiver.getNextCheck(this) &&
                 PreferencesUtil.getIsStarted(this)) {
+            Log.i("UITest", "create start glucose activity");
             startActivity(new Intent(this, WearActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }

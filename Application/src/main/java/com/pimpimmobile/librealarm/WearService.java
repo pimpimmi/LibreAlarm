@@ -231,7 +231,6 @@ public class WearService extends Service implements DataApi.DataListener, Messag
             mAlarmPlayer.start();
         }
 
-
         startActivity(MainActivity.buildAlarmIntent(this, status));
     }
 

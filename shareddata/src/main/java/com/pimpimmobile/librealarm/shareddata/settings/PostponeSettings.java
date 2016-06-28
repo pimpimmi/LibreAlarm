@@ -34,6 +34,7 @@ public class PostponeSettings extends Settings implements AlertRule {
     public void setValueFromView() {
         if (mMinutesView != null && !TextUtils.isEmpty(mMinutesView.getText())) {
             setSettingsValue("" + (((long) (Float.valueOf(mMinutesView.getText().toString()) * 60000)) + System.currentTimeMillis()));
+            mMinutesView.setText("");
         }
     }
 
