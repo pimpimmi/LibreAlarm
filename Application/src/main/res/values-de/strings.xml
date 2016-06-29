@@ -5,7 +5,7 @@
     <!-- String for closing settings drawer, used for accessibility -->
     <string name="drawer_close">Schließe Drawer</string>
     <!-- Explanation shown when user presses on an error message in the glucose list -->
-    <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukose-Daten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte Anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
+    <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukosedaten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte Anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
     <!-- Disclaimer message shown when user first starts app -->
     <string name="disclaimer_message">Bitte die folgenden Punkte gründlich durchlesen, es ist sehr wichtig!\n\n1, Dies ist eine inoffizielle App und wurde von Abbott nicht genehmigt.\n\n2, Die Zuckerwerte die durch diese App erzeugt werden, sind nicht korrekt. Der einzigste Zweck dieser App ist es, den Benutzer zu warnen, sobald ein Wert zu hoch oder zu niedrig ist. Alle Werte sollten mit den offiziellen Werkzeugen von Abbott überprüft werden.\n\n3, Nicht zu sehr auf die Zuverlässigkeit dieser App vertrauen. Es kann möglicherweise ohne Warnung und/oder zu unzuverlässigen Ergebnissen kommen.</string>
     <!-- Disclaimer title message shown when user first starts app -->
@@ -33,21 +33,21 @@
     <!-- Status text next check -->
     <string name="status_text_next_check" formatted="false">"Nächste Überprüfung: %s"</string>
     <!-- Status text not running -->
-    <string name="status_text_not_running">Nicht im Betrieb</string>
+    <string name="status_text_not_running">Nicht gestartet</string>
     <!-- Nightscout menu item -->
     <string name="nightscout">Nightscout</string>
     <!-- Checkbox to enable nightscout -->
-    <string name="nightscout_enable">Enable Nightscout Rest API</string>
+    <string name="nightscout_enable">Aktiviere Nightscout Rest API</string>
     <!-- EditText settings for setting Nightscout URL -->
-    <string name="nightscout_set_url">Set URL</string>
+    <string name="nightscout_set_url">Setze URL</string>
     <!-- Button visible when alarm is snoozing -->
-    <string name="button_alarm_disabled">Enable</string>
+    <string name="button_alarm_disabled">Aktivieren</string>
     <!-- Button text to disable alarm for a period of time-->
-    <string name="alarm_disable_button" formatted="false">Disable %d min</string>
+    <string name="alarm_disable_button" formatted="false">Deaktiviere %d Min.</string>
     <!-- Button text to turn off alarm -->
-    <string name="alarm_turn_off">Turn off</string>
+    <string name="alarm_turn_off">Ausschalten</string>
     <!-- Toast message telling us we failed to turn off alarm -->
-    <string name="toast_turn_off_alarm_failed">Failed to turn off alarm</string>
+    <string name="toast_turn_off_alarm_failed">Fehlerhaftes ausschalten (Alarm)</string>
     <!-- Text message telling us the alarm is disabled -->
-    <string name="alarm_disabled_text" formatted="false">Alarm is disabled until %s</string>
+    <string name="alarm_disabled_text" formatted="false">Alarm ist deaktiviert für %s</string>
 </resources>
