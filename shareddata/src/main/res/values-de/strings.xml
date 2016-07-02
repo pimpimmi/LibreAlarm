@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Minimum confidence interval required for alarm to be executed -->
-    <string name="settings_confidence_text">Min. Zeitspanne für den Alarm</string>
+    <string name="settings_confidence_text">Min. Konfidenzintervall für den Alarm</string>
     <!-- Hint shown in confidence edit text -->
     <string name="settings_confidence_hint">Konfidenzintervall</string>
     <!-- Use mmol hint -->
