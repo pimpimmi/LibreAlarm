@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
+
 public class AlarmIntentService extends IntentService {
 
     private static final String TAG = "GLUCOSE::" + AlarmIntentService.class.getSimpleName();

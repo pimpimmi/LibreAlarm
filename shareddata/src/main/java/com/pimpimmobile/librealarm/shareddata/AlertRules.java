@@ -1,0 +1,47 @@
+package com.pimpimmobile.librealarm.shareddata;
+
+import android.content.Context;
+import android.util.Log;
+
+public class AlertRules {
+
+    public enum Danger {
+        HIGH,
+        LOW,
+        NOTHING
+    }
+
+    public static Danger check(Context context, PredictionData data) {
+        Danger danger = Danger.NOTHING;
+        if (!alertSnoozeHigh(context)) danger = alertHigh(context, data);
+        if (!alertSnoozeLow(context) && danger == Danger.NOTHING) danger = alertLow(context, data);
+        Log.i("UITest", "danger: " + danger.name());
+        return danger;
+    }
+
+    public static Danger checkDontPostpone(Context context, PredictionData data) {
+        Danger danger = alertHigh(context, data);
+        if (danger == Danger.NOTHING) danger = alertLow(context, data);
+        return danger;
+    }
+
+    private static boolean alertSnoozeHigh(Context context) {
+        long time = Long.valueOf(PreferencesUtil.getString(context, R.string.key_snooze_high));
+        return time > System.currentTimeMillis();
+    }
+
+    private static boolean alertSnoozeLow(Context context) {
+        long time = Long.valueOf(PreferencesUtil.getString(context, R.string.key_snooze_low));
+        return time > System.currentTimeMillis();
+    }
+
+    private static Danger alertHigh(Context context, PredictionData data) {
+        float value = Float.valueOf(PreferencesUtil.getString(context, R.string.key_alarm_limit_high));
+        return data.glucoseLevel > value ? Danger.HIGH : Danger.NOTHING;
+    }
+
+    private static Danger alertLow(Context context, PredictionData data) {
+        float value = Float.valueOf(PreferencesUtil.getString(context, R.string.key_alarm_limit_low));
+        return data.glucoseLevel < value ? Danger.LOW : Danger.NOTHING;
+    }
+}

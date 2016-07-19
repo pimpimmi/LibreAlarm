@@ -9,6 +9,7 @@ import android.media.RingtoneManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,15 +23,13 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
 import com.pimpimmobile.librealarm.nightscout.NightscoutUploader;
+import com.pimpimmobile.librealarm.quicksettings.QuickSettingsItem;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
+import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
-import com.pimpimmobile.librealarm.shareddata.settings.PhoneAlarmSettings;
-import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
-import com.pimpimmobile.librealarm.shareddata.settings.Settings;
-import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -73,17 +72,23 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
-        Log.i(TAG, "Message receiver: " + messageEvent.getPath() + ", " +
-                new String(messageEvent.getData(), Charset.forName("UTF-8")));
+        String data = new String(messageEvent.getData(), Charset.forName("UTF-8"));
+        Log.i(TAG, "Message receiver: " + messageEvent.getPath() + ", " + data);
         switch (messageEvent.getPath()) {
             case WearableApi.CANCEL_ALARM:
                 stopAlarm();
                 break;
-            case WearableApi.SETTINGS: // ACK
-                Toast.makeText(this, "Settings updated on watch", Toast.LENGTH_LONG).show();
+            case WearableApi.SETTINGS:
+                Toast.makeText(this, R.string.settings_updated_on_watch, Toast.LENGTH_LONG).show();
+                HashMap<String, String> prefs = PreferencesUtil.toMap(data);
+                for (String key : prefs.keySet()) {
+                    PreferencesUtil.putString(this, key + QuickSettingsItem.WATCH_VALUE, prefs.get(key));
+                }
+
+                if (mListener != null) mListener.onWatchSettingsUpdated();
                 break;
             case WearableApi.STATUS:
-                mReadingStatus = new Gson().fromJson(new String(messageEvent.getData()), Status.class);
+                mReadingStatus = new Gson().fromJson(data, Status.class);
                 Status.Type type = mReadingStatus.status;
                 if (type == Status.Type.ALARM_HIGH || type == Status.Type.ALARM_LOW) {
                     startAlarm(mReadingStatus);
@@ -93,8 +98,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 if (mListener != null) mListener.onDataUpdated();
                 break;
             case WearableApi.GLUCOSE:
-                ReadingData.TransferObject object = new Gson().fromJson(
-                        new String(messageEvent.getData()), ReadingData.TransferObject.class);
+                ReadingData.TransferObject object =
+                        new Gson().fromJson(data, ReadingData.TransferObject.class);
                 mDatabase.storeReading(object.data);
                 WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, String.valueOf(object.id), null);
                 if (mListener != null) mListener.onDataUpdated();
@@ -128,13 +133,9 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         WearableApi.sendMessage(mGoogleApiClient, WearableApi.GET_UPDATE, "", null);
     }
 
-    public void disableAlarm(int minutes) {
-        HashMap<String, Settings> settingsMap = SettingsUtils.getAllSettings(this);
-        settingsMap.get(PostponeSettings.class.getSimpleName())
-                .setSettingsValue(String.valueOf((long) minutes * 60000 + System.currentTimeMillis()));
-        HashMap<String, String> settingsValues = SettingsUtils.getTransferHashMap(settingsMap);
-        SettingsUtils.saveSettings(this, settingsValues);
-        sendData(WearableApi.SETTINGS, settingsValues, null);
+    public void disableAlarm(String key, int minutes) {
+        String value = String.valueOf((long) minutes * 60000 + System.currentTimeMillis());
+        sendData(WearableApi.SETTINGS, key, value, null);
     }
 
     public class WearServiceBinder extends Binder {
@@ -222,8 +223,9 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     }
 
     private void startAlarm(Status status) {
-        if (((PhoneAlarmSettings) SettingsUtils.getSettings(
-                this, PhoneAlarmSettings.class.getSimpleName())).isChecked()) {
+        boolean usePhoneAlarm = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.pref_key_phone_alarm), false);
+        if (usePhoneAlarm) {
             if (mAlarmPlayer == null) {
                 mAlarmPlayer = MediaPlayer.create(
                         this, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM));
@@ -246,6 +248,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
             switch (mReadingStatus.status) {
                 case ALARM_HIGH:
                 case ALARM_LOW:
+                case ALARM_OTHER:
                     return getString(R.string.status_text_alarm);
                 case ATTEMPTING:
                     return getString(R.string.status_check_attempt, mReadingStatus.attempt, mReadingStatus.maxAttempts);
@@ -267,6 +270,10 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         if (isConnected()) WearableApi.sendData(mGoogleApiClient, command, data, listener);
     }
 
+    public void sendData(String command, String key, String data, ResultCallback<DataApi.DataItemResult> listener) {
+        if (isConnected()) WearableApi.sendData(mGoogleApiClient, command, key, data, listener);
+    }
+
     public void sendMessage(String command, String message, ResultCallback<MessageApi.SendMessageResult> listener) {
         if (isConnected()) WearableApi.sendMessage(mGoogleApiClient, command, message, listener);
     }
@@ -278,5 +285,6 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     public interface WearServiceListener {
         void onDataUpdated();
+        void onWatchSettingsUpdated();
     }
 }

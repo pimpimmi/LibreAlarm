@@ -2,52 +2,115 @@
 <resources>
     <!-- String for opening settings drawer, used for accessibility -->
     <string name="drawer_open">open drawer</string>
+
     <!-- String for closing settings drawer, used for accessibility -->
     <string name="drawer_close">close drawer</string>
+
     <!-- Explanation shown when user presses on an error message in the glucose list -->
     <string name="err_explanation">ERR means the watch has failed to fetch glucose data.\n\nMake sure the watch is right above the sensor with the watch screen facing the sensor.\n\nMake sure also that the watch has NFC turned on. Check this by opening the app \"NFC configuration\" on the watch. Should it be impossible to turn on NFC, restart the watch and try again.</string>
+
     <!-- Disclaimer message shown when user first starts app -->
     <string name="disclaimer_message">Please read through these points, it\'s important!\n\n1, This is an unofficial app and has not been approved in any way by Abbott.\n\n2, The glucose values produced by this app are not accurate. The only purpose with this app is to alarm the user when his or her glucose level is too high or too low. All values should be confirmed using official Abbott tools.\n\n3, Do not rely on the app to be fail safe. It may stop working without warning and/or produce unreliable results.</string>
+
     <!-- Disclaimer title message shown when user first starts app -->
     <string name="disclaimer_title">Disclaimer</string>
+
     <!-- Error text shown in glucose list (max 3 characters) -->
     <string name="err">ERR</string>
+
     <!-- Stop button text-->
     <string name="button_stop">STOP</string>
+
     <!-- Alarm button text-->
     <string name="button_alarm">ALARM</string>
+
     <!-- Start button text-->
     <string name="button_start">START</string>
+
     <!-- Wait button text-->
     <string name="button_wait">WAIT</string>
+
     <!-- Check glucose now button text -->
     <string name="button_check_now">Check now</string>
+
     <!-- Message shown when user first starts app -->
     <string name="status_message_first_startup">This is the first startup. The watch app might not be installed yet. Please wait a moment, then restart the app.</string>
+
     <!-- Status text alarm -->
     <string name="status_text_alarm">ALARM!!</string>
+
     <!-- Status text showing how many times the watch has attempted to get glucose value -->
     <string name="status_check_attempt" formatted="false">"Attempt %d/%d"</string>
+
     <!-- Status text showing how many times the watch has failed to get glucose value -->
     <string name="status_check_attempt_failed" formatted="false">"Attempt %d/%d failed"</string>
+
     <!-- Status text next check -->
     <string name="status_text_next_check" formatted="false">"Next check: %s"</string>
+
     <!-- Status text not running -->
     <string name="status_text_not_running">Not running</string>
+
     <!-- Nightscout menu item -->
     <string name="nightscout">Nightscout</string>
+
     <!-- Checkbox to enable nightscout -->
     <string name="nightscout_enable">Enable Nightscout Rest API</string>
+
     <!-- EditText settings for setting Nightscout URL -->
     <string name="nightscout_set_url">Set URL</string>
+
     <!-- Button visible when alarm is snoozing -->
     <string name="button_alarm_disabled">Enable</string>
+
     <!-- Button text to disable alarm for a period of time-->
     <string name="alarm_disable_button" formatted="false">Disable %d min</string>
+
     <!-- Button text to turn off alarm -->
     <string name="alarm_turn_off">Turn off</string>
+
     <!-- Toast message telling us we failed to turn off alarm -->
     <string name="toast_turn_off_alarm_failed">Failed to turn off alarm</string>
-    <!-- Text message telling us the alarm is disabled -->
-    <string name="alarm_disabled_text" formatted="false">Alarm is disabled until %s</string>
+
+    <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
+    <string name="alarm_disabled_low_text" formatted="false">Low glucose alarm snoozed: %s</string>
+
+    <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
+    <string name="alarm_disabled_high_text" formatted="false">High glucose alarm snoozed: %s</string>
+
+    <!-- Use mmol hint -->
+    <string name="settings_glucose_units_text">Use mmol/l</string>
+
+    <!-- Limit for high glucose (Max 25 characters)-->
+    <string name="settings_alarm_high_title">High glucose limit</string>
+
+    <!-- Limit for low glucose (Max 25 characters)-->
+    <string name="settings_alarm_low_title">Low glucose limit</string>
+
+    <!-- If alarm should sound from phone -->
+    <string name="settings_phone_alarm_text">Use alarm sound from phone</string>
+
+    <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
+    <string name="settings_snooze_high_title">Snooze high glucose</string>
+
+    <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
+    <string name="settings_snooze_low_title">Snooze low glucose</string>
+
+    <!-- If the alarm should sound when you get ERR -->
+    <string name="settings_err_checkbox">Alarm on ERR</string>
+
+    <!-- How many times you need to get ERR for alarm -->
+    <string name="settings_err_edittext">How many ERR in a row required</string>
+
+    <!-- Shown in quick settings to verify watch settings are up to date-->
+    <string name="watch_value">Value on watch: %s</string>
+
+    <!-- Preferences button in overflow menu -->
+    <string name="preferences">Preferences</string>
+
+    <!-- Quick settings button -->
+    <string name="snooze">Snooze</string>
+
+    <!-- Toast message telling us settings have been updated on watch -->
+    <string name="settings_updated_on_watch">Settings updated on watch</string>
 </resources>

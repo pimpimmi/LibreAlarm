@@ -2,52 +2,115 @@
 <resources>
     <!-- String for opening settings drawer, used for accessibility -->
     <string name="drawer_open">Öppna drawer</string>
+
     <!-- String for closing settings drawer, used for accessibility -->
     <string name="drawer_close">Stäng drawer</string>
+
     <!-- Explanation shown when user presses on an error message in the glucose list -->
     <string name="err_explanation">ERR betyder att klockan misslyckats hämta glukosvärden.\n\nSe till att klockan sitter direkt på sensorn med klockskärmen mot sensorn.\n\nSe också till att NFC är igång på klockan. Kolla detta genom att öppna \"NFC configuration\" på klockan. Om det inte går att sätta igång NFC, starta om klockan och försök igen.</string>
+
     <!-- Disclaimer message shown when user first starts app -->
     <string name="disclaimer_message">Läs genom detta, det är viktigt!\n\n1, Detta är en inofficiell app som inte har godkänts av Abbott.\n\n2, Glukosvärderna från appen är inte exakta och går ej att lita på. Den enda meningen med appen är att larma vid för högt eller för lågt glukosvärde. Alla värden bör verifieras mot Abbotts egna verktyg.\n\n3, Lita inte på att appen alltid fungerar. Den kan sluta fungera utan varning eller ge felaktiga resultat.</string>
+
     <!-- Disclaimer title message shown when user first starts app -->
     <string name="disclaimer_title">Disclaimer</string>
+
     <!-- Error text shown in glucose list (max 3 characters) -->
     <string name="err">ERR</string>
+
     <!-- Stop button text-->
     <string name="button_stop">STOPPA</string>
+
     <!-- Alarm button text-->
     <string name="button_alarm">LARMA AV</string>
+
     <!-- Start button text-->
     <string name="button_start">STARTA</string>
+
     <!-- Wait button text-->
     <string name="button_wait">VÄNTA</string>
+
     <!-- Check glucose now button text -->
     <string name="button_check_now">Kolla nu</string>
+
     <!-- Message shown when user first starts app -->
     <string name="status_message_first_startup">Detta är första gången ni öppar appen. Appen kanske inte har installerats på klockan ännu. V.g. vänta en kort stund och starta sen om appen.</string>
+
     <!-- Status text alarm -->
     <string name="status_text_alarm">LARM!!</string>
+
     <!-- Status text showing how many times the watch has attempted to get glucose value -->
     <string name="status_check_attempt" formatted="false">"Försök %d/%d"</string>
+
     <!-- Status text showing how many times the watch has failed to get glucose value -->
     <string name="status_check_attempt_failed" formatted="false">"Försök %d/%d misslyckades"</string>
+
     <!-- Status text next check -->
     <string name="status_text_next_check" formatted="false">"Nästa koll: %s"</string>
+
     <!-- Status text not running -->
     <string name="status_text_not_running">Inte igång</string>
+
     <!-- Nightscout menu item -->
     <string name="nightscout">Nightscout</string>
+
     <!-- Checkbox to enable nightscout -->
     <string name="nightscout_enable">Sätt igång Nightscout Rest API</string>
+
     <!-- EditText settings for setting Nightscout URL -->
     <string name="nightscout_set_url">Sätt URL</string>
+
     <!-- Button visible when alarm is snoozing -->
     <string name="button_alarm_disabled">Aktivera</string>
+
     <!-- Button text to disable alarm for a period of time-->
     <string name="alarm_disable_button" formatted="false">Avaktivera %d min</string>
+
     <!-- Button text to turn off alarm -->
     <string name="alarm_turn_off">Stäng av</string>
+
     <!-- Toast message telling us we failed to turn off alarm -->
     <string name="toast_turn_off_alarm_failed">Misslyckades att stänga av alarm</string>
-    <!-- Text message telling us the alarm is disabled -->
-    <string name="alarm_disabled_text" formatted="false">Larmet är inaktiverat tills %s</string>
+
+    <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
+    <string name="alarm_disabled_low_text" formatted="false">Lågt blodsocker larm snoozat: %s</string>
+
+    <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
+    <string name="alarm_disabled_high_text" formatted="false">Högt blodsocker larm snoozat: %s</string>
+
+    <!-- Use mmol hint -->
+    <string name="settings_glucose_units_text">Använd mmol/l</string>
+
+    <!-- Limit for high glucose (Max 25 characters)-->
+    <string name="settings_alarm_high_title">Gräns högt blodsocker</string>
+
+    <!-- Limit for low glucose (Max 25 characters)-->
+    <string name="settings_alarm_low_title">Gräns lågt blodsocker</string>
+
+    <!-- If alarm should sound from phone -->
+    <string name="settings_phone_alarm_text">Använd larm på telefon</string>
+
+    <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
+    <string name="settings_snooze_high_title">Snooza högt blodsocker</string>
+
+    <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
+    <string name="settings_snooze_low_title">Snooza lågt blodsocker</string>
+
+    <!-- If the alarm should sound when you get ERR -->
+    <string name="settings_err_checkbox">Larm vid ERR</string>
+
+    <!-- How many times you need to get ERR for alarm -->
+    <string name="settings_err_edittext">Hur många ERR i rad krävs</string>
+
+    <!-- Shown in quick settings to verify watch settings are up to date-->
+    <string name="watch_value">Värde på klocka: %s</string>
+
+    <!-- Preferences button in overflow menu -->
+    <string name="preferences">Inställningar</string>
+
+    <!-- Quick settings button -->
+    <string name="snooze">Snooze</string>
+
+    <!-- Toast message telling us settings have been updated on watch -->
+    <string name="settings_updated_on_watch">Inställningar uppdaterade på klockan</string>
 </resources>

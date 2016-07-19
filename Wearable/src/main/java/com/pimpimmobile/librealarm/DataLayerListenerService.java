@@ -1,9 +1,8 @@
 package com.pimpimmobile.librealarm;
 
 import android.content.Intent;
-
-import android.util.Log;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -16,13 +15,14 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.google.gson.Gson;
+import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
-import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class DataLayerListenerService extends WearableListenerService {
 
@@ -43,7 +43,6 @@ public class DataLayerListenerService extends WearableListenerService {
             AlarmReceiver.post(this, 120000);
         } else if (System.currentTimeMillis() > AlarmReceiver.getNextCheck(this) &&
                 PreferencesUtil.getIsStarted(this)) {
-            Log.i("UITest", "create start glucose activity");
             startActivity(new Intent(this, WearActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
@@ -75,10 +74,10 @@ public class DataLayerListenerService extends WearableListenerService {
                     DataMap dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     for (String key : dataMap.keySet()) {
                         newSettings.put(key, dataMap.getString(key, null));
+                        PreferencesUtil.putString(this, key, newSettings.get(key));
                     }
-                    SettingsUtils.saveSettings(this, newSettings);
 
-                    WearableApi.sendMessage(mGoogleApiClient, WearableApi.SETTINGS, WearableApi.MESSAGE_ACK, null);
+                    WearableApi.sendMessage(mGoogleApiClient, WearableApi.SETTINGS, PreferencesUtil.toString(newSettings), null);
 
                     sendStatus(mGoogleApiClient);
                 }
@@ -142,6 +141,10 @@ public class DataLayerListenerService extends WearableListenerService {
                 SimpleDatabase database = new SimpleDatabase(client.getContext());
                 for (ReadingData.TransferObject message : database.getMessages()) {
                     WearableApi.sendMessage(client, WearableApi.GLUCOSE, new Gson().toJson(message), null);
+                }
+                Map<String, ?> values = PreferenceManager.getDefaultSharedPreferences(client.getContext()).getAll();
+                for (String key : values.keySet()) {
+                    Log.i("UITest", key + "; " + values.get(key).getClass().getSimpleName() + ",  " + values.get(key).toString());
                 }
                 database.close();
                 sendStatus(client);

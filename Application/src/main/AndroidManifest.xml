@@ -38,5 +38,7 @@
 
         <activity android:name=".nightscout.NightscoutPreferences" />
 
+        <activity android:name=".Preferences" />
+
     </application>
 </manifest>

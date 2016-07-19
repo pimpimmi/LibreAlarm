@@ -26,14 +26,15 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
+import com.pimpimmobile.librealarm.shareddata.AlertRules;
+import com.pimpimmobile.librealarm.shareddata.AlertRules.Danger;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
+import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
-import com.pimpimmobile.librealarm.shareddata.settings.ErrAlarmSettings;
-import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -99,8 +100,8 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     };
 
     private boolean shouldDoErrorAlarm() {
-        return PreferencesUtil.increaseErrorsInARow(this) >= ((ErrAlarmSettings)SettingsUtils
-                .getSettings(this, ErrAlarmSettings.class.getSimpleName())).getErrCount();
+        return PreferencesUtil.increaseErrorsInARow(this) >=
+                PreferencesUtil.errInRowForAlarm(this);
     }
 
     private ReadingData mResult = new ReadingData(PredictionData.Result.ERROR_NO_NFC);
@@ -175,12 +176,6 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         }
         finish();
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.i(TAG,"onDestroy");
-        super.onDestroy();
     }
 
     private void setNextAlarm() {
@@ -278,13 +273,12 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             PreferencesUtil.resetErrorsInARow(WearActivity.this);
             sendResultAndFinish();
             setNextAlarm();
-            AlgorithmUtil.Danger danger = AlgorithmUtil.danger(WearActivity.this, mResult.prediction,
-                    SettingsUtils.getAlertRules(WearActivity.this));
-            if (AlgorithmUtil.Danger.NOTHING != danger) {
+            Danger danger = AlertRules.check(WearActivity.this, mResult.prediction);
+            if (Danger.NOTHING != danger) {
                 mHandler.removeCallbacks(mStopActivityRunnable);
-                Type type = danger == AlgorithmUtil.Danger.LOW ? Type.ALARM_LOW : Type.ALARM_HIGH;
+                Type type = danger == Danger.LOW ? Type.ALARM_LOW : Type.ALARM_HIGH;
                 doAlarm(type, mResult.prediction.glucoseLevel,
-                        AlgorithmUtil.getTrendArrow(WearActivity.this, mResult.prediction));
+                        AlgorithmUtil.getTrendArrow(mResult.prediction));
             } else {
                 sendStatusUpdate(Type.WAITING);
             }

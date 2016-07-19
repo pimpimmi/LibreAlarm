@@ -3,10 +3,10 @@ package com.pimpimmobile.librealarm.nightscout;
 import android.content.Context;
 import android.util.Log;
 
-import com.pimpimmobile.librealarm.PreferencesUtil;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
+import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
 
 import org.apache.http.Header;
 import org.apache.http.client.ResponseHandler;
@@ -198,7 +198,7 @@ public class NightscoutUploader {
     }
 
     private String getSlopeName(GlucoseData data) {
-        AlgorithmUtil.TrendArrow arrow = AlgorithmUtil.getTrendArrow(mContext, data);
+        AlgorithmUtil.TrendArrow arrow = AlgorithmUtil.getTrendArrow(data);
         switch (arrow) {
             case UP:
                 return "SingleUp";

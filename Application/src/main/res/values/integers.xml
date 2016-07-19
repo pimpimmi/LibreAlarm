@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="snooze_high_default">90</integer>
+    <integer name="snooze_low_default">30</integer>
+    <integer name="alarm_high_default">180</integer>
+    <integer name="alarm_low_default">72</integer>
+</resources>

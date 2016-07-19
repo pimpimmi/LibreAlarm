@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.GlucoseData;
-import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings;
 
 public class AlarmDialogFragment extends DialogFragment {
 
@@ -52,9 +51,10 @@ public class AlarmDialogFragment extends DialogFragment {
         final boolean isGlucoseHigh = bundle.getBoolean(EXTRA_IS_HIGH, true);
         AlgorithmUtil.TrendArrow trend = AlgorithmUtil.TrendArrow.values()[bundle.getInt(EXTRA_TREND_ORDINAL, 0)];
         int value = bundle.getInt(EXTRA_VALUE, 0);
+        mPickerValue = isGlucoseHigh ? 90 : 30;
 
-        boolean isMmol = "1".equals(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getString(GlucoseUnitSettings.class.getSimpleName(), "1"));
+        boolean isMmol = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getBoolean(getString(R.string.pref_key_mmol), true);
         TextView glucoseText = (TextView) view.findViewById(R.id.glucose);
         glucoseText.setText(GlucoseData.glucose(value, isMmol));
         glucoseText.setTextColor(Color.RED);
@@ -63,10 +63,6 @@ public class AlarmDialogFragment extends DialogFragment {
         if (trendDrawableResource != -1) {
             ((ImageView) view.findViewById(R.id.trend_arrow)).setImageResource(trendDrawableResource);
         }
-
-        mPickerValue = isGlucoseHigh ?
-                PreferencesUtil.getPreviousAlarmPostponeHigh(getActivity()) :
-                PreferencesUtil.getPreviousAlarmPostponeLow(getActivity());
 
         final Button disableButton = (Button) view.findViewById(R.id.alarm_disable);
         disableButton.setText(getString(R.string.alarm_disable_button, mPickerValue));
@@ -87,7 +83,7 @@ public class AlarmDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.turnOff();
+                    mListener.turnOffAlarm();
                 } else {
                     Toast.makeText(getActivity(),
                             getString(R.string.toast_turn_off_alarm_failed), Toast.LENGTH_SHORT).show();
@@ -99,7 +95,6 @@ public class AlarmDialogFragment extends DialogFragment {
         NumberPicker picker = (NumberPicker) view.findViewById(R.id.minutes_picker);
         picker.setMinValue(1);
         picker.setMaxValue(200);
-        picker.setValue(mPickerValue);
         picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
@@ -107,11 +102,12 @@ public class AlarmDialogFragment extends DialogFragment {
                 disableButton.setText(getString(R.string.alarm_disable_button, mPickerValue));
             }
         });
+        picker.setValue(mPickerValue);
         return builder.create();
     }
 
     public interface AlarmActionListener {
-        void turnOff();
+        void turnOffAlarm();
         void snooze(int minutes, boolean isHigh);
     }
 

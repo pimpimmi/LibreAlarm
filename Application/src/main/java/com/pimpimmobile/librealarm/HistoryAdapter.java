@@ -9,18 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pimpimmobile.librealarm.shareddata.AlertRules;
+import com.pimpimmobile.librealarm.shareddata.AlertRules.Danger;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
-import com.pimpimmobile.librealarm.shareddata.settings.AlertRule;
-import com.pimpimmobile.librealarm.shareddata.settings.GlucoseUnitSettings;
-import com.pimpimmobile.librealarm.shareddata.settings.PostponeSettings;
-import com.pimpimmobile.librealarm.shareddata.settings.SettingsUtils;
+import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+
 
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -35,13 +34,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private OnListItemClickedListener mListener;
 
-    private GlucoseUnitSettings mGlucoseUnitSettings;
-
-    public HistoryAdapter(Context context, OnListItemClickedListener listener, GlucoseUnitSettings settings) {
+    public HistoryAdapter(Context context, OnListItemClickedListener listener) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mListener = listener;
-        mGlucoseUnitSettings = settings;
     }
 
     public void setHistory(List<PredictionData> history) {
@@ -94,22 +90,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         private void onBind(PredictionData data) {
-            List<AlertRule> settings = SettingsUtils.getAlertRules(mContext);
-            Iterator<AlertRule> iterator = settings.iterator();
-            while (iterator.hasNext()) {
-                AlertRule rule = iterator.next();
-                if (rule instanceof PostponeSettings) iterator.remove();
-            }
-
-            AlgorithmUtil.Danger danger = AlgorithmUtil.danger(mContext, data, settings);
+            Danger danger = AlertRules.checkDontPostpone(mContext, data);
             boolean error = data.errorCode != PredictionData.Result.OK;
             mGlucoseView.setTextColor(error ? Color.YELLOW :
-                    (danger != AlgorithmUtil.Danger.NOTHING ? Color.RED : Color.WHITE));
+                    (danger != Danger.NOTHING ? Color.RED : Color.WHITE));
+            boolean isMmol = PreferencesUtil.getBoolean(mContext, mContext.getString(R.string.pref_key_mmol), true);
             if (error) {
                 mGlucoseView.setText(R.string.err);
                 mTrendArrow.setImageDrawable(null);
             } else {
-                mGlucoseView.setText(String.valueOf(data.glucose(mGlucoseUnitSettings.isMmol())));
+                mGlucoseView.setText(String.valueOf(data.glucose(isMmol)));
                 updateTrendArrow(data);
             }
 
@@ -118,7 +108,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         private void updateTrendArrow(PredictionData data) {
-            int drawableResource = getTrendDrawable(AlgorithmUtil.getTrendArrow(mContext, data));
+            int drawableResource = getTrendDrawable(AlgorithmUtil.getTrendArrow(data));
             if (drawableResource == -1) {
                 mTrendArrow.setImageDrawable(null);
             } else {
