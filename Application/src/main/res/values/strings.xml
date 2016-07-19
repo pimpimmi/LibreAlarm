@@ -113,4 +113,46 @@
 
     <!-- Toast message telling us settings have been updated on watch -->
     <string name="settings_updated_on_watch">Settings updated on watch</string>
+
+    <!-- Settings category for general settings -->
+    <string name="settings_category_general">General settings</string>
+
+    <!-- Settings category for Text-to-speech settings -->
+    <string name="settings_category_text_to_speech">Text-to-speech</string>
+
+    <!-- Settings title for using Text-to-speech -->
+    <string name="settings_text_to_speech_title">Use Text-to-speech</string>
+
+    <!-- Settings summary for using Text-to-speech -->
+    <string name="settings_text_to_speech_summary">Have your glucose values read out</string>
+
+    <!-- Settings title for using Text-to-speech only when there is an alarm -->
+    <string name="settings_text_to_speech_only_alarm_title">Only use Text-to-speech on alarms</string>
+
+    <!-- Text-to-speech toast error message. Failed to initialize text-to-speech -->
+    <string name="error_text_to_speech_init">Failed to initialize Text-to-speech</string>
+
+    <!-- Text-to-speech message on new glucose value -->
+    <string name="text_to_speech_message" formatted="false">Glucose value is %s. Trend is %s</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going up -->
+    <string name="text_to_speech_trend_up">rising fast</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going up slowly -->
+    <string name="text_to_speech_trend_slightly_up">rising slowly</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is stable -->
+    <string name="text_to_speech_trend_flat">stable</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going down fast -->
+    <string name="text_to_speech_trend_down">going down fast</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going down slowly -->
+    <string name="text_to_speech_trend_slightly_down">going down slowly</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is unknown -->
+    <string name="text_to_speech_trend_unknown">unknown</string>
+
+    <!-- Text-to-speech when we get an ERR -->
+    <string name="text_to_speech_error">Failed to fetch glucose value</string>
 </resources>

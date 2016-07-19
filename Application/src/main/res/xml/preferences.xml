@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:key="@string/pref_key_err_alarm_enabled"
-        android:summary="@string/settings_err_checkbox"
-        android:defaultValue="false" />
-    <EditTextPreference
-        android:key="@string/pref_key_err_alarm"
-        android:dependency="@string/pref_key_err_alarm_enabled"
-        android:summary="@string/settings_err_edittext"
-        android:inputType="numberSigned"
-        android:defaultValue="2" />
-    <CheckBoxPreference
-        android:key="@string/pref_key_phone_alarm"
-        android:summary="@string/settings_phone_alarm_text"
-        android:defaultValue="false" />
-    <CheckBoxPreference
-        android:key="@string/pref_key_mmol"
-        android:summary="@string/settings_glucose_units_text"
-        android:defaultValue="true" />
+    <PreferenceCategory
+        android:title="@string/settings_category_general">
+        <CheckBoxPreference
+            android:key="@string/pref_key_err_alarm_enabled"
+            android:title="@string/settings_err_checkbox"
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="@string/pref_key_err_alarm"
+            android:dependency="@string/pref_key_err_alarm_enabled"
+            android:title="@string/settings_err_edittext"
+            android:inputType="numberSigned"
+            android:defaultValue="2" />
+        <CheckBoxPreference
+            android:key="@string/pref_key_phone_alarm"
+            android:title="@string/settings_phone_alarm_text"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="@string/pref_key_mmol"
+            android:title="@string/settings_glucose_units_text"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_text_to_speech">
+        <CheckBoxPreference
+            android:key="@string/pref_key_text_to_speech"
+            android:title="@string/settings_text_to_speech_title"
+            android:summary="@string/settings_text_to_speech_summary"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="@string/pref_key_text_to_speech_only_alarm"
+            android:dependency="@string/pref_key_text_to_speech"
+            android:title="@string/settings_text_to_speech_only_alarm_title"
+            android:defaultValue="false" />
+    </PreferenceCategory>
 </PreferenceScreen>

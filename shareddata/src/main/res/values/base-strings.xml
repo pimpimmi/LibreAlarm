@@ -10,4 +10,6 @@
     <string name="pref_key_err_alarm">pref_err_alarm</string>
     <string name="pref_key_err_alarm_enabled">pref_err_alarm_enabled</string>
     <string name="pref_key_confidence">pref_key_confidence</string>
+    <string name="pref_key_text_to_speech">pref_tts</string>
+    <string name="pref_key_text_to_speech_only_alarm">pref_tts_alarm_only</string>
 </resources>

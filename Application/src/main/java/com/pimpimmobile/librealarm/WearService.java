@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,6 +28,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
 import com.pimpimmobile.librealarm.nightscout.NightscoutUploader;
 import com.pimpimmobile.librealarm.quicksettings.QuickSettingsItem;
+import com.pimpimmobile.librealarm.shareddata.AlertRules;
 import com.pimpimmobile.librealarm.shareddata.AlgorithmUtil;
 import com.pimpimmobile.librealarm.shareddata.PredictionData;
 import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
@@ -56,9 +61,18 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     private MediaPlayer mAlarmPlayer;
 
+    private TextToSpeech mTextToSpeech;
+
     private Status mReadingStatus;
 
     private SimpleDatabase mDatabase = new SimpleDatabase(this);
+
+    private AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            // Nop
+        }
+    };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -104,6 +118,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, String.valueOf(object.id), null);
                 if (mListener != null) mListener.onDataUpdated();
                 if (PreferencesUtil.isNsRestEnabled(this)) syncNightscout();
+                runTextToSpeech(object.data.prediction);
                 break;
         }
     }
@@ -147,6 +162,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     @Override
     public void onCreate() {
         super.onCreate();
+        setupTextToSpeech();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
@@ -168,6 +184,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
             mGoogleApiClient.disconnect();
             stopAlarm();
         }
+        mTextToSpeech.shutdown();
         mAlarmPlayer.release();
         mDatabase.close();
         super.onDestroy();
@@ -241,6 +258,90 @@ public class WearService extends Service implements DataApi.DataListener, Messag
             mAlarmPlayer.pause();
             mAlarmPlayer.seekTo(0);
         }
+    }
+
+    private void setupTextToSpeech() {
+        mTextToSpeech = new TextToSpeech(this,new TextToSpeech.OnInitListener() {
+            public void onInit(int status) {
+                if (status == TextToSpeech.ERROR) {
+                    Toast.makeText(WearService.this, R.string.error_text_to_speech_init, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        mTextToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                AudioManager manager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                manager.abandonAudioFocus(mAudioFocusChangeListener);
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+                AudioManager manager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                manager.abandonAudioFocus(mAudioFocusChangeListener);
+            }
+        });
+    }
+
+    private void runTextToSpeech(PredictionData data) {
+
+        if (!PreferencesUtil.getBoolean(this, getString(R.string.pref_key_text_to_speech))) return;
+
+        boolean alarmOnly = PreferencesUtil.getBoolean(this, getString(R.string.pref_key_text_to_speech_only_alarm));
+
+        if (alarmOnly && AlertRules.checkDontPostpone(this, data) == AlertRules.Danger.NOTHING) return;
+
+        AudioManager manager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        manager.requestAudioFocus(mAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
+
+        String message;
+
+        if (data.errorCode == PredictionData.Result.OK) {
+            boolean isMmol = PreferencesUtil.getBoolean(this, getString(R.string.pref_key_mmol), true);
+            String glucose = data.glucose(isMmol);
+
+            AlgorithmUtil.TrendArrow arrow = AlgorithmUtil.getTrendArrow(data);
+            String trend;
+            switch (arrow) {
+                case UP:
+                    trend = getString(R.string.text_to_speech_trend_up);
+                    break;
+                case DOWN:
+                    trend = getString(R.string.text_to_speech_trend_down);
+                    break;
+                case SLIGHTLY_UP:
+                    trend = getString(R.string.text_to_speech_trend_slightly_up);
+                    break;
+                case SLIGHTLY_DOWN:
+                    trend = getString(R.string.text_to_speech_trend_slightly_down);
+                    break;
+                case FLAT:
+                    trend = getString(R.string.text_to_speech_trend_flat);
+                    break;
+                case UNKNOWN:
+                default:
+                    trend = getString(R.string.text_to_speech_trend_unknown);
+                    break;
+            }
+            message = getString(R.string.text_to_speech_message, glucose, trend);
+        } else {
+            message = getString(R.string.text_to_speech_error);
+        }
+
+        if (Build.VERSION.SDK_INT < 21) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "glucose-speech");
+            mTextToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, map);
+        } else {
+            mTextToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, "glucose-speech");
+        }
+
     }
 
     public String getStatusString() {

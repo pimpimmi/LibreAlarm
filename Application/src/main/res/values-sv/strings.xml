@@ -113,4 +113,46 @@
 
     <!-- Toast message telling us settings have been updated on watch -->
     <string name="settings_updated_on_watch">Inställningar uppdaterade på klockan</string>
+
+    <!-- Settings category for general settings -->
+    <string name="settings_category_general">Generella inställningar</string>
+
+    <!-- Settings category for Text-to-speech settings -->
+    <string name="settings_category_text_to_speech">Text-to-speech</string>
+
+    <!-- Settings title for using Text-to-speech -->
+    <string name="settings_text_to_speech_title">Använd Text-to-speech</string>
+
+    <!-- Settings summary for using Text-to-speech -->
+    <string name="settings_text_to_speech_summary">Få dina blodsockervärden upplästa</string>
+
+    <!-- Settings title for using Text-to-speech only when there is an alarm -->
+    <string name="settings_text_to_speech_only_alarm_title">Använd endast Text-to-speech vid larm</string>
+
+    <!-- Text-to-speech toast error message. Failed to initialize text-to-speech -->
+    <string name="error_text_to_speech_init">Kunde inte initialisera Text-to-speech</string>
+
+    <!-- Text-to-speech message on new glucose value -->
+    <string name="text_to_speech_message" formatted="false">Blodsocker värdet är %s. Värdet %s</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going up -->
+    <string name="text_to_speech_trend_up">går upp snabbt</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going up slowly -->
+    <string name="text_to_speech_trend_slightly_up">går upp långsamt</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is stable -->
+    <string name="text_to_speech_trend_flat">är stabilt</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going down fast -->
+    <string name="text_to_speech_trend_down">går ner snabbt</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going down slowly -->
+    <string name="text_to_speech_trend_slightly_down">går ner långsamt</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is unknown -->
+    <string name="text_to_speech_trend_unknown">trend är okänt</string>
+
+    <!-- Text-to-speech when we get an ERR -->
+    <string name="text_to_speech_error">Det gick inte att mäta blodsockret</string>
 </resources>
