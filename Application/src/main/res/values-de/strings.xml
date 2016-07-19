@@ -7,8 +7,12 @@
     <string name="drawer_close">Schließe Drawer</string>
 
     <!-- Explanation shown when user presses on an error message in the glucose list -->
+<<<<<<< HEAD
     <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukosedaten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte Anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
 
+=======
+    <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukosedaten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
+>>>>>>> Matze1985/patch-6
     <!-- Disclaimer message shown when user first starts app -->
     <string name="disclaimer_message">Bitte die folgenden Punkte gründlich durchlesen, es ist sehr wichtig!\n\n1, Dies ist eine inoffizielle App und wurde von Abbott nicht genehmigt.\n\n2, Die Zuckerwerte die durch diese App erzeugt werden, sind nicht korrekt. Der einzigste Zweck dieser App ist es, den Benutzer zu warnen, sobald ein Wert zu hoch oder zu niedrig ist. Alle Werte sollten mit den offiziellen Werkzeugen von Abbott überprüft werden.\n\n3, Nicht zu sehr auf die Zuverlässigkeit dieser App vertrauen. Es kann möglicherweise ohne Warnung und/oder zu unzuverlässigen Ergebnissen kommen.</string>
 
@@ -70,6 +74,7 @@
     <string name="alarm_turn_off">Ausschalten</string>
 
     <!-- Toast message telling us we failed to turn off alarm -->
+<<<<<<< HEAD
     <string name="toast_turn_off_alarm_failed">Fehlerhaftes ausschalten (Alarm)</string>
 
     <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
@@ -155,4 +160,9 @@
 
     <!-- Text-to-speech when we get an ERR -->
     <string name="text_to_speech_error">Failed to fetch glucose value</string>
+=======
+    <string name="toast_turn_off_alarm_failed">Fehlerhafte Abschaltung des Alarms</string>
+    <!-- Text message telling us the alarm is disabled -->
+    <string name="alarm_disabled_text" formatted="false">Alarm ist deaktiviert bis %s</string>
+>>>>>>> Matze1985/patch-6
 </resources>
