@@ -7,152 +7,152 @@
     <string name="drawer_close">close drawer</string>
 
     <!-- Explanation shown when user presses on an error message in the glucose list -->
-    <string name="err_explanation">出现这个错误说明手表没有获得血糖值。\n\n请确保手表是在探头的正上方并且是面向着探头的。\n\n同时确保NFC功能是开启的，可以在手表上打开NFC设置软件查看。如果开启NFC功能失败，请重启手表并重试。</string>
+    <string name="err_explanation">ERR means the watch has failed to fetch glucose data.\n\nMake sure the watch is right above the sensor with the watch screen facing the sensor.\n\nMake sure also that the watch has NFC turned on. Check this by opening the app \"NFC configuration\" on the watch. Should it be impossible to turn on NFC, restart the watch and try again.</string>
 
     <!-- Disclaimer message shown when user first starts app -->
-    <string name="disclaimer_message">请仔细阅读以下注意事项！\n\n1, 这是一个非官网软件，并且未通过雅培认证。\n\n2, 血糖数据不一定完全精确。这个软件的唯一目的是在圩塘偏低或偏高的时候进行报警。所有的血糖值都应该通过雅培官方工具进行确认。\n\n3,不要依赖于这个APP，它也可能会出错。它有可能会没有预警的停止工作或显示错误的结果。</string>
+    <string name="disclaimer_message">Please read through these points, it\'s important!\n\n1, This is an unofficial app and has not been approved in any way by Abbott.\n\n2, The glucose values produced by this app are not accurate. The only purpose with this app is to alarm the user when his or her glucose level is too high or too low. All values should be confirmed using official Abbott tools.\n\n3, Do not rely on the app to be fail safe. It may stop working without warning and/or produce unreliable results.</string>
 
     <!-- Disclaimer title message shown when user first starts app -->
-    <string name="disclaimer_title">免责声明</string>
+    <string name="disclaimer_title">Disclaimer</string>
 
     <!-- Error text shown in glucose list (max 3 characters) -->
-    <string name="err">错误</string>
+    <string name="err">ERR</string>
 
     <!-- Stop button text-->
-    <string name="button_stop">停止</string>
+    <string name="button_stop">STOP</string>
 
     <!-- Alarm button text-->
-    <string name="button_alarm">警报</string>
+    <string name="button_alarm">ALARM</string>
 
     <!-- Start button text-->
-    <string name="button_start">开启</string>
+    <string name="button_start">START</string>
 
     <!-- Wait button text-->
-    <string name="button_wait">等待</string>
+    <string name="button_wait">WAIT</string>
 
     <!-- Check glucose now button text -->
-    <string name="button_check_now">立即检测</string>
+    <string name="button_check_now">Check now</string>
 
     <!-- Message shown when user first starts app -->
-    <string name="status_message_first_startup">这是第一次启动。手表APP可能还没有安装完成。请耐心等待，然后重启APP。</string>
+    <string name="status_message_first_startup">This is the first startup. The watch app might not be installed yet. Please wait a moment, then restart the app.</string>
 
     <!-- Status text alarm -->
-    <string name="status_text_alarm">警报!!</string>
+    <string name="status_text_alarm">ALARM!!</string>
 
     <!-- Status text showing how many times the watch has attempted to get glucose value -->
-    <string name="status_check_attempt" formatted="false">"已尝试 %d/%d 次"</string>
+    <string name="status_check_attempt" formatted="false">"Attempt %d/%d"</string>
 
     <!-- Status text showing how many times the watch has failed to get glucose value -->
-    <string name="status_check_attempt_failed" formatted="false">"失败 %d/%d 次"</string>
+    <string name="status_check_attempt_failed" formatted="false">"Attempt %d/%d failed"</string>
 
     <!-- Status text next check -->
-    <string name="status_text_next_check" formatted="false">"下一次检测: % 秒"</string>
+    <string name="status_text_next_check" formatted="false">"Next check: %s"</string>
 
     <!-- Status text not running -->
-    <string name="status_text_not_running">停止运行</string>
+    <string name="status_text_not_running">Not running</string>
 
     <!-- Nightscout menu item -->
     <string name="nightscout">Nightscout</string>
 
     <!-- Checkbox to enable nightscout -->
-    <string name="nightscout_enable">启用 Nightscout </string>
+    <string name="nightscout_enable">Enable Nightscout Rest API</string>
 
     <!-- EditText settings for setting Nightscout URL -->
-    <string name="nightscout_set_url">设置 URL</string>
+    <string name="nightscout_set_url">Set URL</string>
 
     <!-- Button visible when alarm is snoozing -->
-    <string name="button_alarm_disabled">启动e</string>
+    <string name="button_alarm_disabled">Enable</string>
 
     <!-- Button text to disable alarm for a period of time-->
-    <string name="alarm_disable_button" formatted="false">关闭 %d 分钟</string>
+    <string name="alarm_disable_button" formatted="false">Disable %d min</string>
 
     <!-- Button text to turn off alarm -->
-    <string name="alarm_turn_off">关闭</string>
+    <string name="alarm_turn_off">Turn off</string>
 
     <!-- Toast message telling us we failed to turn off alarm -->
-    <string name="toast_turn_off_alarm_failed">关闭警报功能失败。</string>
+    <string name="toast_turn_off_alarm_failed">Failed to turn off alarm</string>
 
     <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
-    <string name="alarm_disabled_low_text" formatted="false">低血糖警报休眠时间: % 秒</string>
+    <string name="alarm_disabled_low_text" formatted="false">Low glucose alarm snoozed: %s</string>
 
     <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
-    <string name="alarm_disabled_high_text" formatted="false">高血糖警报休眠时间: % 秒</string>
+    <string name="alarm_disabled_high_text" formatted="false">High glucose alarm snoozed: %s</string>
 
     <!-- Use mmol hint -->
-    <string name="settings_glucose_units_text">单位 mmol/l</string>
+    <string name="settings_glucose_units_text">Use mmol/l</string>
 
     <!-- Limit for high glucose (Max 25 characters)-->
-    <string name="settings_alarm_high_title">血糖上限</string>
+    <string name="settings_alarm_high_title">High glucose limit</string>
 
     <!-- Limit for low glucose (Max 25 characters)-->
-    <string name="settings_alarm_low_title">血糖下限</string>
+    <string name="settings_alarm_low_title">Low glucose limit</string>
 
     <!-- If alarm should sound from phone -->
-    <string name="settings_phone_alarm_text"使用手机报警</string>
+    <string name="settings_phone_alarm_text">Use alarm sound from phone</string>
 
     <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
-    <string name="settings_snooze_high_title">高血糖报警</string>
+    <string name="settings_snooze_high_title">Snooze high glucose</string>
 
     <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
-    <string name="settings_snooze_low_title">低血糖报警</string>
+    <string name="settings_snooze_low_title">Snooze low glucose</string>
 
     <!-- If the alarm should sound when you get ERR -->
-    <string name="settings_err_checkbox">错误报警</string>
+    <string name="settings_err_checkbox">Alarm on ERR</string>
 
     <!-- How many times you need to get ERR for alarm -->
-    <string name="settings_err_edittext">需要获得多少次错误报警</string>
+    <string name="settings_err_edittext">How many ERR in a row required</string>
 
     <!-- Shown in quick settings to verify watch settings are up to date-->
     <string name="watch_value">Value on watch: %s</string>
 
     <!-- Preferences button in overflow menu -->
-    <string name="preferences">参数</string>
+    <string name="preferences">Preferences</string>
 
     <!-- Quick settings button -->
-    <string name="snooze">休眠</string>
+    <string name="snooze">Snooze</string>
 
     <!-- Toast message telling us settings have been updated on watch -->
-    <string name="settings_updated_on_watch">设置完成</string>
+    <string name="settings_updated_on_watch">Settings updated on watch</string>
 
     <!-- Settings category for general settings -->
-    <string name="settings_category_general">常规设置</string>
+    <string name="settings_category_general">General settings</string>
 
     <!-- Settings category for Text-to-speech settings -->
-    <string name="settings_category_text_to_speech">文字换语音</string>
+    <string name="settings_category_text_to_speech">Text-to-speech</string>
 
     <!-- Settings title for using Text-to-speech -->
-    <string name="settings_text_to_speech_title">使用“文字转语音”功能</string>
+    <string name="settings_text_to_speech_title">Use Text-to-speech</string>
 
     <!-- Settings summary for using Text-to-speech -->
-    <string name="settings_text_to_speech_summary">读出你的血糖值</string>
+    <string name="settings_text_to_speech_summary">Have your glucose values read out</string>
 
     <!-- Settings title for using Text-to-speech only when there is an alarm -->
-    <string name="settings_text_to_speech_only_alarm_title">只在报警的时候读出血糖值</string>
+    <string name="settings_text_to_speech_only_alarm_title">Only use Text-to-speech on alarms</string>
 
     <!-- Text-to-speech toast error message. Failed to initialize text-to-speech -->
-    <string name="error_text_to_speech_init">语音转文字功能初始化失败</string>
+    <string name="error_text_to_speech_init">Failed to initialize Text-to-speech</string>
 
     <!-- Text-to-speech message on new glucose value -->
-    <string name="text_to_speech_message" formatted="false">血糖值 %s. 趋势 %s</string>
+    <string name="text_to_speech_message" formatted="false">Glucose value is %s. Trend is %s</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going up -->
-    <string name="text_to_speech_trend_up">快速上升</string>
+    <string name="text_to_speech_trend_up">rising fast</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going up slowly -->
-    <string name="text_to_speech_trend_slightly_up">缓慢上升</string>
+    <string name="text_to_speech_trend_slightly_up">rising slowly</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is stable -->
-    <string name="text_to_speech_trend_flat">平稳</string>
+    <string name="text_to_speech_trend_flat">stable</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down fast -->
-    <string name="text_to_speech_trend_down">快速下降</string>
+    <string name="text_to_speech_trend_down">going down fast</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down slowly -->
-    <string name="text_to_speech_trend_slightly_down">缓慢下降</string>
+    <string name="text_to_speech_trend_slightly_down">going down slowly</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is unknown -->
-    <string name="text_to_speech_trend_unknown">未知</string>
+    <string name="text_to_speech_trend_unknown">unknown</string>
 
     <!-- Text-to-speech when we get an ERR -->
-    <string name="text_to_speech_error">获取血糖数据失败</string>
+    <string name="text_to_speech_error">Failed to fetch glucose value</string>
 </resources>
