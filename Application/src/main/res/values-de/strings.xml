@@ -7,12 +7,9 @@
     <string name="drawer_close">Schließe Drawer</string>
 
     <!-- Explanation shown when user presses on an error message in the glucose list -->
-<<<<<<< HEAD
-    <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukosedaten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte Anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
 
-=======
     <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukosedaten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
->>>>>>> Matze1985/patch-6
+
     <!-- Disclaimer message shown when user first starts app -->
     <string name="disclaimer_message">Bitte die folgenden Punkte gründlich durchlesen, es ist sehr wichtig!\n\n1, Dies ist eine inoffizielle App und wurde von Abbott nicht genehmigt.\n\n2, Die Zuckerwerte die durch diese App erzeugt werden, sind nicht korrekt. Der einzigste Zweck dieser App ist es, den Benutzer zu warnen, sobald ein Wert zu hoch oder zu niedrig ist. Alle Werte sollten mit den offiziellen Werkzeugen von Abbott überprüft werden.\n\n3, Nicht zu sehr auf die Zuverlässigkeit dieser App vertrauen. Es kann möglicherweise ohne Warnung und/oder zu unzuverlässigen Ergebnissen kommen.</string>
 
@@ -74,17 +71,17 @@
     <string name="alarm_turn_off">Ausschalten</string>
 
     <!-- Toast message telling us we failed to turn off alarm -->
-<<<<<<< HEAD
-    <string name="toast_turn_off_alarm_failed">Fehlerhaftes ausschalten (Alarm)</string>
+
+    <string name="toast_turn_off_alarm_failed">Abschaltung des Alarms gescheitert</string>
 
     <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
-    <string name="alarm_disabled_low_text" formatted="false">Low glucose alarm snoozed: %s</string>
+    <string name="alarm_disabled_low_text" formatted="false">Niedriger Wert schlummert: %s</string>
 
     <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
-    <string name="alarm_disabled_high_text" formatted="false">High glucose alarm snoozed: %s</string>
+    <string name="alarm_disabled_high_text" formatted="false">Hoher Wert schlummert: %s</string>
 
     <!-- Use mmol hint -->
-    <string name="settings_glucose_units_text">Benutze mmol/l</string>
+    <string name="settings_glucose_units_text">Verwende mmol/l</string>
 
     <!-- Limit for high glucose (Max 25 characters)-->
     <string name="settings_alarm_high_title">Höchster Glukosewert</string>
@@ -93,76 +90,77 @@
     <string name="settings_alarm_low_title">Niedrigster Glukosewert</string>
 
     <!-- If alarm should sound from phone -->
-    <string name="settings_phone_alarm_text">Benutze Alarmton des Telefons</string>
+    <string name="settings_phone_alarm_text">Verwende Alarmton des Telefons</string>
 
     <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
-    <string name="settings_snooze_high_title">Snooze high glucose</string>
+    <string name="settings_snooze_high_title">Höchster Wert schläft</string>
 
     <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
-    <string name="settings_snooze_low_title">Snooze low glucose</string>
+    <string name="settings_snooze_low_title">Niedrigster Wert schläft</string>
 
     <!-- If the alarm should sound when you get ERR -->
-    <string name="settings_err_checkbox">Alarm on ERR</string>
+    <string name="settings_err_checkbox">Alarm auf ERR</string>
 
     <!-- How many times you need to get ERR for alarm -->
-    <string name="settings_err_edittext">How many ERR in a row required</string>
+    <string name="settings_err_edittext">Anzahl der ERR, um Alarm auszulösen</string>
 
     <!-- Shown in quick settings to verify watch settings are up to date-->
-    <string name="watch_value">Value on watch: %s</string>
+    <string name="watch_value">Wert auf der Uhr: %s</string>
 
     <!-- Preferences button in overflow menu -->
-    <string name="preferences">Preferences</string>
+    <string name="preferences">Voreinstellungen</string>
 
     <!-- Quick settings button -->
-    <string name="snooze">Snooze</string>
+    <string name="snooze">Schläfchen</string>
 
     <!-- Toast message telling us settings have been updated on watch -->
-    <string name="settings_updated_on_watch">Settings updated on watch</string>
+    <string name="settings_updated_on_watch">Einstellungen auf der Uhr aktualisiert</string>
 
     <!-- Settings category for general settings -->
-    <string name="settings_category_general">General settings</string>
+    <string name="settings_category_general">Allg. Einstellungen</string>
 
     <!-- Settings category for Text-to-speech settings -->
-    <string name="settings_category_text_to_speech">Text-to-speech</string>
+    <string name="settings_category_text_to_speech">Text-in-Sprache</string>
 
     <!-- Settings title for using Text-to-speech -->
-    <string name="settings_text_to_speech_title">Use Text-to-speech</string>
+    <string name="settings_text_to_speech_title">Verwende Text-in-Sprache</string>
 
     <!-- Settings summary for using Text-to-speech -->
-    <string name="settings_text_to_speech_summary">Have your glucose values read out</string>
+    <string name="settings_text_to_speech_summary">Ausgelesene Glukosewerte</string>
 
     <!-- Settings title for using Text-to-speech only when there is an alarm -->
-    <string name="settings_text_to_speech_only_alarm_title">Only use Text-to-speech on alarms</string>
+    <string name="settings_text_to_speech_only_alarm_title">Text-in-Sprache nur für den Alarm verwenden</string>
 
     <!-- Text-to-speech toast error message. Failed to initialize text-to-speech -->
-    <string name="error_text_to_speech_init">Failed to initialize Text-to-speech</string>
+    <string name="error_text_to_speech_init">Text-in-Sprache wurde fehlerhaft initialisiert</string>
 
     <!-- Text-to-speech message on new glucose value -->
-    <string name="text_to_speech_message" formatted="false">Glucose value is %s. Trend is %s</string>
+    <string name="text_to_speech_message" formatted="false">Glukosewert ist %s. Trend ist %s</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going up -->
-    <string name="text_to_speech_trend_up">rising fast</string>
+    <string name="text_to_speech_trend_up">Steigt schnell</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going up slowly -->
-    <string name="text_to_speech_trend_slightly_up">rising slowly</string>
+    <string name="text_to_speech_trend_slightly_up">Steigt langsam</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is stable -->
-    <string name="text_to_speech_trend_flat">stable</string>
+    <string name="text_to_speech_trend_flat">Stabil</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down fast -->
-    <string name="text_to_speech_trend_down">going down fast</string>
+    <string name="text_to_speech_trend_down">Geht schnell nach unten</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down slowly -->
-    <string name="text_to_speech_trend_slightly_down">going down slowly</string>
+    <string name="text_to_speech_trend_slightly_down">Geht langsam nach unten</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is unknown -->
-    <string name="text_to_speech_trend_unknown">unknown</string>
+    <string name="text_to_speech_trend_unknown">Unbekannt</string>
 
     <!-- Text-to-speech when we get an ERR -->
-    <string name="text_to_speech_error">Failed to fetch glucose value</string>
-=======
+    <string name="text_to_speech_error">Glukosewert konnte nicht abgerufen werden</string>
+
     <string name="toast_turn_off_alarm_failed">Fehlerhafte Abschaltung des Alarms</string>
     <!-- Text message telling us the alarm is disabled -->
     <string name="alarm_disabled_text" formatted="false">Alarm ist deaktiviert bis %s</string>
->>>>>>> Matze1985/patch-6
+
 </resources>
+
