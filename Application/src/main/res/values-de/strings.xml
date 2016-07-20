@@ -7,7 +7,6 @@
     <string name="drawer_close">Schließe Drawer</string>
 
     <!-- Explanation shown when user presses on an error message in the glucose list -->
-
     <string name="err_explanation">ERR bedeutet, die Uhr ist ausgefallen um Glukosedaten abzurufen.\n\nDer Sensor muss direkt mit dem Bildschirm der Uhr verbunden werden.\n\nNFC muss aktiviert werden. Bitte anhand der App \"NFC Configuration\" auf der Uhr überprüfen. Falls sich NFC nicht aktivieren lässt, bitte die Uhr erneut starten und nochmal probieren.</string>
 
     <!-- Disclaimer message shown when user first starts app -->
@@ -71,7 +70,6 @@
     <string name="alarm_turn_off">Ausschalten</string>
 
     <!-- Toast message telling us we failed to turn off alarm -->
-
     <string name="toast_turn_off_alarm_failed">Abschaltung des Alarms gescheitert</string>
 
     <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
@@ -157,10 +155,4 @@
 
     <!-- Text-to-speech when we get an ERR -->
     <string name="text_to_speech_error">Glukosewert konnte nicht abgerufen werden</string>
-
-    <string name="toast_turn_off_alarm_failed">Fehlerhafte Abschaltung des Alarms</string>
-    <!-- Text message telling us the alarm is disabled -->
-    <string name="alarm_disabled_text" formatted="false">Alarm ist deaktiviert bis %s</string>
-
 </resources>
-
