@@ -64,7 +64,7 @@
     <string name="button_alarm_disabled">Aktivieren</string>
 
     <!-- Button text to disable alarm for a period of time-->
-    <string name="alarm_disable_button" formatted="false">Deaktiviere %d Min.</string>
+    <string name="alarm_disable_button" formatted="false">Deakt %d Min</string>
 
     <!-- Button text to turn off alarm -->
     <string name="alarm_turn_off">Ausschalten</string>
@@ -73,49 +73,49 @@
     <string name="toast_turn_off_alarm_failed">Abschaltung des Alarms gescheitert</string>
 
     <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
-    <string name="alarm_disabled_low_text" formatted="false">Niedriger Wert schlummert: %s</string>
+    <string name="alarm_disabled_low_text" formatted="false">Min Glukosealarm deakt bis: %s</string>
 
     <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
-    <string name="alarm_disabled_high_text" formatted="false">Hoher Wert schlummert: %s</string>
+    <string name="alarm_disabled_high_text" formatted="false">Max Glukosealarm deakt bis: %s</string>
 
     <!-- Use mmol hint -->
     <string name="settings_glucose_units_text">Verwende mmol/l</string>
 
     <!-- Limit for high glucose (Max 25 characters)-->
-    <string name="settings_alarm_high_title">Höchster Glukosewert</string>
+    <string name="settings_alarm_high_title">Max Glukosewert</string>
 
     <!-- Limit for low glucose (Max 25 characters)-->
-    <string name="settings_alarm_low_title">Niedrigster Glukosewert</string>
+    <string name="settings_alarm_low_title">Min Glukosewert</string>
 
     <!-- If alarm should sound from phone -->
     <string name="settings_phone_alarm_text">Verwende Alarmton des Telefons</string>
 
     <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
-    <string name="settings_snooze_high_title">Höchster Wert schläft</string>
+    <string name="settings_snooze_high_title">Max Glukosealarm</string>
 
     <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
-    <string name="settings_snooze_low_title">Niedrigster Wert schläft</string>
+    <string name="settings_snooze_low_title">Min Glukosealarm</string>
 
     <!-- If the alarm should sound when you get ERR -->
-    <string name="settings_err_checkbox">Alarm auf ERR</string>
+    <string name="settings_err_checkbox">Verwende Alarm für ERR</string>
 
     <!-- How many times you need to get ERR for alarm -->
     <string name="settings_err_edittext">Anzahl der ERR, um Alarm auszulösen</string>
 
     <!-- Shown in quick settings to verify watch settings are up to date-->
-    <string name="watch_value">Wert auf der Uhr: %s</string>
+    <string name="watch_value">Auf der Uhr: %s</string>
 
     <!-- Preferences button in overflow menu -->
     <string name="preferences">Voreinstellungen</string>
 
     <!-- Quick settings button -->
-    <string name="snooze">Schläfchen</string>
+    <string name="snooze">Deakt</string>
 
     <!-- Toast message telling us settings have been updated on watch -->
     <string name="settings_updated_on_watch">Einstellungen auf der Uhr aktualisiert</string>
 
     <!-- Settings category for general settings -->
-    <string name="settings_category_general">Allg. Einstellungen</string>
+    <string name="settings_category_general">Allgemeine Einstellungen</string>
 
     <!-- Settings category for Text-to-speech settings -->
     <string name="settings_category_text_to_speech">Text-in-Sprache</string>
@@ -124,10 +124,10 @@
     <string name="settings_text_to_speech_title">Verwende Text-in-Sprache</string>
 
     <!-- Settings summary for using Text-to-speech -->
-    <string name="settings_text_to_speech_summary">Ausgelesene Glukosewerte</string>
+    <string name="settings_text_to_speech_summary">Glukosewerte vorlesen lassen</string>
 
     <!-- Settings title for using Text-to-speech only when there is an alarm -->
-    <string name="settings_text_to_speech_only_alarm_title">Text-in-Sprache nur für den Alarm verwenden</string>
+    <string name="settings_text_to_speech_only_alarm_title">Text-in-Sprache nur für Alarm</string>
 
     <!-- Text-to-speech toast error message. Failed to initialize text-to-speech -->
     <string name="error_text_to_speech_init">Text-in-Sprache wurde fehlerhaft initialisiert</string>
@@ -145,10 +145,10 @@
     <string name="text_to_speech_trend_flat">Stabil</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down fast -->
-    <string name="text_to_speech_trend_down">Geht schnell nach unten</string>
+    <string name="text_to_speech_trend_down">Sinkt schnell</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down slowly -->
-    <string name="text_to_speech_trend_slightly_down">Geht langsam nach unten</string>
+    <string name="text_to_speech_trend_slightly_down">Sinkt langsam</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is unknown -->
     <string name="text_to_speech_trend_unknown">Unbekannt</string>
