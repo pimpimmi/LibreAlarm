@@ -133,22 +133,22 @@
     <string name="error_text_to_speech_init">Text-in-Sprache wurde fehlerhaft initialisiert</string>
 
     <!-- Text-to-speech message on new glucose value -->
-    <string name="text_to_speech_message" formatted="false">Glukosewert ist %s. Trend ist %s</string>
+    <string name="text_to_speech_message" formatted="false">Glukosewert ist %s. Tendenz %s</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going up -->
-    <string name="text_to_speech_trend_up">Steigt schnell</string>
+    <string name="text_to_speech_trend_up">schnell steigend</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going up slowly -->
-    <string name="text_to_speech_trend_slightly_up">Steigt langsam</string>
+    <string name="text_to_speech_trend_slightly_up">langsam steigend</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is stable -->
-    <string name="text_to_speech_trend_flat">Stabil</string>
+    <string name="text_to_speech_trend_flat">ist konstant</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down fast -->
-    <string name="text_to_speech_trend_down">Sinkt schnell</string>
+    <string name="text_to_speech_trend_down">schnell sinkend</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is going down slowly -->
-    <string name="text_to_speech_trend_slightly_down">Sinkt langsam</string>
+    <string name="text_to_speech_trend_slightly_down">langsam sinkend</string>
 
     <!-- Will replace %s at the end of text_to_speech_message when trend is unknown -->
     <string name="text_to_speech_trend_unknown">Unbekannt</string>
