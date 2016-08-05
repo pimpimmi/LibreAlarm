@@ -60,7 +60,9 @@ public class QuickSettingsView extends LinearLayout {
         HashMap<String, String> saved = new HashMap<>();
         for (int i = 0; i < getChildCount(); i++) {
             QuickSettingsInterface settings = (QuickSettingsInterface) getChildAt(i);
-            if (settings.saveSettings()) saved.put(settings.getKey(), settings.getValue());
+            if (settings.saveSettings()) {
+                saved.put(settings.getKey(), settings.getValue());
+            }
         }
         return saved;
     }

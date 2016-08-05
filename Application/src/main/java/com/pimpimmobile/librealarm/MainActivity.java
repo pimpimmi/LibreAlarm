@@ -332,21 +332,24 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
                 case ALARM_LOW:
                 case ALARM_OTHER:
                     mActionButton.setText(R.string.button_alarm);
+                    mActionButton.setVisibility(View.VISIBLE);
                     mTriggerGlucoseButton.setVisibility(View.GONE);
                     break;
                 case ATTEMPTING:
                 case ATTENPT_FAILED:
                 case WAITING:
                     mActionButton.setText(R.string.button_stop);
+                    mActionButton.setVisibility(View.VISIBLE);
                     mTriggerGlucoseButton.setVisibility(View.VISIBLE);
                     break;
                 case NOT_RUNNING:
                     mActionButton.setText(R.string.button_start);
+                    mActionButton.setVisibility(View.VISIBLE);
                     mTriggerGlucoseButton.setVisibility(View.GONE);
                     break;
             }
         } else {
-            mActionButton.setText(R.string.button_wait);
+            mActionButton.setVisibility(View.GONE);
             mTriggerGlucoseButton.setVisibility(View.GONE);
         }
 

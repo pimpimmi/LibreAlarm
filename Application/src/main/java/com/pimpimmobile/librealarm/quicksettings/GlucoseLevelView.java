@@ -2,7 +2,6 @@ package com.pimpimmobile.librealarm.quicksettings;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -54,10 +53,14 @@ public class GlucoseLevelView extends FrameLayout implements QuickSettingsInterf
 
     @Override
     public boolean saveSettings() {
-        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString(
-                mItem.key + QuickSettingsItem.DEFAULT_VALUE, getValue()).commit();
-        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString(mItem.key, getValue()).commit();
-        return true;
+        String value = getValue();
+        if (value != null) {
+            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString(
+                    mItem.key + QuickSettingsItem.DEFAULT_VALUE, value).commit();
+            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString(mItem.key, value).commit();
+            return true;
+        }
+        return false;
     }
 
     private void refreshViews() {
@@ -85,7 +88,11 @@ public class GlucoseLevelView extends FrameLayout implements QuickSettingsInterf
     @Override
     public String getValue() {
         String value = mValueView.getText().toString();
-        if (TextUtils.isEmpty(value)) return "0";
+        try {
+            Float.valueOf(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
         return mItem.isMmol ? "" + Float.valueOf(value) * 18 : value;
     }
 

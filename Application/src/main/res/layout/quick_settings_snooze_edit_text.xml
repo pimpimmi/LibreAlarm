@@ -30,7 +30,7 @@
         android:layout_below="@id/title"
         android:padding="5dp"
         android:saveEnabled="false"
-        android:inputType="numberDecimal"
+        android:inputType="numberSigned"
         android:selectAllOnFocus="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
