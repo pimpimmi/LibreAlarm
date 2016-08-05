@@ -118,6 +118,10 @@ public class PreferencesUtil {
         return getString(context, key, "-1");
     }
 
+    public static String getString(Context context, int keyId, String default_) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(keyId), default_);
+    }
+
     public static String getString(Context context, String key, String default_) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(key, default_);
     }

@@ -1,7 +1,6 @@
 package com.pimpimmobile.librealarm.shareddata;
 
 import android.content.Context;
-import android.util.Log;
 
 public class AlertRules {
 
@@ -15,7 +14,6 @@ public class AlertRules {
         Danger danger = Danger.NOTHING;
         if (!alertSnoozeHigh(context)) danger = alertHigh(context, data);
         if (!alertSnoozeLow(context) && danger == Danger.NOTHING) danger = alertLow(context, data);
-        Log.i("UITest", "danger: " + danger.name());
         return danger;
     }
 
@@ -36,12 +34,12 @@ public class AlertRules {
     }
 
     private static Danger alertHigh(Context context, PredictionData data) {
-        float value = Float.valueOf(PreferencesUtil.getString(context, R.string.key_alarm_limit_high));
+        float value = Float.valueOf(PreferencesUtil.getString(context, R.string.key_alarm_limit_high, "180"));
         return data.glucoseLevel > value ? Danger.HIGH : Danger.NOTHING;
     }
 
     private static Danger alertLow(Context context, PredictionData data) {
-        float value = Float.valueOf(PreferencesUtil.getString(context, R.string.key_alarm_limit_low));
+        float value = Float.valueOf(PreferencesUtil.getString(context, R.string.key_alarm_limit_low, "72"));
         return data.glucoseLevel < value ? Danger.LOW : Danger.NOTHING;
     }
 }
