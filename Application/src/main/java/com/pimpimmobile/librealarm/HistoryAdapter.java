@@ -98,6 +98,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (error) {
                 mGlucoseView.setText(R.string.err);
                 mTrendArrow.setImageDrawable(null);
+            } else if (data.glucoseLevel < 36) {
+                mGlucoseView.setText(mContext.getString(R.string.glucose_too_low_string, (isMmol ? "2.0" : "36")));
             } else {
                 mGlucoseView.setText(String.valueOf(data.glucose(isMmol)));
                 updateTrendArrow(data);

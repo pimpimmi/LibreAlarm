@@ -4,4 +4,5 @@
     <string name="app_name" translatable="false">Libre alarm</string>
     <string name="mmol" translatable="false">mmol/l</string>
     <string name="mgdl" translatable="false">mg/dl</string>
+    <string name="glucose_too_low_string" translatable="false">&lt;%s</string>
 </resources>
