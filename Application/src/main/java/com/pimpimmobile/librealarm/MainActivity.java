@@ -3,6 +3,7 @@ package com.pimpimmobile.librealarm;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -211,6 +212,9 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             AlarmDialogFragment fragment = AlarmDialogFragment.build(
                     intent.getBooleanExtra(AlarmDialogFragment.EXTRA_IS_HIGH, false),
                     intent.getIntExtra(AlarmDialogFragment.EXTRA_TREND_ORDINAL, 0), extraValue);
+
+            Fragment oldFragment = getFragmentManager().findFragmentByTag("alarm");
+            if (oldFragment != null) ((AlarmDialogFragment) oldFragment).dismiss();
 
             fragment.show(getFragmentManager().beginTransaction(), "alarm");
         }

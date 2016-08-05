@@ -110,7 +110,7 @@ public class SimpleDatabase extends SQLiteOpenHelper {
             try {
                 c = database.query(TABLE_PREDICTIONS, null,
                         Glucose.SENSOR_ID + "=? AND ?=" + Glucose.SENSOR_TIME,
-                        new String[]{String.valueOf(data.prediction.sensorTime), data.prediction.sensorId},
+                        new String[]{data.prediction.sensorId, String.valueOf(data.prediction.sensorTime)},
                         null, null, null);
                 if (c.getCount() > 0) {
                     Log.i(TAG, "Data already exist, sensor id: " + data.prediction.sensorId +

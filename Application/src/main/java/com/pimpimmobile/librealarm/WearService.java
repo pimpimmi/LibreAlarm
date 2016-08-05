@@ -199,7 +199,6 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         Log.i(TAG, "Wear connected");
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
         Wearable.DataApi.addListener(mGoogleApiClient, this);
-        getUpdate();
         mResolvingError = false;
         if (mListener != null) mListener.onDataUpdated();
     }

@@ -2,7 +2,6 @@ package com.pimpimmobile.librealarm;
 
 import android.content.Intent;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,7 +21,6 @@ import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class DataLayerListenerService extends WearableListenerService {
 
@@ -141,10 +139,6 @@ public class DataLayerListenerService extends WearableListenerService {
                 SimpleDatabase database = new SimpleDatabase(client.getContext());
                 for (ReadingData.TransferObject message : database.getMessages()) {
                     WearableApi.sendMessage(client, WearableApi.GLUCOSE, new Gson().toJson(message), null);
-                }
-                Map<String, ?> values = PreferenceManager.getDefaultSharedPreferences(client.getContext()).getAll();
-                for (String key : values.keySet()) {
-                    Log.i("UITest", key + "; " + values.get(key).getClass().getSimpleName() + ",  " + values.get(key).toString());
                 }
                 database.close();
                 sendStatus(client);
