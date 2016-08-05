@@ -171,7 +171,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         mActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mService != null) {
+                if (mService != null && mService.getReadingStatus() != null) {
                     switch (mService.getReadingStatus().status) {
                         case ALARM_HIGH:
                         case ALARM_LOW:
