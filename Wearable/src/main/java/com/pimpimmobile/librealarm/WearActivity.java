@@ -58,25 +58,28 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     private Vibrator mVibrator;
 
+    private static boolean busy = false;
+    private static boolean tag_discovered = false;
+
     // We can't finish activity until all messages have been sent.
     private int mMessagesBeingSent;
     private boolean mFinishAfterSentMessages = false;
 
     private ResultCallback<MessageApi.SendMessageResult> mMessageListener =
             new ResultCallback<MessageApi.SendMessageResult>() {
-        @Override
-        public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
-            runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
-                    Log.i(TAG, "messagesbeingsent: " + mMessagesBeingSent +", finish? " + mFinishAfterSentMessages);
-                    if (--mMessagesBeingSent <= 0 && mFinishAfterSentMessages) {
-                        finish();
-                    }
+                public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "messagesbeingsent: " + mMessagesBeingSent + ", finish? " + mFinishAfterSentMessages);
+                            if (--mMessagesBeingSent <= 0 && mFinishAfterSentMessages) {
+                                finish();
+                            }
+                        }
+                    });
                 }
-            });
-        }
-    };
+            };
 
     private Runnable mStopActivityRunnable = new Runnable() {
         @Override
@@ -96,6 +99,8 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 sendStatusUpdate(Type.ATTENPT_FAILED);
                 PreferencesUtil.setRetries(WearActivity.this, ++retries);
             }
+            rootSwitchNFC(false);
+            busy = false;
         }
     };
 
@@ -118,40 +123,77 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                         WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                WindowManager.LayoutParams.FLAG_FULLSCREEN |
                         WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         setContentView(R.layout.wear_activity);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
 
-        // If attempt fails for some reason, retry in 20 seconds.
-        if (PreferencesUtil.getIsStarted(this)) AlarmReceiver.post(this, 20000);
+        if (!busy) {
+            busy = true;
+            PowerManager manager = (PowerManager) getSystemService(POWER_SERVICE);
 
-        mGoogleApiClient.connect();
-        NfcManager nfcManager =
-                (NfcManager) WearActivity.this.getSystemService(Context.NFC_SERVICE);
-        mNfcAdapter = nfcManager.getDefaultAdapter();
-        mNfcAdapter.enableReaderMode(WearActivity.this, new NfcAdapter.ReaderCallback() {
-            @Override
-            public void onTagDiscovered(Tag tag) {
-                new NfcVReaderTask().execute(tag);
-                mNfcAdapter.disableReaderMode(WearActivity.this);
+            // TODO wakelock management needs reviewing - is there possiblity to arrive here with this wakelock already held?
+            if ((mWakeLock != null) && (mWakeLock.isHeld())) mWakeLock.release();
+            mWakeLock = manager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
+
+            mWakeLock.acquire(60000);
+
+            // If attempt fails for some reason, retry in 20 seconds.
+            if (PreferencesUtil.getIsStarted(this)) AlarmReceiver.post(this, 20000);
+
+            Log.d(TAG, "busy set true");
+            rootSwitchNFC(true); // turn it on
+
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Wearable.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+
+            mGoogleApiClient.connect();
+            Log.d(TAG, "NFC Initialization");
+            NfcManager nfcManager =
+                    (NfcManager) WearActivity.this.getSystemService(Context.NFC_SERVICE);
+            mNfcAdapter = nfcManager.getDefaultAdapter();
+            Log.d(TAG, "Got NFC adpater");
+            int counter = 0;
+            while ((!mNfcAdapter.isEnabled() && counter < 5)) {
+                Log.d(TAG, "nfc turn on wait: " + counter);
+                try {
+                    // quick and very dirty
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    //
+                }
+                counter++;
             }
-        }, NfcAdapter.FLAG_READER_NFC_V, null);
 
-        PowerManager manager = (PowerManager) getSystemService(POWER_SERVICE);
-        mWakeLock = manager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
-                PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
 
-        mWakeLock.acquire();
+            //mNfcAdapter.disableReaderMode(WearActivity.this);
+            Log.d(TAG, "About to discover tag");
+            tag_discovered = false;
+            mNfcAdapter.enableReaderMode(WearActivity.this, new NfcAdapter.ReaderCallback() {
+                @Override
+                public void onTagDiscovered(Tag tag) {
+                    if (!tag_discovered) {
+                        tag_discovered = true;
+                        Log.d(TAG, "NFC tag discovered - going to read data");
+                        new NfcVReaderTask().execute(tag);
+                        // mNfcAdapter.disableReaderMode(WearActivity.this); // this seems to make it less reliable than multiple discoveries
+                    } else {
+                        Log.d(TAG, "Tag already discovered!");
+                    }
+                }
+            }, NfcAdapter.FLAG_READER_NFC_V | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, null);
 
-        // If NFC reading hasn't been completed within 10 seconds, close the app.
-        mHandler.postDelayed(mStopActivityRunnable, 10000);
+
+            // If NFC reading hasn't been completed within 10 seconds, close the app.
+            mHandler.postDelayed(mStopActivityRunnable, 10000);
+        } else {
+            Log.d(TAG, "busy is true! not proceeding");
+        }
     }
 
     @Override
@@ -165,11 +207,14 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     @Override
     protected void onStop() {
-        Log.i(TAG,"onStop");
+        Log.i(TAG, "onStop");
         mHandler.removeCallbacksAndMessages(null);
-        if (mWakeLock.isHeld()) mWakeLock.release();
+        if ((mWakeLock != null) && (mWakeLock.isHeld())) mWakeLock.release();
         if (mVibrator != null) mVibrator.cancel();
-        if (mNfcAdapter != null) mNfcAdapter.disableReaderMode(this);
+        if (mNfcAdapter != null) {
+            mNfcAdapter.disableReaderMode(this);
+            rootSwitchNFC(false);
+        }
         if (mGoogleApiClient.isConnected()) {
             Wearable.MessageApi.removeListener(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
@@ -259,28 +304,56 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         Log.e(TAG, "onConnectionFailed(): Failed to connect, with result: " + connectionResult);
     }
 
+    // platform specific method for enabling/disabling nfc - not sure if there is a better api based method
+    private static void rootSwitchNFC(final boolean state) {
+        Log.d(TAG, "Setting NFC hardware to state: " + (state ? "ON" : "OFF"));
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    final boolean needs_root = true; // unclear at the moment whether we need root for this
+                    final Process execute = Runtime.getRuntime().exec((needs_root ? "su -c " : "")+"service call nfc " + (state ? "6" : "5")); // turn NFC on or off
+                } catch (Exception e) {
+                    Log.e(TAG, "Got exception executing root nfc off");
+                }
+            }
+        }.start();
+    }
+
     private class NfcVReaderTask extends AsyncTask<Tag, Void, Tag> {
 
         private byte[] data = new byte[360];
 
         @Override
         protected void onPostExecute(Tag tag) {
-            if (tag == null) return;
-            String tagId = bytesToHexString(tag.getId());
-            int attempt = PreferencesUtil.getRetries(WearActivity.this);
-            mResult = AlgorithmUtil.parseData(attempt, tagId, data);
-            PreferencesUtil.setRetries(WearActivity.this, 1);
-            PreferencesUtil.resetErrorsInARow(WearActivity.this);
-            sendResultAndFinish();
-            setNextAlarm();
-            Danger danger = AlertRules.check(WearActivity.this, mResult.prediction);
-            if (Danger.NOTHING != danger) {
-                mHandler.removeCallbacks(mStopActivityRunnable);
-                Type type = danger == Danger.LOW ? Type.ALARM_LOW : Type.ALARM_HIGH;
-                doAlarm(type, mResult.prediction.glucoseLevel,
-                        AlgorithmUtil.getTrendArrow(mResult.prediction));
-            } else {
-                sendStatusUpdate(Type.WAITING);
+            try {
+                Log.d(TAG, "NFC Reader task done - disabling read mode");
+                mNfcAdapter.disableReaderMode(WearActivity.this);
+                Log.d(TAG, "NFC read mode disabled");
+                if (tag == null) return;
+                String tagId = bytesToHexString(tag.getId());
+                int attempt = PreferencesUtil.getRetries(WearActivity.this);
+                mResult = AlgorithmUtil.parseData(attempt, tagId, data);
+                PreferencesUtil.setRetries(WearActivity.this, 1);
+                PreferencesUtil.resetErrorsInARow(WearActivity.this);
+                sendResultAndFinish();
+                setNextAlarm();
+                Danger danger = AlertRules.check(WearActivity.this, mResult.prediction);
+                if (Danger.NOTHING != danger) {
+                    mHandler.removeCallbacks(mStopActivityRunnable);
+                    Type type = danger == Danger.LOW ? Type.ALARM_LOW : Type.ALARM_HIGH;
+                    doAlarm(type, mResult.prediction.glucoseLevel,
+                            AlgorithmUtil.getTrendArrow(mResult.prediction));
+                } else {
+                    sendStatusUpdate(Type.WAITING);
+                }
+
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Illegal state exception in postExecute: " + e);
+
+            } finally {
+                rootSwitchNFC(false); // turn it off
+                busy = false;
             }
         }
 
@@ -288,11 +361,12 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         protected Tag doInBackground(Tag... params) {
             Tag tag = params[0];
             NfcV nfcvTag = NfcV.get(tag);
+            Log.d(TAG, "Attempting to read tag data");
             try {
                 nfcvTag.connect();
                 final byte[] uid = tag.getId();
-                for(int i=0; i <= 40; i++) {
-                    byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte)i, 0};
+                for (int i = 0; i <= 40; i++) {
+                    byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
                     System.arraycopy(uid, 0, cmd, 2, 8);
                     byte[] oneBlock;
                     Long time = System.currentTimeMillis();
@@ -309,9 +383,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                     }
 
                     oneBlock = Arrays.copyOfRange(oneBlock, 2, oneBlock.length);
-                    System.arraycopy(oneBlock, 0, data, i*8, 8);
+                    System.arraycopy(oneBlock, 0, data, i * 8, 8);
                 }
-
+                Log.d(TAG, "GOT TAG DATA!");
             } catch (Exception e) {
                 Log.i(TAG, e.toString());
                 return null;
@@ -322,7 +396,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                     Log.e(TAG, "Error closing tag!");
                 }
             }
-
+            Log.d(TAG, "Tag data reader exiting");
             return tag;
         }
     }
