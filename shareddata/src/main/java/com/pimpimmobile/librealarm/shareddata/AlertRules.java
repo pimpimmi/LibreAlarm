@@ -28,7 +28,6 @@ public class AlertRules {
 
     private static boolean allAlertsDisabled(Context context)
     {
-        // Booleans can be either boolean or text depending on whether they are on watch or phone due to how they are synced
         return PreferencesUtil.getBoolean(context, context.getString(R.string.key_all_alarms_disabled), false);
     }
 

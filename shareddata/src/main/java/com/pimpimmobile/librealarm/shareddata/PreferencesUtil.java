@@ -77,7 +77,16 @@ public class PreferencesUtil {
     public static void resetErrorsInARow(Context context) {
         setInt(context, "errors_in_a_row", 0);
     }
-    // End used in watch
+
+    public static Boolean slowCpu(Context context) {
+        return getBoolean(context, context.getString(R.string.pref_key_clock_speed));
+    }
+
+    public static Boolean disableTouchscreen(Context context) {
+        return getBoolean(context, context.getString(R.string.pref_key_disable_touchscreen));
+    }
+
+    /// / End used in watch
 
     public static void setBoolean(Context context, String key, boolean value) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(key, value).apply();

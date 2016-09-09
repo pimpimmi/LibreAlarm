@@ -69,7 +69,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     private static boolean scripts_created = false;
     private static final boolean d = true; // global debug output flag
-    private static boolean busy = false;
+    private static long busy = -1;
     private static boolean tag_discovered = false;
     private static int batteryLevel = -1;
     private static Boolean nfcDestinationState = null;
@@ -113,7 +113,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 PreferencesUtil.setRetries(WearActivity.this, ++retries);
             }
             rootSwitchNFC(false);
-            busy = false;
+            clearBusy();
         }
     };
 
@@ -125,7 +125,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     private ReadingData mResult = new ReadingData(PredictionData.Result.ERROR_NO_NFC);
 
     public static void clearBusy() {
-        busy = false;
+        busy = -1;
     }
 
     @Override
@@ -148,8 +148,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
         createScripts();
 
-        if (!busy) {
-            busy = true;
+        final long time_now = System.currentTimeMillis();
+        if (time_now > busy) {
+            busy =  time_now+120000; // maximum time we can lock for
             PowerManager manager = (PowerManager) getSystemService(POWER_SERVICE);
 
             // TODO wakelock management needs reviewing - is there possiblity to arrive here with this wakelock already held?
@@ -439,12 +440,18 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                         }
 
                         if (!state) {
-                            if (d) Log.d(TAG,"Switching to lower powersave cpu speed");
-                            String script_name = getFilesDir() + "/powersave.sh";
-                            final Process execute2 = Runtime.getRuntime().exec("su -c sh " + script_name);
-
-                       if (d) showProcessOutput(execute2);
-                         }
+                            if (PreferencesUtil.disableTouchscreen(getApplicationContext())) {
+                                // TODO check if already disabled
+                                if (d) Log.d(TAG, "Disabling touchscreen!");
+                                final Process execute1 = Runtime.getRuntime().exec("su -c sh " + getFilesDir() + "/killtouch.sh");
+                                if (d) showProcessOutput(execute1);
+                            }
+                            if (PreferencesUtil.slowCpu(getApplicationContext())) {
+                                if (d) Log.d(TAG, "Switching to lower powersave cpu speed");
+                                final Process execute2 = Runtime.getRuntime().exec("su -c sh " + getFilesDir() + "/powersave.sh");
+                                if (d) showProcessOutput(execute2);
+                            }
+                        }
                     }
 
                 } catch (Exception e) {
@@ -504,7 +511,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
             } finally {
                 rootSwitchNFC(false); // turn it off
-                busy = false;
+                clearBusy();
             }
         }
 

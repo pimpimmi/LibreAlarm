@@ -46,6 +46,7 @@
         <CheckBoxPreference
             android:key="@string/pref_key_disable_touchscreen"
             android:title="Completely disable watch touchscreen"
+            android:summaryOn="To re-enable touchscreen turn this off and hold watch button until it reboots"
             android:defaultValue="false" />
     </PreferenceCategory>
 
