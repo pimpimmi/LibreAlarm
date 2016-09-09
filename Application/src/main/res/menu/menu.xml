@@ -4,6 +4,8 @@
         android:title="@string/disclaimer_title" />
     <item android:id="@+id/nightscout"
         android:title="@string/nightscout" />
+    <item android:id="@+id/xdrip_plus"
+        android:title="@string/xdrip_plus"/>
     <item android:id="@+id/preferences"
         android:title="@string/preferences" />
 </menu>

@@ -40,6 +40,7 @@ import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
+import com.pimpimmobile.librealarm.xdrip_plus.XdripPlusPreferences;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -141,6 +142,7 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         mTriggerGlucoseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mProgressBar.setVisibility(View.VISIBLE);
                 mService.sendMessage(WearableApi.TRIGGER_GLUCOSE, "", null);
             }
         });
@@ -302,6 +304,9 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
         if (item.getItemId() == R.id.nightscout) {
             startActivity(new Intent(this, NightscoutPreferences.class));
         }
+        if (item.getItemId() == R.id.xdrip_plus) {
+            startActivityForResult(new Intent(this, XdripPlusPreferences.class),0);
+        }
         if (item.getItemId() == R.id.preferences) {
             startActivityForResult(new Intent(this, Preferences.class), 0);
         }
@@ -357,6 +362,12 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             mStatusTextView.setText(R.string.status_message_first_startup);
         } else {
             mStatusTextView.setText(mService.getStatusString());
+            // TODO add layout item for battery instead of using append
+            if (mService.getBatteryLevel()>0) mStatusTextView.append(" Batt: "+mService.getBatteryLevel()+"%");
+            if ((status!=null)&& (status.status == Type.ATTEMPTING) && (!status.hasRoot)) mStatusTextView.append(" needs SuperSU patch!");
+            // simple indicator of root status, supersu root for wear is available at:
+            // http://forum.xda-developers.com/attachment.php?attachmentid=3342605&d=1433157678
+            // sha1: 00c2ccd6ff356fa5cf73124e978fc192af186d2d
         }
 
         updateAlarmSnoozeViews();

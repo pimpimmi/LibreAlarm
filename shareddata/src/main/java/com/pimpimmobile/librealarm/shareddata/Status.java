@@ -18,12 +18,23 @@ public class Status {
     public long nextCheck;
     public int alarmExtraValue;
     public int alarmExtraTrendOrdinal;
+    public int battery;
+    public boolean hasRoot;
 
     public Status(Type type, int attempt, int maxAttempts, long nextCheck) {
         this.status = type;
         this.attempt = attempt;
         this.maxAttempts = maxAttempts;
         this.nextCheck = nextCheck;
+    }
+
+    public Status(Type type, int attempt, int maxAttempts, long nextCheck, int battery, boolean has_root) {
+        this.status = type;
+        this.attempt = attempt;
+        this.maxAttempts = maxAttempts;
+        this.nextCheck = nextCheck;
+        this.battery = battery;
+        this.hasRoot = has_root;
     }
 
     public Status(Type type, int attempt, int maxAttempts, long nextCheck, int alarmExtraValue,

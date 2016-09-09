@@ -18,6 +18,11 @@ public class PreferencesUtil {
         return getBoolean(context, "ns_rest");
     }
 
+    // Used on phone
+    public static Boolean isXdripPlusEnabled(Context context) {
+        return getBoolean(context, "xdrip_plus_broadcast");
+    }
+
     public static String getNsRestUrl(Context context) {
         return getString(context, "ns_rest_uri");
     }
@@ -72,7 +77,16 @@ public class PreferencesUtil {
     public static void resetErrorsInARow(Context context) {
         setInt(context, "errors_in_a_row", 0);
     }
-    // End used in watch
+
+    public static Boolean slowCpu(Context context) {
+        return getBoolean(context, context.getString(R.string.pref_key_clock_speed));
+    }
+
+    public static Boolean disableTouchscreen(Context context) {
+        return getBoolean(context, context.getString(R.string.pref_key_disable_touchscreen));
+    }
+
+    /// / End used in watch
 
     public static void setBoolean(Context context, String key, boolean value) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(key, value).apply();
@@ -83,7 +97,12 @@ public class PreferencesUtil {
     }
 
     public static boolean getBoolean(Context context, String key, boolean default_) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, default_);
+        // booleans get stored on watch as strings due to the way data is synced
+        try {
+            return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, default_);
+        } catch (ClassCastException e) {
+            return PreferencesUtil.getString(context, key).equals("true");
+        }
     }
 
     public static void setInt(Context context, String key, int value) {
