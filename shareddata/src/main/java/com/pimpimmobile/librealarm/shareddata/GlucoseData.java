@@ -8,6 +8,7 @@ public class GlucoseData implements Comparable<GlucoseData> {
     public String sensorId;
     public long sensorTime;
     public int glucoseLevel = -1;
+    public int glucoseLevelRaw = -1;
     public long phoneDatabaseId;
 
     public GlucoseData(){}

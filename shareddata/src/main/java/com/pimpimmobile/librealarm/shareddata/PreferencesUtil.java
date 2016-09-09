@@ -18,6 +18,11 @@ public class PreferencesUtil {
         return getBoolean(context, "ns_rest");
     }
 
+    // Used on phone
+    public static Boolean isXdripPlusEnabled(Context context) {
+        return getBoolean(context, "xdrip_plus_broadcast");
+    }
+
     public static String getNsRestUrl(Context context) {
         return getString(context, "ns_rest_uri");
     }
@@ -83,7 +88,12 @@ public class PreferencesUtil {
     }
 
     public static boolean getBoolean(Context context, String key, boolean default_) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, default_);
+        // booleans get stored on watch as strings due to the way data is synced
+        try {
+            return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, default_);
+        } catch (ClassCastException e) {
+            return PreferencesUtil.getString(context, key).equals("true");
+        }
     }
 
     public static void setInt(Context context, String key, int value) {

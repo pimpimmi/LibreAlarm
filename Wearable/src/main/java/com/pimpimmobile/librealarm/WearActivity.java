@@ -8,6 +8,7 @@ import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.NfcV;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -36,7 +37,12 @@ import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.Status.Type;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class WearActivity extends Activity implements ConnectionCallbacks,
@@ -58,8 +64,15 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     private Vibrator mVibrator;
 
+    private boolean hasRoot = false;
+    private boolean checkedForRoot = false;
+
+    private static boolean scripts_created = false;
+    private static final boolean d = true; // global debug output flag
     private static boolean busy = false;
     private static boolean tag_discovered = false;
+    private static int batteryLevel = -1;
+    private static Boolean nfcDestinationState = null;
 
     // We can't finish activity until all messages have been sent.
     private int mMessagesBeingSent;
@@ -111,6 +124,10 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     private ReadingData mResult = new ReadingData(PredictionData.Result.ERROR_NO_NFC);
 
+    public static void clearBusy() {
+        busy = false;
+    }
+
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
@@ -129,6 +146,8 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         setContentView(R.layout.wear_activity);
 
+        createScripts();
+
         if (!busy) {
             busy = true;
             PowerManager manager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -146,6 +165,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             Log.d(TAG, "busy set true");
             rootSwitchNFC(true); // turn it on
 
+            BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
+            batteryLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(Wearable.API)
                     .addConnectionCallbacks(this)
@@ -157,38 +179,48 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             NfcManager nfcManager =
                     (NfcManager) WearActivity.this.getSystemService(Context.NFC_SERVICE);
             mNfcAdapter = nfcManager.getDefaultAdapter();
-            Log.d(TAG, "Got NFC adpater");
-            int counter = 0;
-            while ((!mNfcAdapter.isEnabled() && counter < 5)) {
-                Log.d(TAG, "nfc turn on wait: " + counter);
+           // mNfcAdapter.disableForegroundDispatch(this);
+            if (mNfcAdapter !=null) {
+                Log.d(TAG, "Got NFC adpater");
+                int counter = 0;
                 try {
-                    // quick and very dirty
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    //
-                }
-                counter++;
-            }
-
-
-            //mNfcAdapter.disableReaderMode(WearActivity.this);
-            Log.d(TAG, "About to discover tag");
-            tag_discovered = false;
-            mNfcAdapter.enableReaderMode(WearActivity.this, new NfcAdapter.ReaderCallback() {
-                @Override
-                public void onTagDiscovered(Tag tag) {
-                    if (!tag_discovered) {
-                        tag_discovered = true;
-                        Log.d(TAG, "NFC tag discovered - going to read data");
-                        new NfcVReaderTask().execute(tag);
-                        // mNfcAdapter.disableReaderMode(WearActivity.this); // this seems to make it less reliable than multiple discoveries
-                    } else {
-                        Log.d(TAG, "Tag already discovered!");
+                    // null pointer can trigger here from the systemapi
+                    while ((!mNfcAdapter.isEnabled() && counter < 9)) {
+                        Log.d(TAG, "nfc turn on wait: " + counter);
+                        try {
+                            // quick and very dirty
+                            Thread.sleep(1000);
+                        } catch (Exception e) {
+                            //
+                        }
+                        counter++;
                     }
+
+
+                //mNfcAdapter.disableReaderMode(WearActivity.this);
+                Log.d(TAG, "About to discover tag");
+                tag_discovered = false;
+                mNfcAdapter.enableReaderMode(WearActivity.this, new NfcAdapter.ReaderCallback() {
+                    @Override
+                    public void onTagDiscovered(Tag tag) {
+                        if (!tag_discovered) {
+                            tag_discovered = true;
+                            Log.d(TAG, "NFC tag discovered - going to read data");
+                            new NfcVReaderTask().execute(tag);
+                            // mNfcAdapter.disableReaderMode(WearActivity.this); // this seems to make it less reliable than multiple discoveries
+                        } else {
+                            Log.d(TAG, "Tag already discovered!");
+                        }
+                    }
+                }, NfcAdapter.FLAG_READER_NFC_V | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, null);
+                } catch (NullPointerException e)
+                {
+                    Log.wtf(TAG,"Null pointer exception from NFC subsystem: "+e.toString());
+                    // TODO do we actually need to reboot watch here after some counter of failures without resolution?
                 }
-            }, NfcAdapter.FLAG_READER_NFC_V | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, null);
-
-
+            } else {
+                Log.e(TAG,"nfcAdapter is NULL!!");
+            }
             // If NFC reading hasn't been completed within 10 seconds, close the app.
             mHandler.postDelayed(mStopActivityRunnable, 10000);
         } else {
@@ -208,17 +240,18 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     @Override
     protected void onStop() {
         Log.i(TAG, "onStop");
-        mHandler.removeCallbacksAndMessages(null);
-        if ((mWakeLock != null) && (mWakeLock.isHeld())) mWakeLock.release();
+        if (mHandler != null) mHandler.removeCallbacksAndMessages(null);
+
         if (mVibrator != null) mVibrator.cancel();
         if (mNfcAdapter != null) {
             mNfcAdapter.disableReaderMode(this);
-            rootSwitchNFC(false);
         }
-        if (mGoogleApiClient.isConnected()) {
+        if ((mGoogleApiClient != null) && (mGoogleApiClient.isConnected())) {
             Wearable.MessageApi.removeListener(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+        rootSwitchNFC(false, 15000);
+        if ((mWakeLock != null) && (mWakeLock.isHeld())) mWakeLock.release();
         finish();
         super.onStop();
     }
@@ -246,7 +279,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     private void sendStatusUpdate(Type type) {
         int attempt = PreferencesUtil.getRetries(this);
         Status status = new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
-                AlarmReceiver.getNextCheck(mGoogleApiClient.getContext()));
+                AlarmReceiver.getNextCheck(mGoogleApiClient.getContext()),batteryLevel,isHasRoot());
         sendStatusUpdate(type, status);
     }
 
@@ -304,20 +337,138 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         Log.e(TAG, "onConnectionFailed(): Failed to connect, with result: " + connectionResult);
     }
 
+    private synchronized boolean detectRoot()
+    {
+        checkedForRoot=true;
+        return (new File("/system/xbin/su").exists());
+    }
+    private boolean isHasRoot()
+    {
+        if (!checkedForRoot) hasRoot = detectRoot();
+        return hasRoot;
+    }
+
+    private void createScripts()
+    {
+        if (scripts_created) return;
+        // switches to lowest possible power levels on cpu
+        String script_name = getFilesDir()+"/powersave.sh";
+        writeToFile(script_name,"echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor\necho 0 >/sys/devices/system/cpu/cpu1/online\n",getApplicationContext());
+
+        // restore cpu speed somewhat
+        script_name = getFilesDir()+"/performance.sh";
+        writeToFile(script_name,"echo interactive > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor\necho 1 >/sys/devices/system/cpu/cpu1/online\n",getApplicationContext());
+
+
+        // disables the touch sense on the keypad by nuking the driver
+        script_name=getFilesDir()+"/killtouch.sh";
+        writeToFile(script_name,"echo synaptics_dsx.0 >/sys/bus/platform/drivers/synaptics_dsx/unbind\n" +
+                "a=`grep -l ^/system/bin/key_sleep_vibrate_service /proc/*/cmdline`\n" +
+                "if [ \"$a\" != \"\" ]\n" +
+                "then\n" +
+                "let p=6\n" +
+                "while [ $p -lt 14 ] && [ \"${a:$p:1}\" != \"/\" ] \n" +
+                "do\n" +
+                "let p=$p+1\n" +
+                "done\n" +
+                "let l=$p-6\n" +
+                "b=\"${a:6:$l}\"\n" +
+                "echo \"$b\"\n" +
+                "kill \"$b\"\n" +
+                "fi\n" +
+                "\n",getApplicationContext());
+
+
+        scripts_created = true;
+    }
+
+    private void writeToFile(String filename,String data,Context context) {
+        try {
+            File the_file = new File(filename);
+           // if (!the_file.exists())
+          //  {
+                FileOutputStream out = new FileOutputStream(the_file);
+                out.write(data.getBytes(Charset.forName("UTF-8")));
+                out.close();
+           // }
+        }
+        catch (IOException e) {
+            Log.e(TAG, "File write failed: " + e.toString());
+        }
+    }
+    private void rootSwitchNFC(boolean state)
+    {
+        rootSwitchNFC(state,0);
+    }
     // platform specific method for enabling/disabling nfc - not sure if there is a better api based method
-    private static void rootSwitchNFC(final boolean state) {
-        Log.d(TAG, "Setting NFC hardware to state: " + (state ? "ON" : "OFF"));
+    private void rootSwitchNFC(final boolean state, final long delay) {
+        nfcDestinationState=state;
+        Log.d(TAG, "Setting NFC hardware to state: " + (state ? "ON" : "OFF") + ((delay==0) ? " now" : " after: "+delay));
         new Thread() {
             @Override
             public void run() {
+                final PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+                PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Nfc-control");
+                wl.acquire(30000);
                 try {
-                    final boolean needs_root = true; // unclear at the moment whether we need root for this
-                    final Process execute = Runtime.getRuntime().exec((needs_root ? "su -c " : "")+"service call nfc " + (state ? "6" : "5")); // turn NFC on or off
+                    if (delay>0)
+                    {
+                        Log.d(TAG,"Sleeping for "+delay+" ms");
+                        Thread.sleep(delay);
+                        Log.d(TAG,"Sleep finished");
+                    }
+                    if ((nfcDestinationState!=null)&&(nfcDestinationState!=state))
+                    {
+                        Log.e(TAG,"Destination state changed from: "+state+" to "+nfcDestinationState+" .. skipping switch!");
+                    } else {
+                        //final boolean needs_root = true; // unclear at the moment whether we need root for this
+
+                        if (state)
+                        {
+                            if (d) Log.d(TAG,"Switching to higher performance cpu speed");
+                            final Process execute4 = Runtime.getRuntime().exec("su -c sh "+getFilesDir()+"/performance.sh");
+                        }
+
+                        for (int counter=0;counter<5;counter++) {
+                            final Process execute = Runtime.getRuntime().exec("su -c service call nfc " + (state ? "6" : "5")); // turn NFC on or off
+                            if (showProcessOutput(execute) != null) {
+                                Log.e(TAG, "Got error- retrying.."+counter);
+                            } else {
+                               break;
+                            }
+                        }
+
+                        if (!state) {
+                            if (d) Log.d(TAG,"Switching to lower powersave cpu speed");
+                            String script_name = getFilesDir() + "/powersave.sh";
+                            final Process execute2 = Runtime.getRuntime().exec("su -c sh " + script_name);
+
+                       if (d) showProcessOutput(execute2);
+                         }
+                    }
+
                 } catch (Exception e) {
-                    Log.e(TAG, "Got exception executing root nfc off");
+                    Log.e(TAG, "Got exception executing root nfc off: "+e.toString());
+                } finally {
+                    if (wl.isHeld()) wl.release();
                 }
             }
         }.start();
+    }
+
+    private static String showProcessOutput(Process execute)
+    {
+            try {
+                Thread.sleep(1000);
+                if (d) Log.d(TAG, "PROCESS OUTPUT: " + (new BufferedReader(new InputStreamReader(execute.getInputStream())).readLine()));
+                String error = (new BufferedReader(new InputStreamReader(execute.getErrorStream())).readLine());
+                if (d) Log.d(TAG, " PROCESS ERROR: " + error);
+                return error;
+            } catch (InterruptedException | IOException e)
+            {
+                Log.d(TAG,"Got error showing process output: "+e.toString());
+            }
+        return "other error";
     }
 
     private class NfcVReaderTask extends AsyncTask<Tag, Void, Tag> {
@@ -327,9 +478,9 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         @Override
         protected void onPostExecute(Tag tag) {
             try {
-                Log.d(TAG, "NFC Reader task done - disabling read mode");
+                if (d) Log.d(TAG, "NFC Reader task done - disabling read mode");
                 mNfcAdapter.disableReaderMode(WearActivity.this);
-                Log.d(TAG, "NFC read mode disabled");
+                if (d) Log.d(TAG, "NFC read mode disabled");
                 if (tag == null) return;
                 String tagId = bytesToHexString(tag.getId());
                 int attempt = PreferencesUtil.getRetries(WearActivity.this);
@@ -361,7 +512,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         protected Tag doInBackground(Tag... params) {
             Tag tag = params[0];
             NfcV nfcvTag = NfcV.get(tag);
-            Log.d(TAG, "Attempting to read tag data");
+            if (d) Log.d(TAG, "Attempting to read tag data");
             try {
                 nfcvTag.connect();
                 final byte[] uid = tag.getId();
