@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <resources>
+    <string name="key_all_alarms_disabled">all_alarms_disabled</string>
+    <string name="pref_key_clock_speed">pref_key_clock_speed</string>
+    <string name="pref_key_disable_touchscreen">pref_key_disable_touchscreen</string>
     <string name="key_snooze_high">postpone_high</string>
     <string name="key_snooze_low">postpone_low</string>
     <string name="key_alarm_limit_high">alarm_level_high</string>

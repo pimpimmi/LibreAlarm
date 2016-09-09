@@ -38,6 +38,8 @@
 
         <activity android:name=".nightscout.NightscoutPreferences" />
 
+        <activity android:name=".xdrip_plus.XdripPlusPreferences" />
+
         <activity android:name=".Preferences" />
 
     </application>

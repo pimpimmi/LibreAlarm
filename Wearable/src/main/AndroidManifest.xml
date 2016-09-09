@@ -3,7 +3,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.pimpimmobile.librealarm">
 
-    <uses-sdk android:minSdkVersion="18" />
+    <uses-sdk android:minSdkVersion="21" />
 
     <uses-feature android:name="android.hardware.type.watch" />
 

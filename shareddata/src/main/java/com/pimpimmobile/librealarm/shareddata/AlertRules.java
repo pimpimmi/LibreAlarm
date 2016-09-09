@@ -12,8 +12,11 @@ public class AlertRules {
 
     public static Danger check(Context context, PredictionData data) {
         Danger danger = Danger.NOTHING;
-        if (!alertSnoozeHigh(context)) danger = alertHigh(context, data);
-        if (!alertSnoozeLow(context) && danger == Danger.NOTHING) danger = alertLow(context, data);
+        if (!allAlertsDisabled(context)) {
+            if (!alertSnoozeHigh(context)) danger = alertHigh(context, data);
+            if (!alertSnoozeLow(context) && danger == Danger.NOTHING)
+                danger = alertLow(context, data);
+        }
         return danger;
     }
 
@@ -21,6 +24,11 @@ public class AlertRules {
         Danger danger = alertHigh(context, data);
         if (danger == Danger.NOTHING) danger = alertLow(context, data);
         return danger;
+    }
+
+    private static boolean allAlertsDisabled(Context context)
+    {
+        return PreferencesUtil.getBoolean(context, context.getString(R.string.key_all_alarms_disabled), false);
     }
 
     private static boolean alertSnoozeHigh(Context context) {

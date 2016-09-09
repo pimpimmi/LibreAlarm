@@ -155,4 +155,7 @@
 
     <!-- Text-to-speech when we get an ERR -->
     <string name="text_to_speech_error">Failed to fetch glucose value</string>
+
+    <!-- xDrip+ -->
+    <string name="xdrip_plus" translatable="false">xDrip+</string>
 </resources>

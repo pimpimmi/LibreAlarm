@@ -37,6 +37,10 @@ public class AlgorithmUtil {
         return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x3FFF) / 10;
     }
 
+    private static int getGlucoseRaw(byte[] bytes) {
+        return ((256 * (bytes[0] & 0xFF) + (bytes[1] & 0xFF)) & 0x3FFF); // 0x3FFF or 0x0FFF ?
+    }
+
     public static TrendArrow getTrendArrow(GlucoseData data) {
         if (data instanceof PredictionData) {
             PredictionData predictionData = (PredictionData) data;
@@ -73,6 +77,7 @@ public class AlgorithmUtil {
 
         ArrayList<GlucoseData> historyList = new ArrayList<>();
 
+
         // loads history values (ring buffer, starting at index_trent. byte 124-315)
         for (int index = 0; index < 32; index++) {
             int i = indexHistory - index - 1;
@@ -80,6 +85,9 @@ public class AlgorithmUtil {
             GlucoseData glucoseData = new GlucoseData();
             glucoseData.glucoseLevel =
                     getGlucose(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
+
+            glucoseData.glucoseLevelRaw =
+                    getGlucoseRaw(new byte[]{data[(i * 6 + 125)], data[(i * 6 + 124)]});
 
             int time = Math.max(0, Math.abs((sensorTime - 3) / 15) * 15 - index * 15);
 
@@ -99,6 +107,9 @@ public class AlgorithmUtil {
             GlucoseData glucoseData = new GlucoseData();
             glucoseData.glucoseLevel =
                     getGlucose(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
+
+            glucoseData.glucoseLevelRaw =
+                    getGlucoseRaw(new byte[]{data[(i * 6 + 29)], data[(i * 6 + 28)]});
             int time = Math.max(0, sensorTime - index);
 
             glucoseData.realDate = sensorStartTime + time * MINUTE;

@@ -35,6 +35,7 @@ import com.pimpimmobile.librealarm.shareddata.PreferencesUtil;
 import com.pimpimmobile.librealarm.shareddata.ReadingData;
 import com.pimpimmobile.librealarm.shareddata.Status;
 import com.pimpimmobile.librealarm.shareddata.WearableApi;
+import com.pimpimmobile.librealarm.xdrip_plus.XdripPlusBroadcast;
 
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -117,6 +118,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 mDatabase.storeReading(object.data);
                 WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, String.valueOf(object.id), null);
                 if (mListener != null) mListener.onDataUpdated();
+                if (PreferencesUtil.isXdripPlusEnabled(this)) XdripPlusBroadcast.syncXdripPlus(getApplicationContext(),data,object,getBatteryLevel());
                 if (PreferencesUtil.isNsRestEnabled(this)) syncNightscout();
                 runTextToSpeech(object.data.prediction);
                 break;
@@ -341,6 +343,14 @@ public class WearService extends Service implements DataApi.DataListener, Messag
             mTextToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, "glucose-speech");
         }
 
+    }
+
+    public int getBatteryLevel() {
+        if ((mReadingStatus != null) && (mReadingStatus.battery > 0)) {
+            return mReadingStatus.battery;
+        } else {
+            return 0;
+        }
     }
 
     public String getStatusString() {
