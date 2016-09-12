@@ -119,7 +119,6 @@ public class DataLayerListenerService extends WearableListenerService {
                 PreferencesUtil.setIsStarted(client.getContext(), false);
                 AlarmReceiver.stop(client.getContext());
                 sendStatus(client);
-                WearActivity.clearBusy();
             }
             break;
             case WearableApi.START: {

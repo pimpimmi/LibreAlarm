@@ -10,6 +10,8 @@ import java.util.Date;
 
 public class AlgorithmUtil {
 
+    public static final boolean DEBUG = true; // global debug output flag (don't have anywhere better to put it)
+
     private static final double TREND_UP_DOWN_LIMIT = 1;
     private static final double TREND_SLIGHT_UP_DOWN_LIMIT = 0.5;
     private static final int CONFIDENCE_LIMIT = 1;

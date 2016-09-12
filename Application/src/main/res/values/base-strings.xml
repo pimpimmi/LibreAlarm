@@ -5,4 +5,6 @@
     <string name="mmol" translatable="false">mmol/l</string>
     <string name="mgdl" translatable="false">mg/dl</string>
     <string name="glucose_too_low_string" translatable="false">&lt;%s</string>
+    <string name="key_xdrip_plus_broadcast" translatable="false">xdrip_plus_broadcast</string>
+    <string name="xdrip_plus" translatable="false">xDrip+</string>
 </resources>

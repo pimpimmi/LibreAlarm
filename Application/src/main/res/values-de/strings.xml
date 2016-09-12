@@ -155,4 +155,11 @@
 
     <!-- Text-to-speech when we get an ERR -->
     <string name="text_to_speech_error">Glukosewert konnte nicht abgerufen werden</string>
+
+    <!-- Enable xDrip+ broadcast -->
+    <string name="xdrip_plus_broadcast_summary">Send data to xDrip+ running on the same handset</string>
+
+    <!-- Disable alarms on LibreAlarm and use xDrip+ alarm instead-->
+    <string name="all_alarms_disabled_summary">Disable all Watch and LibreAlarm alerts and use xDrip+ for alarms!</string>
+
 </resources>

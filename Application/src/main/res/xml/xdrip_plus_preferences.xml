@@ -3,11 +3,11 @@
     <PreferenceCategory android:title="xDrip+ broadcast">
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="xdrip_plus_broadcast"
-            android:summary="Send data to xDrip+ running on the same handset" />
+            android:key="@string/key_xdrip_plus_broadcast"
+            android:summary="@string/xdrip_plus_broadcast_summary" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/key_all_alarms_disabled"
-            android:summary="Disable all Watch and LibreAlarm alerts and use xDrip+ for alarms!" />
+            android:summary="@string/all_alarms_disabled_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

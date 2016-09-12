@@ -155,4 +155,11 @@
 
     <!-- Text-to-speech when we get an ERR -->
     <string name="text_to_speech_error">Det gick inte att mäta blodsockret</string>
+
+    <!-- Enable xDrip+ broadcast -->
+    <string name="xdrip_plus_broadcast_summary">Skicka data till xDrip+ som kör på samma enhet</string>
+
+    <!-- Disable alarms on LibreAlarm and use xDrip+ alarm instead-->
+    <string name="all_alarms_disabled_summary">Avaktivera alla klock- och LibreAlarm larm och använd xDrip+ istället!</string>
+
 </resources>
