@@ -20,6 +20,11 @@
             android:key="@string/pref_key_mmol"
             android:title="@string/settings_glucose_units_text"
             android:defaultValue="true" />
+        <EditTextPreference
+            android:key="@string/pref_key_glucose_interval"
+            android:title="@string/settings_glucose_interval"
+            android:inputType="numberSigned"
+            android:defaultValue="10" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -40,13 +45,13 @@
         android:title="Power save features">
         <CheckBoxPreference
             android:key="@string/pref_key_clock_speed"
-            android:title="Slow down watch CPU"
-            android:summary="Run watch at slowest processing speed to save battery."
-            android:defaultValue="true" />
+            android:title="@string/pref_key_clock_speed_title"
+            android:summary="@string/pref_key_clock_speed_summary"
+            android:defaultValue="false" />
         <CheckBoxPreference
             android:key="@string/pref_key_disable_touchscreen"
-            android:title="Completely disable watch touchscreen"
-            android:summaryOn="To re-enable touchscreen turn this off and hold watch button until it reboots"
+            android:title="@string/pref_key_disable_touchscreen_title"
+            android:summaryOn="@string/pref_key_disable_touchscreen_summary"
             android:defaultValue="false" />
     </PreferenceCategory>
 

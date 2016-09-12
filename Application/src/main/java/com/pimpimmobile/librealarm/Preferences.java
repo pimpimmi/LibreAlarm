@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 import java.util.HashMap;
 
@@ -36,6 +37,12 @@ public class Preferences extends Activity implements SharedPreferences.OnSharedP
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (getString(R.string.pref_key_glucose_interval).equals(key)) {
+            String value = sharedPreferences.getString(key, "10");
+            if (TextUtils.isEmpty(value) || Integer.valueOf(value) < 1) {
+                sharedPreferences.edit().putString(key, "1").apply();
+            }
+        }
         mChanged.put(key, sharedPreferences.getAll().get(key).toString());
     }
 

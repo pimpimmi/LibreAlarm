@@ -86,6 +86,10 @@ public class PreferencesUtil {
         return getBoolean(context, context.getString(R.string.pref_key_disable_touchscreen));
     }
 
+    public static String getCheckGlucoseInterval(Context context) {
+        return getString(context, context.getString(R.string.pref_key_glucose_interval), "10");
+    }
+
     /// / End used in watch
 
     public static void setBoolean(Context context, String key, boolean value) {

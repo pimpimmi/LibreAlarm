@@ -237,7 +237,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
 
     private void setNextAlarm() {
         if (PreferencesUtil.getIsStarted(this)) {
-            AlarmReceiver.post(this, AlarmReceiver.DEFAULT_INTERVAL);
+            AlarmReceiver.post(this, Integer.valueOf(PreferencesUtil.getCheckGlucoseInterval(this)) * 60000); // 60000 ms = 1 minute
         }
     }
 

@@ -162,4 +162,19 @@
     <!-- Disable alarms on LibreAlarm and use xDrip+ alarm instead-->
     <string name="all_alarms_disabled_summary">Avaktivera alla klock- och LibreAlarm larm och använd xDrip+ istället!</string>
 
+    <!-- How often we should make glucose readings -->
+    <string name="settings_glucose_interval">Sätt blodsocker läsnings intervall</string>
+
+    <!-- Title for setting allowing the user to slow down the watch CPU to save battery -->
+    <string name="pref_key_clock_speed_title">Klocka ner CPU</string>
+
+    <!-- Summary for setting allowing the user to slow down the watch CPU to save battery -->
+    <string name="pref_key_clock_speed_summary">Kör klockan på lägsta processor hastighet för att spara batteri.</string>
+
+    <!-- Title for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
+    <string name="pref_key_disable_touchscreen_title">Stäng av touchscreen helt</string>
+
+    <!-- Summary for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
+    <string name="pref_key_disable_touchscreen_summary">För att åter aktivera touchscreen, stäng av detta och tryck på klockans power knapp tills den startar om</string>
+
 </resources>

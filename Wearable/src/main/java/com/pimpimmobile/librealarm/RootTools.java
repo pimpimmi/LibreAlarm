@@ -23,7 +23,7 @@ public class RootTools {
     private static final boolean DEBUG = AlgorithmUtil.DEBUG;
 
     private static Boolean sHasRoot = null;
-    private static Boolean sScriptsCreated = null;
+    private static boolean sScriptsCreated = false;
 
     private Context mContext;
 
@@ -34,7 +34,7 @@ public class RootTools {
     public RootTools(Context context) {
         mContext = context;
         createScripts();
-        mRootHandlerThread = new RootHandlerThread();
+        if (isHasRoot()) mRootHandlerThread = new RootHandlerThread();
     }
 
     public synchronized boolean isHasRoot() {
@@ -94,6 +94,7 @@ public class RootTools {
 
     // platform specific method for enabling/disabling nfc - not sure if there is a better api based method
     public void executeScripts(final boolean state, final long delay) {
+        if (!isHasRoot()) return;
         mRootHandlerThread.executeScripts(state, delay);
         final PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Nfc-control");
@@ -101,6 +102,7 @@ public class RootTools {
     }
 
     public void cancelScripts() {
+        if (!isHasRoot()) return;
         mRootHandlerThread.mHandler.removeCallbacksAndMessages(null);
         if (mWakeLock.isHeld()) mWakeLock.release();
     }
@@ -120,7 +122,6 @@ public class RootTools {
     }
 
     private class RootHandlerThread extends HandlerThread implements Handler.Callback {
-
         private Handler mHandler;
 
         private Boolean sNfcDestinationState = null;

@@ -19,7 +19,6 @@ import java.util.Date;
  */
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 
-    public static final int DEFAULT_INTERVAL = 600000;
     private static final String TAG = "GLUCOSE::" + AlarmReceiver.class.getSimpleName();
 
     @Override
