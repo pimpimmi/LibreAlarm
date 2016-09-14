@@ -177,4 +177,10 @@
     <!-- Summary for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
     <string name="pref_key_disable_touchscreen_summary">To re-enable touchscreen turn this off and hold watch button until it reboots</string>
 
+    <!-- Title for setting to enable root -->
+    <string name="pref_key_root_title">Enable root functionality</string>
+
+    <!-- Title for setting to enable root -->
+    <string name="pref_key_root_summary">Requires rooted watch</string>
+
 </resources>

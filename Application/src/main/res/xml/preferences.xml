@@ -44,14 +44,21 @@
     <PreferenceCategory
         android:title="Power save features">
         <CheckBoxPreference
+            android:key="@string/pref_key_root"
+            android:title="@string/pref_key_root_title"
+            android:summary="@string/pref_key_root_summary"
+            android:defaultValue="false" />
+        <CheckBoxPreference
             android:key="@string/pref_key_clock_speed"
             android:title="@string/pref_key_clock_speed_title"
             android:summary="@string/pref_key_clock_speed_summary"
+            android:dependency="@string/pref_key_root"
             android:defaultValue="false" />
         <CheckBoxPreference
             android:key="@string/pref_key_disable_touchscreen"
             android:title="@string/pref_key_disable_touchscreen_title"
             android:summaryOn="@string/pref_key_disable_touchscreen_summary"
+            android:dependency="@string/pref_key_root"
             android:defaultValue="false" />
     </PreferenceCategory>
 

@@ -177,4 +177,10 @@
     <!-- Summary for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
     <string name="pref_key_disable_touchscreen_summary">För att åter aktivera touchscreen, stäng av detta och tryck på klockans power knapp tills den startar om</string>
 
+    <!-- Title for setting to enable root -->
+    <string name="pref_key_root_title">Aktivera root funktioner</string>
+
+    <!-- Title for setting to enable root -->
+    <string name="pref_key_root_summary">Kräver rootad klocka</string>
+
 </resources>

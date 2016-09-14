@@ -364,7 +364,10 @@ public class MainActivity extends Activity implements WearService.WearServiceLis
             mStatusTextView.setText(mService.getStatusString());
             // TODO add layout item for battery instead of using append
             if (mService.getBatteryLevel()>0) mStatusTextView.append(" Batt: " + mService.getBatteryLevel() + "%");
-            if ((status!=null)&& (status.status == Type.ATTEMPTING) && (!status.hasRoot)) mStatusTextView.append(" (no SuperSU)");
+            if (PreferencesUtil.shouldUseRoot(this) && status != null &&
+                    status.status == Type.ATTEMPTING && !status.hasRoot) {
+                mStatusTextView.append(" (no SuperSU)");
+            }
             // simple indicator of root status, supersu root for wear is available at:
             // http://forum.xda-developers.com/attachment.php?attachmentid=3342605&d=1433157678
             // sha1: 00c2ccd6ff356fa5cf73124e978fc192af186d2d

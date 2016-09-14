@@ -188,6 +188,8 @@ public class RootTools {
                 if (mWakeLock.isHeld()) mWakeLock.release();
             }
 
+            if (!state) quitSafely();
+
             sNfcDestinationState = state;
 
             return true;

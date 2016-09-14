@@ -16,4 +16,5 @@
     <string name="pref_key_text_to_speech">pref_tts</string>
     <string name="pref_key_text_to_speech_only_alarm">pref_tts_alarm_only</string>
     <string name="pref_key_glucose_interval">pref_glucose_interval</string>
+    <string name="pref_key_root">pref_key_root</string>
 </resources>

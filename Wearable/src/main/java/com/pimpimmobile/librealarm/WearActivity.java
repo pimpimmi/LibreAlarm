@@ -107,7 +107,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 sendStatusUpdate(Type.ATTENPT_FAILED);
                 PreferencesUtil.setRetries(WearActivity.this, ++retries);
             }
-            mRootTools.executeScripts(false);
+            if (mRootTools != null) mRootTools.executeScripts(false);
         }
     };
 
@@ -146,8 +146,10 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
         // If attempt fails for some reason, retry in 20 seconds.
         if (PreferencesUtil.getIsStarted(this)) AlarmReceiver.post(this, 20000);
 
-        mRootTools = new RootTools(this);
-        mRootTools.executeScripts(true); // turn it on
+        if (PreferencesUtil.shouldUseRoot(this)) {
+            mRootTools = new RootTools(this);
+            mRootTools.executeScripts(true); // turn it on
+        }
 
         BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
         mBatteryLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
@@ -229,7 +231,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             Wearable.MessageApi.removeListener(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
-        mRootTools.executeScripts(false, 15000);
+        if (mRootTools != null) mRootTools.executeScripts(false, 15000);
         if ((mWakeLock != null) && (mWakeLock.isHeld())) mWakeLock.release();
         finish();
         super.onStop();
@@ -258,7 +260,8 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
     private void sendStatusUpdate(Type type) {
         int attempt = PreferencesUtil.getRetries(this);
         Status status = new Status(type, attempt, WearActivity.MAX_ATTEMPTS,
-                AlarmReceiver.getNextCheck(mGoogleApiClient.getContext()), mBatteryLevel, mRootTools.isHasRoot());
+                AlarmReceiver.getNextCheck(mGoogleApiClient.getContext()), mBatteryLevel,
+                mRootTools != null && mRootTools.isHasRoot());
         sendStatusUpdate(type, status);
     }
 
@@ -348,8 +351,10 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 Log.e(TAG, "Illegal state exception in postExecute: " + e);
 
             } finally {
-                mRootTools.cancelScripts();
-                mRootTools.executeScripts(false); // turn it off
+                if (mRootTools != null) {
+                    mRootTools.cancelScripts();
+                    mRootTools.executeScripts(false); // turn it off
+                }
             }
         }
 
