@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- String for opening settings drawer, used for accessibility -->
+    <string name="drawer_open">abrir carpeta</string>
+
+    <!-- String for closing settings drawer, used for accessibility -->
+    <string name="drawer_close">cerar carpeta</string>
+
+    <!-- Explanation shown when user presses on an error message in the glucose list -->
+    <string name="err_explanation"> ERR significa el reloj no pudo leer valor de glucosa.\n\nProura mantener reloj justo encima del sensor con la superficie hacia el sensor.\n\Tambien procura tener nfc activado. Controla esto abriendo la aplicacion \"NFC configuration\" en el reloj. Si es posible activar nfc, vuelve a iniciar el reloj.</string>
+
+    <!-- Disclaimer message shown when user first starts app -->
+    <string name="disclaimer_message">Por favor lee esto, \'es importante!\n\n1, Esto es una aplicacion no oficial y no ha sido aprobado en ningun sentido por Abbott.\n\n2, Los valores de glucosa producidos por esta aplicacion no son exactos. La unica intencion de esta aplicacion es para alarmar el usario cuando el nivel de glucosa es muy alto o muy bajo. Todos los datos deben ser controlados usando las herramientas oficiales de Abbott.\n\n3, No te fies de la aplicacion para evitar fallos. Podria dejar de funcionar sin avisar o / y producir resultados no fiables.</string>
+
+    <!-- Disclaimer title message shown when user first starts app -->
+    <string name="disclaimer_title">exclusion de resposabilidad</string>
+
+    <!-- Error text shown in glucose list (max 3 characters) -->
+    <string name="err">ERR</string>
+
+    <!-- Stop button text-->
+    <string name="button_stop">STOP</string>
+
+    <!-- Alarm button text-->
+    <string name="button_alarm">ALARMA</string>
+
+    <!-- Start button text-->
+    <string name="button_start">INICIO</string>
+
+    <!-- Wait button text-->
+    <string name="button_wait">ESPERA</string>
+
+    <!-- Check glucose now button text -->
+    <string name="button_check_now">escanear ahora</string>
+
+    <!-- Message shown when user first starts app -->
+    <string name="status_message_first_startup">Esto es el primer inicio. El reloj a lo mejor no esta instalado todavia. Por favor espere un momento, luego vuelve an iniciar el reloj.</string>
+
+    <!-- Status text alarm -->
+    <string name="status_text_alarm">ALARMA!!</string>
+
+    <!-- Status text showing how many times the watch has attempted to get glucose value -->
+    <string name="status_check_attempt" formatted="false">"Intentos %d/%d"</string>
+
+    <!-- Status text showing how many times the watch has failed to get glucose value -->
+    <string name="status_check_attempt_failed" formatted="false">"Intentos %d/%d fallados"</string>
+
+    <!-- Status text next check -->
+    <string name="status_text_next_check" formatted="false">"Proximo escan: %s"</string>
+
+    <!-- Status text not running -->
+    <string name="status_text_not_running">No funcionando</string>
+
+    <!-- Nightscout menu item -->
+    <string name="nightscout">Nightscout</string>
+
+    <!-- Checkbox to enable nightscout -->
+    <string name="nightscout_enable">Activar Nightscout Rest API</string>
+
+    <!-- EditText settings for setting Nightscout URL -->
+    <string name="nightscout_set_url">Set URL</string>
+
+    <!-- Button visible when alarm is snoozing -->
+    <string name="button_alarm_disabled">activar</string>
+
+    <!-- Button text to disable alarm for a period of time-->
+    <string name="alarm_disable_button" formatted="false">apagar %d min</string>
+
+    <!-- Button text to turn off alarm -->
+    <string name="alarm_turn_off">Apagar</string>
+
+    <!-- Toast message telling us we failed to turn off alarm -->
+    <string name="toast_turn_off_alarm_failed">Apagar fallado</string>
+
+    <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
+    <string name="alarm_disabled_low_text" formatted="false">glucosa baja alarma apagado: %s</string>
+
+    <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
+    <string name="alarm_disabled_high_text" formatted="false">glucosa alta alarma apagado: %s</string>
+
+    <!-- Use mmol hint -->
+    <string name="settings_glucose_units_text">Usa mmol/l</string>
+
+    <!-- Limit for high glucose (Max 25 characters)-->
+    <string name="settings_alarm_high_title">Limite glucosa alta</string>
+
+    <!-- Limit for low glucose (Max 25 characters)-->
+    <string name="settings_alarm_low_title">Limite glucosa baja</string>
+
+    <!-- If alarm should sound from phone -->
+    <string name="settings_phone_alarm_text">Usa sonido de alarma del movil</string>
+
+    <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
+    <string name="settings_snooze_high_title">apagar alarma glucosa alta</string>
+
+    <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
+    <string name="settings_snooze_low_title">apagar alarma glucosa baja</string>
+
+    <!-- If the alarm should sound when you get ERR -->
+    <string name="settings_err_checkbox">Alarma on ERR</string>
+
+    <!-- How many times you need to get ERR for alarm -->
+    <string name="settings_err_edittext">Cuantos ERR seguidos necesarios</string>
+
+    <!-- Shown in quick settings to verify watch settings are up to date-->
+    <string name="watch_value">Datos en reloj: %s</string>
+
+    <!-- Preferences button in overflow menu -->
+    <string name="preferences">Preferencias</string>
+
+    <!-- Quick settings button -->
+    <string name="snooze">dormir/apagar</string>
+
+    <!-- Toast message telling us settings have been updated on watch -->
+    <string name="settings_updated_on_watch">Valores actualizados en el reloj</string>
+
+    <!-- Settings category for general settings -->
+    <string name="settings_category_general">Valores generales</string>
+
+    <!-- Settings category for Text-to-speech settings -->
+    <string name="settings_category_text_to_speech">Texto-en-voz</string>
+
+    <!-- Settings title for using Text-to-speech -->
+    <string name="settings_text_to_speech_title">Usa Texto-en-voz</string>
+
+    <!-- Settings summary for using Text-to-speech -->
+    <string name="settings_text_to_speech_summary">Deja leer tu valor de glucosa en voz alta</string>
+
+    <!-- Settings title for using Text-to-speech only when there is an alarm -->
+    <string name="settings_text_to_speech_only_alarm_title">Usa texto-en-voz solo con alarmas</string>
+
+    <!-- Text-to-speech toast error message. Failed to initialize text-to-speech -->
+    <string name="error_text_to_speech_init">Iniciar texto-en-voz fallado</string>
+
+    <!-- Text-to-speech message on new glucose value -->
+    <string name="text_to_speech_message" formatted="false">Valor de glucosa es %s. Tendencia es %s</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going up -->
+    <string name="text_to_speech_trend_up">aumentando rapido</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going up slowly -->
+    <string name="text_to_speech_trend_slightly_up">aumentando despacio</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is stable -->
+    <string name="text_to_speech_trend_flat">estable</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going down fast -->
+    <string name="text_to_speech_trend_down">bajando rapido</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is going down slowly -->
+    <string name="text_to_speech_trend_slightly_down">bajando despacio</string>
+
+    <!-- Will replace %s at the end of text_to_speech_message when trend is unknown -->
+    <string name="text_to_speech_trend_unknown">tendencia no clara</string>
+
+    <!-- Text-to-speech when we get an ERR -->
+    <string name="text_to_speech_error">escan de glucosa fallado</string>
+
+    <!-- Enable xDrip+ broadcast -->
+    <string name="xdrip_plus_broadcast_summary">Manda datos a xDrip+ funcionando en el mismo aparato</string>
+
+    <!-- Disable alarms on LibreAlarm and use xDrip+ alarm instead -->
+    <string name="all_alarms_disabled_summary">apagar todos alarmas del reloj y de LibreAlarm y usar xDrip+ para alarmas!</string>
+
+    <!-- How often we should make glucose readings -->
+    <string name="settings_glucose_interval">editar interval de escan de glucosa</string>
+
+    <!-- Title for setting allowing the user to slow down the watch CPU to save battery -->
+    <string name="pref_key_clock_speed_title">reducir CPU del reloj</string>
+
+    <!-- Summary for setting allowing the user to slow down the watch CPU to save battery -->
+    <string name="pref_key_clock_speed_summary">poner reloj a velocidad minima del procesor para ahorar bateria.</string>
+
+    <!-- Title for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
+    <string name="pref_key_disable_touchscreen_title">Apagar pantalla tactil del reloj completamente</string>
+
+    <!-- Summary for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
+    <string name="pref_key_disable_touchscreen_summary">Para volver a encender pantalla tactil del reloj, apagar reloj y apretar boton hasta re-inicio</string>
+
+    <!-- Title for setting to enable root -->
+    <string name="pref_key_root_title">Activar root funcionamiento</string>
+
+    <!-- Title for setting to enable root -->
+    <string name="pref_key_root_summary">Se necesita rooted reloj</string>
+
+</resources>
