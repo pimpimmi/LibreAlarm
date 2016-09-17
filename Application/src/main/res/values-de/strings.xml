@@ -72,29 +72,29 @@
     <!-- Toast message telling us we failed to turn off alarm -->
     <string name="toast_turn_off_alarm_failed">Abschaltung des Alarms gescheitert</string>
 
-    <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
-    <string name="alarm_disabled_low_text" formatted="false">Min Glukosealarm deakt bis: %s</string>
+    <!-- Toast message telling us the alarm is disabled for low glucose (Max 30 characters) -->
+    <string name="alarm_disabled_low_text" formatted="false">Alarmdeaktivierung für niedrigen Glukosewert bis: %s</string>
 
-    <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
-    <string name="alarm_disabled_high_text" formatted="false">Max Glukosealarm deakt bis: %s</string>
+    <!-- Toast message telling us the alarm is disabled for high glucose (Max 30 characters) -->
+    <string name="alarm_disabled_high_text" formatted="false">Alarmdeaktivierung für hohen Glukosewert bis: %s</string>
 
     <!-- Use mmol hint -->
     <string name="settings_glucose_units_text">Verwende mmol/l</string>
 
     <!-- Limit for high glucose (Max 25 characters)-->
-    <string name="settings_alarm_high_title">Max Glukosewert</string>
+    <string name="settings_alarm_high_title">Grenze für hohen Glukosewert</string>
 
     <!-- Limit for low glucose (Max 25 characters)-->
-    <string name="settings_alarm_low_title">Min Glukosewert</string>
+    <string name="settings_alarm_low_title">Grenze für niedrigen Glukosewert</string>
 
     <!-- If alarm should sound from phone -->
     <string name="settings_phone_alarm_text">Verwende Alarmton des Telefons</string>
 
     <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
-    <string name="settings_snooze_high_title">Max Glukosealarm</string>
+    <string name="settings_snooze_high_title">Alarmdeakt für hohen Glukosewert</string>
 
     <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
-    <string name="settings_snooze_low_title">Min Glukosealarm</string>
+    <string name="settings_snooze_low_title">Alarmdeakt für niedrigen Glukosewert</string>
 
     <!-- If the alarm should sound when you get ERR -->
     <string name="settings_err_checkbox">Verwende Alarm für ERR</string>
@@ -157,30 +157,30 @@
     <string name="text_to_speech_error">Glukosewert konnte nicht abgerufen werden</string>
 
     <!-- Enable xDrip+ broadcast -->
-    <string name="xdrip_plus_broadcast_summary">Send data to xDrip+ running on the same handset</string>
+    <string name="xdrip_plus_broadcast_summary">Aktiviere xDrip+ Broadcast</string>
 
     <!-- Disable alarms on LibreAlarm and use xDrip+ alarm instead-->
-    <string name="all_alarms_disabled_summary">Disable all Watch and LibreAlarm alerts and use xDrip+ for alarms!</string>
+    <string name="all_alarms_disabled_summary">Alarm der Uhr und LibreAlarm komplett deaktivieren, stattdessen xDrip+ nutzen</string>
 
     <!-- How often we should make glucose readings -->
-    <string name="settings_glucose_interval">Set glucose reading interval</string>
+    <string name="settings_glucose_interval">Glukosemesswertintervall setzen</string>
 
     <!-- Title for setting allowing the user to slow down the watch CPU to save battery -->
-    <string name="pref_key_clock_speed_title">Slow down watch CPU</string>
+    <string name="pref_key_clock_speed_title">CPU der Uhr verlangsamen</string>
 
     <!-- Summary for setting allowing the user to slow down the watch CPU to save battery -->
-    <string name="pref_key_clock_speed_summary">Run watch at slowest processing speed to save battery.</string>
+    <string name="pref_key_clock_speed_summary">CPU der Uhr verlangsamen, um Energie zu sparen</string>
 
     <!-- Title for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
-    <string name="pref_key_disable_touchscreen_title">Completely disable watch touchscreen</string>
+    <string name="pref_key_disable_touchscreen_title">Touchscreen der Uhr deaktivieren</string>
 
     <!-- Summary for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
-    <string name="pref_key_disable_touchscreen_summary">To re-enable touchscreen turn this off and hold watch button until it reboots</string>
+    <string name="pref_key_disable_touchscreen_summary">Ist der Touchscreen der Uhr deaktiviert, muss man bei Wiederaktivierung, als erstes die Option deaktivieren und die Uhr erneut starten.</string>
 
     <!-- Title for setting to enable root -->
-    <string name="pref_key_root_title">Enable root functionality</string>
+    <string name="pref_key_root_title">ROOT aktivieren</string>
 
     <!-- Title for setting to enable root -->
-    <string name="pref_key_root_summary">Requires rooted watch</string>
+    <string name="pref_key_root_summary">Erfordert eine gerootete Uhr</string>
 
-</resources>
+</resources>                                    	  
