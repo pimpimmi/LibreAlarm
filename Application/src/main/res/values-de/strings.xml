@@ -72,11 +72,11 @@
     <!-- Toast message telling us we failed to turn off alarm -->
     <string name="toast_turn_off_alarm_failed">Abschaltung des Alarms gescheitert</string>
 
-    <!-- Toast message telling us the alarm is disabled for low glucose (Max 30 characters) -->
-    <string name="alarm_disabled_low_text" formatted="false">Alarmdeaktivierung für niedrigen Glukosewert bis: %s</string>
+    <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
+    <string name="alarm_disabled_low_text" formatted="false">Alarmdeakt für niedrigen Glukosewert bis: %s</string>
 
-    <!-- Toast message telling us the alarm is disabled for high glucose (Max 30 characters) -->
-    <string name="alarm_disabled_high_text" formatted="false">Alarmdeaktivierung für hohen Glukosewert bis: %s</string>
+    <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
+    <string name="alarm_disabled_high_text" formatted="false">Alarmdeakt für hohen Glukosewert bis: %s</string>
 
     <!-- Use mmol hint -->
     <string name="settings_glucose_units_text">Verwende mmol/l</string>
