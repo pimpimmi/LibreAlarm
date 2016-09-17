@@ -38,6 +38,7 @@ import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.xdrip_plus.XdripPlusBroadcast;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -127,11 +128,12 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
 
     private void syncNightscout() {
+        final List<PredictionData> data = mDatabase.getNsSyncData();
         new Thread() {
             @Override
             public void run() {
                 NightscoutUploader uploader = new NightscoutUploader(WearService.this);
-                List<PredictionData> result = uploader.upload(mDatabase.getNsSyncData());
+                List<PredictionData> result = uploader.upload(data);
                 mDatabase.setNsSynced(result);
                 super.run();
             }
