@@ -354,6 +354,7 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                 if (mRootTools != null) {
                     mRootTools.cancelScripts();
                     mRootTools.executeScripts(false); // turn it off
+                    mRootTools = null;
                 }
             }
         }

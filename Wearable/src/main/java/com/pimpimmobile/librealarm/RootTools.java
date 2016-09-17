@@ -124,7 +124,7 @@ public class RootTools {
     private class RootHandlerThread extends HandlerThread implements Handler.Callback {
         private Handler mHandler;
 
-        private Boolean sNfcDestinationState = null;
+        private boolean mNfcDestinationState = false;
 
         private RootHandlerThread() {
             super("RootHandlerThread");
@@ -148,8 +148,8 @@ public class RootTools {
             boolean state = msg.what == 1;
 
             try {
-                if (sNfcDestinationState != null && sNfcDestinationState != state) {
-                    Log.e(TAG,"Destination state changed from: "+state+" to "+ sNfcDestinationState +" .. skipping switch!");
+                if (mNfcDestinationState == state) {
+                    Log.e(TAG,"Destination state changed from: "+state+" to "+ mNfcDestinationState +" .. skipping switch!");
                 } else {
                     //final boolean needs_root = true; // unclear at the moment whether we need root for this
 
@@ -158,7 +158,8 @@ public class RootTools {
                         final Process execute4 = Runtime.getRuntime().exec("su -c sh "+mContext.getFilesDir()+"/performance.sh");
                     }
 
-                    for (int counter=0;counter<5;counter++) {
+                    for (int counter=0 ;counter < 5 ;counter++) {
+                        Log.i(TAG, "Trying to switch nfc " + (state ? "on" : "off"));
                         final Process execute = Runtime.getRuntime().exec("su -c service call nfc " + (state ? "6" : "5")); // turn NFC on or off
                         if (showProcessOutput(execute) != null) {
                             Log.e(TAG, "Got error- retrying.."+counter);
@@ -190,7 +191,7 @@ public class RootTools {
 
             if (!state) quitSafely();
 
-            sNfcDestinationState = state;
+            mNfcDestinationState = state;
 
             return true;
         }
