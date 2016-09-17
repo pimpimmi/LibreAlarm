@@ -1,6 +1,8 @@
 package com.pimpimmobile.librealarm;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -38,7 +40,6 @@ import com.pimpimmobile.librealarm.shareddata.WearableApi;
 import com.pimpimmobile.librealarm.xdrip_plus.XdripPlusBroadcast;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,12 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     private TextToSpeech mTextToSpeech;
 
     private Status mReadingStatus;
+
+    private PredictionData mLastReading;
+
+    private boolean mNotificationShowing = false;
+
+    private boolean mAlarmReceiverIsRunning = false;
 
     private SimpleDatabase mDatabase = new SimpleDatabase(this);
 
@@ -111,11 +118,19 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 } else {
                     stopAlarm();
                 }
+                updateAlarmReceiver(type != Status.Type.NOT_RUNNING);
+                updateNotification(type != Status.Type.NOT_RUNNING);
                 if (mListener != null) mListener.onDataUpdated();
                 break;
             case WearableApi.GLUCOSE:
                 ReadingData.TransferObject object =
                         new Gson().fromJson(data, ReadingData.TransferObject.class);
+                if (mLastReading == null || mLastReading.realDate < object.data.prediction.realDate) {
+                    mLastReading = object.data.prediction;
+                    if (mAlarmReceiverIsRunning) AlarmReceiver.post(this);
+                    updateNotification((mReadingStatus.status == null ? null : mReadingStatus.status != Status.Type.NOT_RUNNING));
+                }
+
                 mDatabase.storeReading(object.data);
                 WearableApi.sendMessage(mGoogleApiClient, WearableApi.GLUCOSE, String.valueOf(object.id), null);
                 if (mListener != null) mListener.onDataUpdated();
@@ -123,6 +138,41 @@ public class WearService extends Service implements DataApi.DataListener, Messag
                 if (PreferencesUtil.isNsRestEnabled(this)) syncNightscout();
                 runTextToSpeech(object.data.prediction);
                 break;
+        }
+    }
+
+    private void updateAlarmReceiver(boolean started) {
+        if (started && !mAlarmReceiverIsRunning) {
+            AlarmReceiver.start(this);
+        } else if (!started && mAlarmReceiverIsRunning) {
+            AlarmReceiver.stop(this);
+        }
+        mAlarmReceiverIsRunning = started;
+    }
+
+    private void updateNotification(Boolean show) {
+        if (show == null) {
+            show = mNotificationShowing;
+        }
+
+        if (show) {
+            boolean isMmol = PreferencesUtil.getBoolean(this, getString(R.string.pref_key_mmol), true);
+            Notification.Builder builder = new Notification.Builder(this);
+            builder.setSmallIcon(R.drawable.ic_launcher);
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+
+            if (mLastReading != null) {
+                builder.setContentTitle("" + mLastReading.glucose(isMmol) + " " +
+                        (isMmol ? getString(R.string.mmol) : getString(R.string.mgdl)));
+            } else {
+                builder.setContentTitle("");
+            }
+            builder.setContentText("");
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+            builder.setContentIntent(pendingIntent);
+            startForeground(1922, builder.build());
+        } else {
+            stopForeground(true);
         }
     }
 
@@ -177,6 +227,15 @@ public class WearService extends Service implements DataApi.DataListener, Messag
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "onStartCommand!!!");
+        if ("alarmreceiver".equals(intent.getAction()) && mReadingStatus != null && mReadingStatus.status != Status.Type.NOT_RUNNING) {
+            long delay = Integer.valueOf(PreferencesUtil.getCheckGlucoseInterval(this)) * 60000;
+            if (mLastReading == null || mLastReading.realDate + delay < System.currentTimeMillis()) {
+                Log.i(TAG, "trigger glucose");
+                sendMessage(WearableApi.TRIGGER_GLUCOSE, "", null);
+            }
+        }
+
         return START_STICKY;
     }
 
