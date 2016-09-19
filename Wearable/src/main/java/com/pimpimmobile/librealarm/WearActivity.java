@@ -364,12 +364,21 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
             Tag tag = params[0];
             NfcV nfcvTag = NfcV.get(tag);
             if (DEBUG) Log.d(TAG, "Attempting to read tag data");
+            final boolean multiblock = true;
             try {
                 nfcvTag.connect();
                 final byte[] uid = tag.getId();
-                for (int i = 0; i <= 40; i++) {
-                    byte[] cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
-                    System.arraycopy(uid, 0, cmd, 2, 8);
+                final int step = multiblock ? 3 : 1;
+
+                for (int i = 0; i <= 40; i = i + step) {
+                    byte[] cmd;
+                    if (multiblock) {
+                        cmd = new byte[]{0x02, 0x23, (byte) i, 0x02}; // multi-block read 3 blocks
+                    } else {
+                        cmd = new byte[]{0x60, 0x20, 0, 0, 0, 0, 0, 0, 0, 0, (byte) i, 0};
+                        System.arraycopy(uid, 0, cmd, 2, 8);
+                    }
+
                     byte[] oneBlock;
                     Long time = System.currentTimeMillis();
                     while (true) {
@@ -384,8 +393,12 @@ public class WearActivity extends Activity implements ConnectionCallbacks,
                         }
                     }
 
-                    oneBlock = Arrays.copyOfRange(oneBlock, 2, oneBlock.length);
-                    System.arraycopy(oneBlock, 0, data, i * 8, 8);
+                    if (multiblock) {
+                        System.arraycopy(oneBlock, 1, data, i * 8, oneBlock.length - 1);
+                    } else {
+                        oneBlock = Arrays.copyOfRange(oneBlock, 2, oneBlock.length);
+                        System.arraycopy(oneBlock, 0, data, i * 8, 8);
+                    }
                 }
                 Log.d(TAG, "GOT TAG DATA!");
             } catch (Exception e) {
