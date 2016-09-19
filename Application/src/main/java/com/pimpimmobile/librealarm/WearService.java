@@ -174,6 +174,7 @@ public class WearService extends Service implements DataApi.DataListener, Messag
         } else {
             stopForeground(true);
         }
+        mNotificationShowing = show;
     }
 
 
@@ -228,7 +229,8 @@ public class WearService extends Service implements DataApi.DataListener, Messag
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand!!!");
-        if ("alarmreceiver".equals(intent.getAction()) && mReadingStatus != null && mReadingStatus.status != Status.Type.NOT_RUNNING) {
+        if (intent != null && "alarmreceiver".equals(intent.getAction()) &&
+                mReadingStatus != null && mReadingStatus.status != Status.Type.NOT_RUNNING) {
             long delay = Integer.valueOf(PreferencesUtil.getCheckGlucoseInterval(this)) * 60000;
             if (mLastReading == null || mLastReading.realDate + delay < System.currentTimeMillis()) {
                 Log.i(TAG, "trigger glucose");

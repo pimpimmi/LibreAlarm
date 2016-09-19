@@ -52,7 +52,7 @@ public class WearableApi {
             PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
             PendingResult<DataApi.DataItemResult> pR =
                     Wearable.DataApi.putDataItem(client, putDataReq);
-            pR.setResultCallback(listener);
+            if (listener != null) pR.setResultCallback(listener);
             return true;
         }
         return false;
