@@ -73,28 +73,28 @@
     <string name="toast_turn_off_alarm_failed">Abschaltung des Alarms gescheitert</string>
 
     <!-- Text message telling us the alarm is disabled for low glucose (Max 30 characters) -->
-    <string name="alarm_disabled_low_text" formatted="false">Alarmdeakt für niedrigen Glukosewert bis: %s</string>
+    <string name="alarm_disabled_low_text" formatted="false">Min Glukosealarm deakt bis: %s</string>
 
     <!-- Text message telling us the alarm is disabled for high glucose (Max 30 characters) -->
-    <string name="alarm_disabled_high_text" formatted="false">Alarmdeakt für hohen Glukosewert bis: %s</string>
+    <string name="alarm_disabled_high_text" formatted="false">Max Glukosealarm deakt bis: %s</string>
 
     <!-- Use mmol hint -->
     <string name="settings_glucose_units_text">Verwende mmol/l</string>
 
     <!-- Limit for high glucose (Max 25 characters)-->
-    <string name="settings_alarm_high_title">Grenze für hohen Glukosewert</string>
+    <string name="settings_alarm_high_title">Max Glukosewert</string>
 
     <!-- Limit for low glucose (Max 25 characters)-->
-    <string name="settings_alarm_low_title">Grenze für niedrigen Glukosewert</string>
+    <string name="settings_alarm_low_title">Min Glukosewert</string>
 
     <!-- If alarm should sound from phone -->
     <string name="settings_phone_alarm_text">Verwende Alarmton des Telefons</string>
 
     <!-- Disable alarm for X minutes for high glucose (Max 25 characters) -->
-    <string name="settings_snooze_high_title">Alarmdeakt für hohen Glukosewert</string>
+    <string name="settings_snooze_high_title">Max Glukosealarm</string>
 
     <!-- Disable alarm for X minutes for low glucose (Max 25 characters)-->
-    <string name="settings_snooze_low_title">Alarmdeakt für niedrigen Glukosewert</string>
+    <string name="settings_snooze_low_title">Min Glukosealarm</string>
 
     <!-- If the alarm should sound when you get ERR -->
     <string name="settings_err_checkbox">Verwende Alarm für ERR</string>
@@ -160,7 +160,7 @@
     <string name="xdrip_plus_broadcast_summary">Aktiviere xDrip+ Broadcast</string>
 
     <!-- Disable alarms on LibreAlarm and use xDrip+ alarm instead-->
-    <string name="all_alarms_disabled_summary">Alarm der Uhr und LibreAlarm komplett deaktivieren, stattdessen xDrip+ nutzen</string>
+    <string name="all_alarms_disabled_summary">Alarm der Uhr und LibreAlarm komplett deaktivieren, stattdessen xDrip+ nutzen</string>
 
     <!-- How often we should make glucose readings -->
     <string name="settings_glucose_interval">Glukosemesswertintervall setzen</string>
@@ -175,12 +175,36 @@
     <string name="pref_key_disable_touchscreen_title">Touchscreen der Uhr deaktivieren</string>
 
     <!-- Summary for setting allowing the user to disable the watch touchscreen to avoid accidental touches -->
-    <string name="pref_key_disable_touchscreen_summary">Ist der Touchscreen der Uhr deaktiviert, muss man bei Wiederaktivierung, als erstes die Option deaktivieren und die Uhr erneut starten.</string>
+    <string name="pref_key_disable_touchscreen_summary">Ist der Touchscreen der Uhr deaktiviert, muss man bei Wiederaktivierung, als erstes die Option deaktivieren und die Uhr erneut starten</string>
 
     <!-- Title for setting to enable root -->
     <string name="pref_key_root_title">ROOT aktivieren</string>
 
-    <!-- Title for setting to enable root -->
+    <!-- Summary for setting to enable root -->
     <string name="pref_key_root_summary">Erfordert eine gerootete Uhr</string>
+    
+    <!--Title for deinstalling xDrip watchfece -->
+    <string name="uninstall_xdrip_watchface">Deinstalliere xDrip Ziffernblatt</string>
+    
+    <!-- Summary for removing xDrip watchfece from collector watch -->
+    <string name="remove_the_xdrip_watchface_from_the_collector_watch">Entferne das xDrip Ziffernblatt von der Sammleruhr</string> 
+    
+    <!-- Title for Toggle NFC -->
+    <string name="toggle_nfc">NFC umschalten</string>
+    
+    <!-- Title for Toggle NFC on error -->
+    <string name="toggle_nfc_on_error">Umschalten von NFC auf Fehler</string>
+    
+    <!-- Summary for Toggle NFC -->
+    <string name="try_to_turn_nfc_off_when_not_in_use">Versuche NFC auszuschalten, wenn nicht in Benutzung (Nicht empfohlen)</string>
+    
+    <!-- Summary for Toggle NFC on error -->
+    <string name="turn_nfc_off_if_get_errors">NFC OFF/ON, bei Fehlerübermittlung (Empfohlen)</string>
+    
+    <!-- Reboot watch menu item -->
+    <string name="reboot_watch">Neustart der Uhr (ROOT benötigt)</string>
+    
+    <!-- Clear statistics watch menu item -->
+    <string name="clear_statistics">Statistiken bereinigen</string>
 
-</resources>                                    	  
+</resources> 
